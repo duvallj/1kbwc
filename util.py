@@ -1,7 +1,6 @@
 def immutablize(target):
-    def noset(*args):
-        print("settings")
-        raise RuntimeError()
+    if target is None:
+        return None
     class MetaFactory(type):
         def __new__(mcls, name, bases, attrs):
             whitelist = ['__getattribute__', '__setattr__', '__init__']
@@ -19,6 +18,6 @@ def immutablize(target):
             ret = getattr(object.__getattribute__(self, "_backing_obj"), attr)
             return immutablize(ret)
         def __setattr__(self, attr, val):
-            raise RuntimeError("urbad")
+            raise RuntimeError("Err: Card attempted to change gamestate without kernel call")
     
     return Proxy(target)

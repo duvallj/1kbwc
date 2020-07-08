@@ -1,20 +1,28 @@
+from util import immutablize
 
-class CardInPlay():
-    def __init__(self):
-        self.data = None    # CardData - things bound less tightly to instance
-
-        self.owner = None   # owner of the area this card is in
-        self.player = None  # person who moved this card into play
-        self.area = None    # area this card resides in (hand, play, deck, etc.)
 
 ## (editable) data tied to the card itself, and not the game
 class Card():
     def __init__(self):
         self.val = 0        # point value of card
         self.name = ''      # name of card
-        self.action = ''    # code on card, `eval`ed by game
         self.image = None   # image on card
         self.flags = set()   # identifiers for card (government system, play at any time, etc.)
+        ### these properties should ONLY be edited by the Kernel
+        ### this card should only reference them immutably, using the @properties below
+        self._owner = None   # owner of the area this card is in
+        self._player = None  # person who moved this card into play
+        self._area = None    # area this card resides in (hand, play, deck, etc.)
+
+    @property
+    def owner(self):
+        return immutablize(self._owner)
+    @property
+    def player(self):
+        return immutablize(self._player)
+    @property
+    def area(self):
+        return immutablize(self._area)
 
 class Area():
     def __init__(self):
