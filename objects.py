@@ -24,6 +24,7 @@ class Area():
 
 class Player():
     def __init__(self):
+        self.username = ''  # the name of the player
         self.hand = None    # the player's hand
         self.area = None    # the player's play area
         self.score = 0      # the player's score
