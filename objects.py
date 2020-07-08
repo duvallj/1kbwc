@@ -1,5 +1,5 @@
 
-class Card():
+class CardInPlay():
     def __init__(self):
         self.data = None    # CardData - things bound less tightly to instance
 
@@ -8,7 +8,7 @@ class Card():
         self.area = None    # area this card resides in (hand, play, deck, etc.)
 
 ## (editable) data tied to the card itself, and not the game
-class CardData():
+class Card():
     def __init__(self):
         self.val = 0        # point value of card
         self.name = ''      # name of card
