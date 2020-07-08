@@ -9,13 +9,14 @@ def make_parser():
     return parser
 
 async def hello(websocket, path):
-    name = await websocket.recv()
-    print(f"< {name}")
+    while True:
+        name = await websocket.recv()
+        print(f"< {name}")
 
-    greeting = f"(at {path}): Hello {name}!"
+        greeting = f"(at {path}): Hello {name}!"
 
-    await websocket.send(greeting)
-    print(f"> {greeting}")
+        await websocket.send(greeting)
+        print(f"> {greeting}")
 
 def make_server(port):
     return websockets.serve(hello, "localhost", port)
