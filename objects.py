@@ -49,4 +49,6 @@ class Game():
         self.turn_order = self.players  # normal turn rotation
         self.turn_q = []                # turn rotation override
 
+        self.turn_num           # incremented each turn, mostly for use by cards w/ timers
+
 
