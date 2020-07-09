@@ -1,0 +1,26 @@
+import inspect, random
+from objects import Card
+from cards import *
+
+def read_cards():
+    import cards
+    card_modules = inspect.getmembers(cards, inspect.ismodule)
+    card_classes = []
+    for card_module in card_modules:
+        card_classes += inspect.getmembers(card_module[1], inspect.isclass)
+    card_classes = [card_class[1] for card_class in card_classes if card_class[1] != Card]
+    card_classes = [card_class for card_class in card_classes if Card in card_class.__bases__]
+    return card_classes
+
+def make_deck(size=0):
+    classes = read_cards()
+    deck = []
+    for card_class in classes:
+        deck.append(card_class())
+    random.shuffle(deck)
+    if size == 0:
+        return deck
+    while len(deck) < size:
+        deck.append(random.choice(classes)())
+    while len(deck) > size:
+        del deck[random.randint(0, len(deck) - 1)]
