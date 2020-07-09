@@ -18,6 +18,6 @@ def immutablize(target):
             ret = getattr(object.__getattribute__(self, "_backing_obj"), attr)
             return immutablize(ret)
         def __setattr__(self, attr, val):
-            raise RuntimeError("Err: Card attempted to change gamestate without kernel call")
+            raise AttributeError("Err: Card attempted to change gamestate without kernel call")
     
     return Proxy(target)
