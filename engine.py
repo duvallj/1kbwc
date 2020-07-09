@@ -77,3 +77,5 @@ class Engine():
             self.turn_order_index = (self.turn_order_index + 1) % len(self.game.turn_order)
             self.current_player = self.game.turn_order[self.turn_order_index]
 
+    def is_game_over(self):
+        return len(self.game.draw.contents) = 0
