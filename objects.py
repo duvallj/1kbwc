@@ -1,5 +1,5 @@
 from util import immutablize
-
+from enum import Enum
 
 ## (editable) data tied to the card itself, and not the game
 class Card():
@@ -13,7 +13,10 @@ class Card():
         self._owner = None   # owner of the area this card is in
         self._player = None  # person who moved this card into play
         self._area = None    # area this card resides in (hand, play, deck, etc.)
+        self.init()
 
+    def init(self):
+        raise NotImplementedError("Card has no init function!")
     @property
     def owner(self):
         return immutablize(self._owner)
@@ -29,6 +32,13 @@ class Area():
         self.owners = []            # players who can play from or are affected by this area
         self.viewers = self.owners  # players who can see the contents of this area
         self.contents = []          # the cards in this area
+        self.flags = set()          # extra data associated with this area
+
+class AreaFlag(Enum):       # area types
+    PLAY_AREA = 'PLAY AREA'
+    DRAW_AREA = 'DRAW AREA'
+    HAND_AREA = 'HAND AREA'
+    DISCARD_AREA = 'DISCARD AREA'
 
 class Player():
     def __init__(self):
