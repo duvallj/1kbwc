@@ -49,7 +49,7 @@ class Kernel:
             return result
         else:
             return None
-
+    #TODO should we give client's some form of IDing areas without giving them access to contents?
     def look_at(self, player, play_area) -> Optional[List[Card]]:
         """
         Callback for revealing an area to a player
