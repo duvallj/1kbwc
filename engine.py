@@ -1,21 +1,20 @@
 import cardreader
 from objects import *
+from kernel import Kernel
 
 class Engine():
     def __init__(self):
         self.game = None
-        self.current_player = None
-        self.turn_order_index = 0
+        self.kernel = None
 
     def reset(self):
         self.game = Game()
-        self.turn_order_index = 0
-        self.current_player = None
+        self.kernel = Kernel(self.game)
 
     def setup_game(self):
         setup_areas()
         self.game.turn_order = self.game.players[:]
-        self.current_player = self.game.turn_order(self.turn_order_index)        
+        self.game.current_player = self.game.turn_order(self.game.turn_order_index)        
 
     def setup_areas(self):
         card_deck = cardreader.make_deck(len(self.game.players) * 10) #MAGIC NUMBER, AAAAA
@@ -70,12 +69,15 @@ class Engine():
 
     def advance_turn(self):
         self.game.turn_num += 1
+        self.game.cards_played_this_turn = 0
+        self.game.cards_drawn_this_turn = 0
         if len(self.game.turn_q) > 0:
-            self.current_player = self.game.turn_q[0]
+            self.game.current_player = self.game.turn_q[0]
             self.game.turn_q = self.game.turn_q[1:]
         else:
-            self.turn_order_index = (self.turn_order_index + 1) % len(self.game.turn_order)
-            self.current_player = self.game.turn_order[self.turn_order_index]
+            self.game.turn_order_index = (self.game.turn_order_index + 1) % len(self.game.turn_order)
+            self.game.current_player = self.game.turn_order[self.game.turn_order_index]
 
     def is_game_over(self):
-        return len(self.game.draw.contents) = 0
+        return len(self.game.draw.contents) == 0
+

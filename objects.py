@@ -55,10 +55,15 @@ class Game():
         self.draw = None            # reference to the draw pile
         self.discard = None         # reference to the discard pile
         self.all_areas = []         # references to *every* area in the game
+        self.all_cards = []         # references to *every* card in the game; as cards are played they are moved towards the front
 
         self.turn_order = self.players  # normal turn rotation
         self.turn_q = []                # turn rotation override
 
         self.turn_num = 0           # incremented each turn, mostly for use by cards w/ timers
+        self.current_player = None
+        self.turn_order_index = 0
+        self.cards_played_this_turn = 0
+        self.cards_drawn_this_turn = 0
 
 
