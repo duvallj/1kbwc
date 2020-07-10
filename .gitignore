@@ -4,3 +4,7 @@ venv/
 # Ignore compiled python files
 __pycache__/
 *.pyc
+
+# ideaaaaa
+.idea
+.pycharm_helpers

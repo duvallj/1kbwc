@@ -1,36 +1,34 @@
-from typing import List, Option, Bool
+import traceback
+from typing import List, Optional
 from objects import *
 
 
-class Kernel():
+class Kernel:
     def __init__(self, game, engine):
         self.__game = game
         self.__engine = engine
 
     def __update_card_in_game(self, card):
         index = None
-        
+
         try:
             index = self.__game.all_cards.index(card)
         except ValueError:
             return
 
-        self.__game.all_cards = [card] + \
-                            self.__game.all_cards[:index] + \
-                            self.__game.all_cards[index+1:]
-        
+        self.__game.all_cards = [card] + self.__game.all_cards[:index] + self.__game.all_cards[index + 1:]
 
-    def look_at(self, player, play_area) -> Option[List[Card]]:
+    def look_at(self, player, play_area) -> Optional[List[Card]]:
         can_look = None
-        
+
         for card in self.__game.all_cards:
             handler = getattr(card, "look_handler", None)
-            if hander is not None:
+            if handler is not None:
                 # TODO: don't always call handler b/c not all cards trigger 
                 # effects when not in play
                 try:
                     can_look = handler(self, player, play_area)
-                except e:
+                except AttributeError as e:
                     # TODO: do something with the error, like alert the
                     # players a card has crashed
                     traceback.print_exc()
@@ -49,7 +47,7 @@ class Kernel():
     def __default_look_handler(self, player, play_area) -> bool:
         if AreaFlag.PLAY_AREA in play_area.flags:
             return True
-        
+
         if AreaFlag.HAND_AREA in play_area.flags:
             return player in play_area.viewers
 
@@ -83,26 +81,26 @@ class Kernel():
 
         if can_move is None:
             can_move = self.__default_move_handler(player, card, from_area, to_area)
-        
+
         if AreaFlag.HAND_AREA in from_area.flags and \
-           AreaFlag.PLAY_AREA in to_area.flags and \
-           player in from_area.owners and \
-           player is self.__game.current_player and \
-           CardFlag.PLAY_ANY_TIME not in card.flags:
+                AreaFlag.PLAY_AREA in to_area.flags and \
+                player in from_area.owners and \
+                player is self.__game.current_player and \
+                CardFlag.PLAY_ANY_TIME not in card.flags:
             self.__game.cards_played_this_turn += 1
-        
+
         if AreaFlag.DRAW_AREA in from_area.flags and \
-           AreaFlag.HAND_AREA in to_area.flags and \
-           player in to_area.owners and \
-           player is self.__game.current_player:
+                AreaFlag.HAND_AREA in to_area.flags and \
+                player in to_area.owners and \
+                player is self.__game.current_player:
             self.__game.cards_drawn_this_turn += 1
 
         if can_move:
             index = from_area.cards.index(card)
-            from_area.cards = from_area.cards[:index] + from_area.cards[index+1:]
+            from_area.cards = from_area.cards[:index] + from_area.cards[index + 1:]
             to_area.cards = [card] + to_area.cards
 
-            self.__update_card(card)
+            self.__update_card_in_game(card)
 
         return can_move
 
@@ -115,24 +113,25 @@ class Kernel():
     * Returns true ==> card in to_area and card not in from_area
     * Returns false ==> card in from_area and card not in to_area
     """
+
     def __default_move_handler(self, player, card, from_area, to_area) -> bool:
         if AreaFlag.HAND_AREA in from_area.flags and \
-           AreaFlag.PLAY_AREA in to_area.flags and \
-           player in from_area.owners:
+                AreaFlag.PLAY_AREA in to_area.flags and \
+                player in from_area.owners:
             if CardFlag.PLAY_ANY_TIME in card.flags:
                 return True
             elif player is self.__game.current_player and \
-                 self.__game.cards_played_this_turn == 0 and \
-                 self.__game.cards_drawn_this_turn < 2:
+                    self.__game.cards_played_this_turn == 0 and \
+                    self.__game.cards_drawn_this_turn < 2:
                 return True
-        
+
         if AreaFlag.DRAW_AREA in from_area.flags and \
-           AreaFlag.HAND_AREA in to_area.flags and \
-           player in to_area.owners:
+                AreaFlag.HAND_AREA in to_area.flags and \
+                player in to_area.owners:
             if player is self.__game.current_player and \
-               (self.__game.cards_drawn_this_turn == 0 or \
-                (self.__game.cards_drawn_this_turn == 1 and \
-                 self.__game.cards_played_this_turn == 0)):
+                    (self.__game.cards_drawn_this_turn == 0 or
+                     (self.__game.cards_drawn_this_turn == 1 and
+                      self.__game.cards_played_this_turn == 0)):
                 return True
 
         return False
@@ -145,9 +144,8 @@ class Kernel():
             # TODO: don't always call b/c ur an poop
             try:
                 can_end_turn = handler(self, player)
-            except e:
+            except AttributeError as _:
                 traceback.print_exc()
-                pass
 
             if can_end_turn is not None:
                 break
@@ -157,13 +155,13 @@ class Kernel():
 
         if can_end_turn:
             self.__engine.advance_turn()
-        
+
         return can_end_turn
 
     def __default_end_turn_handler(self, player) -> bool:
         if player is self.__game.current_player:
             if self.__game.cards_drawn_this_turn + \
-               self.__game.cards_played_this_turn >= 2:
+                    self.__game.cards_played_this_turn >= 2:
                 return True
 
         return False
