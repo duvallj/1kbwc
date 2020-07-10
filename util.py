@@ -3,7 +3,7 @@ def immutablize(target):
         return None
     class MetaFactory(type):
         def __new__(mcls, name, bases, attrs):
-            whitelist = ['__getattribute__', '__setattr__', '__getitem__', '__setitem__', '__repr__', '__str__', '__init__']
+            whitelist = ['__getattribute__', '__setattr__', '__getitem__', '__setitem__', '__repr__', '__str__', '__init__', '__eq__']
             for attr in dir(type(target)):
                 if attr not in whitelist:
                     attrs[attr] = getattr(type(target), attr)
@@ -28,5 +28,16 @@ def immutablize(target):
             return repr(object.__getattribute__(self, "_backing_obj"))
         def __str__(self):
             return str(object.__getattribute__(self, "_backing_obj"))
+        def __eq__(self, other):
+            if type(other) == type(object.__getattribute__(self, "_backing_obj")):
+                return other == object.__getattribute__(self, "_backing_obj")
+            try:
+                if type(object.__getattribute__(self, "_backing_obj")) == type(object.__getattribute__(other, "_backing_obj")):
+                    return object.__getattribute__(self, "_backing_obj") == object.__getattribute__(other, "_backing_obj")
+            except AttributeError:
+                return False
+            return False
+
+
     
     return Proxy(target)
