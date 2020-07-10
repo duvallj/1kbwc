@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title id="title">Socket Testing Page</title>
+    <meta charset="UTF-8">
+    <meta width="device-width">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body>
+    <h3>Socket Testing Page</h3>
+    <div class="main">
+      <p>Click one of the following buttons to start the test</p>
+      <p>
+        <input type="text" id="socketPath" />
+        <button onclick="connect();">Connect</button>
+        <button onclick="disconnect();">Disconnect</button>
+      </p>
+      <p>
+        Connected? <span id="socketConnect">No</span>
+      </p>
+      <p>
+        <input type="text" id="messageInput" />
+        <button onclick="send_message();">Send Message</button>
+        <code class="log"><pre id="log"></pre></code>
+      </p>
+    </div>
+    <script type="text/javascript">
+const SCHEME = window.location.protocol == "https:" ? "wss": "ws";
+const HOST = window.location.host;
+const PATH = SCHEME + "://" + HOST + "/"
+
+const socket_path = document.getElementById("socketPath");
+socket_path.value = PATH;
+const page_log = document.getElementById("log");
+const socket_connected_log = document.getElementById("socketConnect");
+const message_input = document.getElementById("messageInput");
+
+let socket = false;
+let socket_connected = false;
+
+function log_to_page(content) {
+  page_log.innerHTML += content + "\n";
+}
+
+function log_error_to_page(content) {
+  page_log.innerHTML += "<span style='color: red'>" + content + "</span>\n";
+}
+
+function on_open() {
+  log_to_page("### Opened WebSocket");
+  socket_connected_log.innerHTML = "Yes";
+  socket_connected = true;
+}
+
+function on_close() {
+  log_to_page("### Closed WebSocket");
+  socket_connected_log.innerHTML = "No";
+  socket_connected = false;
+}
+
+function on_message(content) {
+  log_to_page(content.data);
+}
+
+function init_socket(socket) {
+  socket.onopen = on_open;
+  socket.onclose = on_close;
+  socket.onmessage = on_message;
+}
+
+function connect() {
+  log_to_page("### Trying to open new WebSocket");
+  if (socket_connected) {
+    disconnect();
+  }
+  socket = new WebSocket(socket_path.value);
+  init_socket(socket);
+}
+
+function disconnect() {
+  log_to_page("### Manually Closed WebSocket");
+  socket.close();
+}
+
+function send_message() {
+  if (!socket_connected) {
+    log_to_page("### Can't send to closed socket");
+  }
+  else { 
+    socket.send(message_input.value);
+    message_input.value = "";
+  }
+}
+
+// from https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
+function key_listener(event) {
+    console.log(event.key);
+    if (!event.repeat && event.key === "Enter") {
+        send_message();
+    }
+}
+window.addEventListener('keydown', key_listener);
+    </script>
+  </body>
+</html>

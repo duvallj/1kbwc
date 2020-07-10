@@ -1,0 +1,21 @@
+<html>
+<head>
+<link rel="stylesheet" href="style.css"></style>
+<title>1KBWC</title>
+</head>
+<body>
+      <p>
+        <input type="text" id="socketPath" />
+        <button onclick="connect();">Connect</button>
+        <button onclick="disconnect();">Disconnect</button>
+      </p>
+      <p>
+        Connected? <span id="socketConnect">No</span>
+      </p>
+<img src="card.png" /><br/>
+<div id="output">Let's start!</div>
+<input id="input" placeholder="Type a command here..."></input>
+<button id="submit" onclick="processCommand();">Submit</button>
+<script src="input.js"></script>
+</body>
+</html>

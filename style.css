@@ -1,0 +1,11 @@
+#output{
+	white-space: pre-line;
+	overflow-y: auto;
+	height: 5em;
+	border: 1px solid black;
+}
+
+img{
+	height: 250px;
+	width: 150px;
+}
