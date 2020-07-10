@@ -1,6 +1,7 @@
 import traceback
 from typing import List, Optional
 from objects import *
+from util import immutablize
 
 
 class Kernel:
@@ -18,23 +19,28 @@ class Kernel:
 
         self.__game.all_cards = [card] + self.__game.all_cards[:index] + self.__game.all_cards[index + 1:]
 
-    def look_at(self, player, play_area) -> Optional[List[Card]]:
-        can_look = None
-
-        for card in self.__game.all_cards:
-            handler = getattr(card, "look_handler", None)
+    def __run_card_handler(self, card, handler_str, *args):
+        if AreaFlag.PLAY_AREA in card._area.flags or CardFlag.ALWAYS_GET_EVENTS in card.flags:
+            handler = getattr(card, handler_str, None)
+            result = None
             if handler is not None:
-                # TODO: don't always call handler b/c not all cards trigger 
-                # effects when not in play
+                immutable_args = [immutablize(arg) for arg in args]
                 try:
-                    can_look = handler(self, player, play_area)
+                    result = handler(self, *immutable_args)
                 except AttributeError as e:
                     # TODO: do something with the error, like alert the
                     # players a card has crashed
                     traceback.print_exc()
-                    pass
+            return result
+        else:
+            return None
 
-                if can_look is not None: break
+    def look_at(self, player, play_area) -> Optional[List[Card]]:
+        can_look = None
+
+        for card in self.__game.all_cards:
+            can_look = self.__run_card_handler(card, "handle_look", player, play_area, self.__game)
+            if can_look is not None: break
 
         if can_look is None:
             can_look = self.__default_look_handler(player, play_area)
@@ -68,16 +74,8 @@ class Kernel:
 
         can_move = None
         for card in self.__game.all_cards:
-            # TODO: same as look_at
-            handler = getattr(card, "move_handler", None)
-            if handler is not None:
-                try:
-                    can_move = handler(self, player, card, from_area, to_area)
-                except e:
-                    # TODO: do something with the error, like alert the
-                    # players a card has crashed
-                    traceback.print_exc()
-                    pass
+            can_move = self.__run_card_handler(card, "handle_move", player, card, from_area, to_area, self.__game)
+            if can_move is not None: break
 
         if can_move is None:
             can_move = self.__default_move_handler(player, card, from_area, to_area)
@@ -99,6 +97,7 @@ class Kernel:
             index = from_area.cards.index(card)
             from_area.cards = from_area.cards[:index] + from_area.cards[index + 1:]
             to_area.cards = [card] + to_area.cards
+            card._owners = to_area.owners
 
             self.__update_card_in_game(card)
 
@@ -136,17 +135,12 @@ class Kernel:
 
         return False
 
+    # TODO Check if the game is over (drawpile is empty) in here?
     def end_turn(self, player) -> bool:
         can_end_turn = None
 
         for card in self.__game.all_cards:
-            handler = getattr(card, "end_turn_handler", None)
-            # TODO: don't always call b/c ur an poop
-            try:
-                can_end_turn = handler(self, player)
-            except AttributeError as _:
-                traceback.print_exc()
-
+            can_end_turn = self.__run_card_handler(card, "handle_end_turn", player, self.__game)
             if can_end_turn is not None:
                 break
 

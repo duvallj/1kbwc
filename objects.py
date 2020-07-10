@@ -11,7 +11,7 @@ class Card:
         self.flags = set()  # identifiers for card (government system, play at any time, etc.)
         # !!! these properties should ONLY be edited by the Kernel
         # !!! this card should only reference them immutably, using the @properties below
-        self._owner = None  # owner of the area this card is in
+        self._owners = []  # owners of the area this card is in
         self._player = None  # person who moved this card into play
         self._area = None  # area this card resides in (hand, play, deck, etc.)
         self.init()
@@ -20,8 +20,8 @@ class Card:
         raise NotImplementedError("Card has no init function!")
 
     @property
-    def owner(self):
-        return immutablize(self._owner)
+    def owners(self):
+        return immutablize(self._owners)
 
     @property
     def player(self):
@@ -31,9 +31,37 @@ class Card:
     def area(self):
         return immutablize(self._area)
 
+    def handle_look(kernel, player, area, gamestate):
+        pass
+
+    def handle_move(kernel, player, card, from_area, to_area, gamestate):
+        pass
+
+    def handle_end_turn(kernel, player, gamestate):
+        pass
+
+    def handle_score_area(kernel, area, gamestate):
+        pass
+
+    def handle_score_card(kernel, card, gamestate):
+        pass
+
+    def handle_mutable_card_request(kernel, player, card, gamestate):
+        pass
+
+    def handle_end_game(kernel, gamestate):
+        pass
+
+    def on_play(kernel, gamestate):
+        pass
+
+    def on_discard(kernel, gamestate):
+        pass
+
 
 class CardFlag(Enum):
     PLAY_ANY_TIME = 'Play at any time'
+    ALWAYS_GET_EVENTS = 'Get events in any area'
 
 
 class Area:
