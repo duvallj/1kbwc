@@ -282,7 +282,6 @@ class Kernel:
         """
         return score_card.val
 
-    # TODO What should this return if request is denied?
     def get_mutable_card(self, player, requested_card):
         """
         Returns a mutable copy of a card
@@ -296,12 +295,13 @@ class Kernel:
         """
         pass
 
-    # TODO What actually is the default response to a mutable card request?  Allow it?
     def __default_get_mutable_card_handler(self, player, requested_card):
         """
+        Allow it
         """
-        pass
-
+        return True
+    
+    #TODO this should actually end the game
     def end_game(self):
         """
         Calls card's end_game hooks right before the game ends.
