@@ -46,7 +46,7 @@ class Card:
     def handle_score_card(kernel, card, gamestate):
         pass
 
-    def handle_mutable_card_request(kernel, player, card, gamestate):
+    def handle_get_mutable_card(kernel, player, card, gamestate):
         pass
 
     def handle_end_game(kernel, gamestate):
