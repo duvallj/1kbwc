@@ -15,7 +15,7 @@ class Engine:
     def setup_game(self):
         self.setup_areas()
         self.game.turn_order = self.game.players[:]
-        self.game.current_player = self.game.turn_order(self.game.turn_order_index)
+        self.game.current_player = self.game.turn_order[self.game.turn_order_index]
 
     def setup_areas(self):
         card_deck = cardreader.make_deck(len(self.game.players) * 10)  # MAGIC NUMBER, AAAAA
@@ -58,6 +58,7 @@ class Engine:
         draw = Area()
         draw.contents = card_deck
         draw.flags = {AreaFlag.DRAW_AREA}
+        self.game.draw = draw
         self.game.all_areas.append(draw)
 
     def add_player(self, username):

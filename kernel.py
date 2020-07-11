@@ -7,7 +7,6 @@ from util import immutablize
 class Kernel:
     def __init__(self, game, engine):
         self.__game = game
-        self.__engine = engine
 
     def __update_card_in_game(self, card):
         """
@@ -201,9 +200,6 @@ class Kernel:
 
         if can_end_turn is None:
             can_end_turn = self.__default_end_turn_handler(player)
-
-        if can_end_turn:
-            self.__engine.advance_turn()
 
         return can_end_turn
 

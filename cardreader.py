@@ -24,3 +24,4 @@ def make_deck(size=0):
         deck.append(random.choice(classes)())
     while len(deck) > size:
         del deck[random.randint(0, len(deck) - 1)]
+    return deck
