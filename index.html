@@ -1,21 +1,49 @@
+<!DOCTYPE html>
 <html>
 <head>
-<link rel="stylesheet" href="style.css"></style>
-<title>1KBWC</title>
+    <link rel="stylesheet" href="style.css"></style>
+    <title>1KBWC</title>
 </head>
 <body>
-      <p>
-        <input id="socketPath" type="text" />
-        <button onclick="connect();">Connect</button>
-        <button onclick="disconnect();">Disconnect</button>
-      </p>
-      <p>
-        Connected? <span id="socketConnect">No</span>
-      </p>
-<img src="card.png" /><br/>
-<div id="output">Let's start!</div>
-<input id="input" placeholder="Type a command here..."></input>
-<button id="submit" onclick="on_submit();">Submit</button>
-<script src="input.js"></script>
+    <div class="main">
+        <div class="console">
+            <div id="output" class="console-output">Let's start!</div>
+            <div class="console-input">
+                <input id="input" placeholder="Type a command here..."></input>
+                <button id="submit" onclick="on_submit();">Submit</button>
+            </div>
+        </div>
+        <div id="gamestate" class="gameState">Game view state stuff goes here
+        </div>
+        <div class="settings">
+            <div class="settings-connected">
+                Connected? <span id="socketConnect">No</span>
+            </div>
+            <div class="socketPath">
+                <label for="socketPath">Base URL:</label>
+                <input id="socketPath" class="socketPath-input" type="text" />
+            </div>
+            <div class="roomName">
+                <label for="roomName">Room Name:</label>
+                <input id="roomName" class="roomName-input" type="text" placeholder="Enter room name..." value="TJHSST" />
+            </div>
+            <div class="playerName">
+                <label for="playerName">Player Name:</label>
+                <input id="playerName" class="playerName-input" type="text" placeholder="Enter player name..." />
+            </div>
+            <div class="settings-doconnect">
+                <button onclick="makeRoom();">Make Room</button>
+                <button onclick="joinRoom();">Join Room</button>
+                <button onclick="startRoom();">Start Game</button>
+                <button onclick="disconnect();">Disconnect</button>
+            </div>
+        </div>
+        <div class="cardViewer">
+            <img src="placeholder-card.png" class="card" />
+        </div>
+    </div>
+    <script src="utils.js"></script>
+    <script src="api.js"></script>
+    <script src="input.js"></script>
 </body>
 </html>

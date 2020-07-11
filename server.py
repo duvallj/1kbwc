@@ -44,11 +44,13 @@ class RoomManager():
         self.rooms = dict()
 
     async def make_room(self, websocket, room_name):
+        print(f"make_room {room_name}")
         self.rooms[room_name] = Room(room_name)
         self.rooms[room_name].engine.reset()
         await websocket.send(f"Made room {room_name}")
 
     async def join_room(self, websocket, room_name, player_name):
+        print(f"join_room {room_name} {player_name}")
         room = self.rooms.get(room_name, None)
         if room is None:
             await websocket.send(f"Error: room '{room_name}' does not exist!")
@@ -78,6 +80,7 @@ class RoomManager():
         await room.stopped.wait()
 
     async def run_game(self, websocket, room_name):
+        print(f"run_game {room_name}")
         room = self.rooms.get(room_name, None)
         if room is None:
             await websocket.send(f"Error: room '{room_name}' does not exist!")
@@ -109,6 +112,7 @@ class RoomManager():
         Starts a game in an already-created room
     """
     async def serve(self, websocket, path):
+        print(path)
         if path.startswith("/make/"):
             rest = path[6:]
             await self.make_room(websocket, rest)
@@ -125,6 +129,7 @@ class RoomManager():
             rest = path[7:]
             # Doesn't hold up this socket, schedules run automatically
             asyncio.create_task(self.run_game(websocket, rest))
+            await websocket.send("Game should be starting now!")
 
 def make_server(port):
     manager = RoomManager()

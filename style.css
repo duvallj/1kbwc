@@ -1,8 +1,50 @@
-#output{
-	white-space: pre-line;
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+.main {
+    height: 100%;
+    display: grid;
+    grid-template-columns: 0pt 2fr 2fr 1fr 0pt;
+    grid-template-rows: 0pt auto 1fr 0pt;
+    grid-template-areas:
+        ". . . . ."
+        ". console play settings ."
+        ". console play card ."
+        ". . . . .";
+    grid-column-gap: 6pt;
+    grid-row-gap: 6pt;
+}
+
+.console {
+    height: 100%;
+    grid-area: console;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto;
+    grid-row-gap: 6pt;
+}
+
+.console-output {
+    height: 100%;
 	overflow-y: auto;
-	height: 5em;
+	white-space: pre-line;
 	border: 1px solid black;
+}
+
+.gameState {
+    grid-area: play;
+	white-space: pre-line;
+	border: 1px solid black;
+}
+
+.settings {
+    grid-area: settings;
+}
+
+.cardViewer {
+    grid-area: card
 }
 
 img{
