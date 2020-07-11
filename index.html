@@ -7,31 +7,31 @@
 <body>
     <div class="main">
         <div class="console">
-            <div id="output" class="console-output">Let's start!</div>
+            <div id="output" class="console-output box preline">Let's start!</div>
             <div class="console-input">
                 <input id="input" placeholder="Type a command here..."></input>
                 <button id="submit" onclick="on_submit();">Submit</button>
             </div>
         </div>
-        <div id="gamestate" class="gameState">Game view state stuff goes here
+        <div id="gamestate" class="gameState box preline">Game view state stuff goes here
         </div>
         <div class="settings">
             <div class="settings-connected">
                 Connected? <span id="socketConnect">No</span>
             </div>
             <div class="socketPath">
-                <label for="socketPath">Base URL:</label>
-                <input id="socketPath" class="socketPath-input" type="text" />
+                <label for="socketPath" class="settings-label">URL:</label>
+                <input id="socketPath" class="socketPath-input settings-input" type="text" />
             </div>
             <div class="roomName">
-                <label for="roomName">Room Name:</label>
-                <input id="roomName" class="roomName-input" type="text" placeholder="Enter room name..." value="TJHSST" />
+                <label for="roomName" class="settings-label">Room:</label>
+				<input id="roomName" class="roomName-input settings-input" type="text" placeholder="Enter room name..." value="TJHSST" />
             </div>
             <div class="playerName">
-                <label for="playerName">Player Name:</label>
-                <input id="playerName" class="playerName-input" type="text" placeholder="Enter player name..." />
+                <label for="playerName" class="settings-label">Player:</label>
+                <input id="playerName" class="playerName-input settings-input" type="text" placeholder="Enter player name..." />
             </div>
-            <div class="settings-doconnect">
+            <div class="settings-doconnect center-text">
                 <button onclick="makeRoom();">Make Room</button>
                 <button onclick="joinRoom();">Join Room</button>
                 <button onclick="startRoom();">Start Game</button>
@@ -39,7 +39,14 @@
             </div>
         </div>
         <div class="cardViewer">
-            <img src="placeholder-card.png" class="card" />
+			<div class="center-text">
+				<img src="placeholder-card.png" class="card" />
+			</div>
+			<div id="detail-container" class="box">
+				<div id="inspect-title" class="inspect-detail">Title: </div>
+				<div id="inspect-value" class="inspect-detail">Score: </div>
+				<div id="inspect-flags" class="inspect-detail">Flags: </div>
+			</div>
         </div>
     </div>
     <script src="utils.js"></script>
