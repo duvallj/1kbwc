@@ -3,7 +3,7 @@ def immutablize(target):
         return None
     class MetaFactory(type):
         def __new__(mcls, name, bases, attrs):
-            whitelist = ['__getattribute__', '__setattr__', '__getitem__', '__setitem__', '__repr__', '__str__', '__init__', '__eq__']
+            whitelist = ['__getattr__', '__setattr__', '__getitem__', '__setitem__', '__repr__', '__str__', '__init__']
             for attr in dir(type(target)):
                 if attr not in whitelist:
                     attrs[attr] = getattr(type(target), attr)
@@ -14,30 +14,20 @@ def immutablize(target):
     class Proxy(metaclass=MetaFactory):
         def __init__(self, obj):
             object.__setattr__(self, "_backing_obj", obj)
-        def __getattribute__(self, attr):
-            ret = getattr(object.__getattribute__(self, "_backing_obj"), attr)
-            return immutablize(ret)
+        def __getattr__(self, attr):
+            backing = object.__getattribute__(self, "_backing_obj")
+            if attr == "_backing_obj":
+                return backing
+            return immutablize(getattr(backing, attr))
         def __setattr__(self, attr, val):
             raise AttributeError("Error: Card attempted to change gamestate without kernel call!")
         def __getitem__(self, attr):
-            ret = object.__getattribute__(self, "_backing_obj")[attr]
-            return immutablize(ret)
+            return immutablize(self._backing_obj[attr])
         def __setitem__(self, attr, val):
             raise AttributeError("Error: Card attempted to manipulate state without kernel call!")
         def __repr__(self):
-            return repr(object.__getattribute__(self, "_backing_obj"))
+            return repr(self._backing_obj)
         def __str__(self):
-            return str(object.__getattribute__(self, "_backing_obj"))
-        def __eq__(self, other):
-            if type(other) == type(object.__getattribute__(self, "_backing_obj")):
-                return other == object.__getattribute__(self, "_backing_obj")
-            try:
-                if type(object.__getattribute__(self, "_backing_obj")) == type(object.__getattribute__(other, "_backing_obj")):
-                    return object.__getattribute__(self, "_backing_obj") == object.__getattribute__(other, "_backing_obj")
-            except AttributeError:
-                return False
-            return False
-
-
+            return str(self._backing_obj)
     
     return Proxy(target)

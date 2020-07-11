@@ -16,6 +16,11 @@ class Card:
         self._area = None  # area this card resides in (hand, play, deck, etc.)
         self.init()
 
+    def __eq__(self, other):
+        if not isinstance(other, Player):
+            return NotImplemented
+        return all(getattr(self, x) == getattr(other, x) for x in ('owners', 'viewers', 'contents', 'flags'))
+
     def init(self):
         raise NotImplementedError("Card has no init function!")
 
@@ -71,6 +76,11 @@ class Area:
         self.contents = []  # the cards in this area
         self.flags = set()  # extra data associated with this area
 
+    def __eq__(self, other):
+        if not isinstance(other, Player):
+            return NotImplemented
+        return all(getattr(self, x) == getattr(other, x) for x in ('owners', 'viewers', 'contents', 'flags'))
+
 
 class AreaFlag(Enum):  # area types
     PLAY_AREA = 'PLAY AREA'
@@ -85,6 +95,11 @@ class Player:
         self.hand = None  # the player's hand
         self.area = None  # the player's play area
         self.score = 0  # the player's score
+
+    def __eq__(self, other):
+        if not isinstance(other, Player):
+            return NotImplemented
+        return all(getattr(self, x) == getattr(other, x) for x in ('username', 'hand', 'area', 'score'))
 
 
 class Game:
