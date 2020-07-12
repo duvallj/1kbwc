@@ -1,11 +1,14 @@
 html, body {
 	height: 100%;
-    margin: 0;
+    margin: 0px;
 	font-family: Futura,Trebuchet MS,Arial,sans-serif;
 	background-color: #e2e2e2;
 }
 
 h1 {
+	margin: 0px;
+	padding-top: 20px;
+	padding-bottom: 20px;
 }
 
 .center {
@@ -31,8 +34,7 @@ input {
 	padding-left: 10px;
 	padding-right: 10px;
 	padding-top: 10px;
-	grid-column-gap: 10px;
-	height: 100%;
+	grid-column-gap: 10px;]
 }
 
 #editorContainer {
@@ -42,4 +44,10 @@ input {
 }
 
 #previewContainer {
+}
+
+#copyArea {
+	position: absolute;
+	left: -9999px;
+	height: 0px;
 }

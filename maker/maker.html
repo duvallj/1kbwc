@@ -8,10 +8,10 @@
 <body>
 	<h1 class="center">Simple Card Maker!</h1>
 	<div id="controlButtons" class="center">
-		<button id="reset" onclick="reset();">Reset!</button>
-		<a id="downloadButton" download="example_card.py" href="">
-			<button id="download" onclick="download();">Export!</button>
-		</a>
+		<button id="resetButton" onclick="reset();">Reset!</button>
+		<a id="downloadButton" download="example_card.py" href=""><button id="download" onclick="download();">Export!</button></a>
+		<button id="copyButton" onclick="copy();">Copy!</button>
+		<textarea id="copyArea" readonly></textarea>
 	</div>
 	<div id="gridContainer">
 		<div id="editorContainer">

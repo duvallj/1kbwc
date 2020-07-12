@@ -4,6 +4,7 @@ window.onload = function(){
 
 let downloadButton = document.getElementById("downloadButton");
 let preview = document.getElementById("preview");
+let copyArea = document.getElementById("copyArea");
 
 let classInput = document.getElementById("class");
 let titleInput = document.getElementById("title");
@@ -53,16 +54,7 @@ function update(){
 		flags = "set()"
 	}
 	
-	let py = `from objects import Card
-
-
-class ${filename}(Card):
-    def init(self):
-        self.val = ${value}
-        self.name = '${title}'
-        self.image = '${imagename}'
-        self.flags = ${flags}
-${handlers}`
+	let py = get_formatted();
 	preview.innerHTML = py;
 	hljs.highlightBlock(preview);
 	let data = new Blob([py], {type: 'text/plain'});
@@ -84,4 +76,23 @@ function reset(){
 	}
 	
 	update();
+}
+
+function copy(){
+	copyArea.value = get_formatted();
+	copyArea.select();
+	document.execCommand("copy");
+}
+
+function get_formatted(){
+	return `from objects import Card
+
+
+class ${filename}(Card):
+    def init(self):
+        self.val = ${value}
+        self.name = '${title}'
+        self.image = '${imagename}'
+        self.flags = ${flags}
+${handlers}`;
 }
