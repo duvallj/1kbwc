@@ -73,9 +73,9 @@ class Kernel:
             can_look = self.__default_look_handler(player, play_area)
 
         if can_look:
-            return True, play_area.cards
+            return True, play_area.contents
         else:
-            return False, len(play_area.cards)
+            return False, len(play_area.contents)
 
     def __default_look_handler(self, player, play_area) -> bool:
         """
@@ -116,7 +116,7 @@ class Kernel:
         from_area = self.__mutablize_obj(from_area)
         to_area = self.__mutablize_obj(to_area)
 
-        if card not in from_area.cards:
+        if card not in from_area.contents:
             return False
 
         if from_area == to_area:
@@ -145,9 +145,9 @@ class Kernel:
             self.__game.cards_drawn_this_turn += 1
 
         if can_move:
-            index = from_area.cards.index(card)
-            from_area.cards = from_area.cards[:index] + from_area.cards[index + 1:]
-            to_area.cards = [card] + to_area.cards
+            index = from_area.contents.index(card)
+            from_area.contents = from_area.contents[:index] + from_area.contents[index + 1:]
+            to_area.contents = [card] + to_area.contents
             card._owners = to_area.owners
 
             self.__update_card_in_game(card)
