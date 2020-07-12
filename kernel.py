@@ -58,9 +58,7 @@ class Kernel:
             pass
         return obj
 
-
-    #TODO should we give client's some form of IDing areas without giving them access to contents?
-    def look_at(self, player, play_area) -> Tuple[bool, Union[int, List[Card]]]:
+    def look_at(self, player, play_area) -> Optional[List[Card]]:
         """
         Callback for revealing an area to a player
         -> player is the player that the area will be revealed to
@@ -161,6 +159,8 @@ class Kernel:
             card._owners = to_area.owners
 
             self.__update_card_in_game(card)
+
+        # TODO CALL ON_PLAY, ON_DISCARD
 
         return can_move
 
@@ -367,3 +367,20 @@ class Kernel:
         And return which choice they chose
         """
         pass
+
+    def create_new_area(self, new_area):
+        """
+        Add a new area to the game
+        """
+        # TODO do a poll to see if the action should be cancelled
+        area = Area()
+        for owner in new_area.owners:
+            area.owners.append(self.__game.players[owner.username])
+        for viewer in new_area.viewers:
+            area.viewers.append(self.__game.players[viewer.username])
+        for content in new_area.contents:
+            area.contents.append(self.__mutablize_obj(content))
+        area.id = self.__mutablize_obj(new_area.id)
+        area.flags = self.__mutablize_obj(new_area.flags)
+
+        self.__game.all_areas[area.id] = area
