@@ -8,6 +8,10 @@ const playerName_input = document.getElementById("playerName");
 function makeRoom() {
     const call_path = MAKE_ROOM_PATH + roomName_input.value;
     websocketOnce(call_path, on_message);
+	// We figured this should be default
+	if(playerName_input.value){
+		joinRoom();
+	}
 }
 
 function startRoom() {
