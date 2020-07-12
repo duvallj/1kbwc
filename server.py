@@ -2,6 +2,7 @@ import asyncio
 import argparse
 import json
 import websockets
+from websockets.exceptions import ConnectionClosedError
 from objects import AreaFlag
 from engine import Engine
 
@@ -31,27 +32,33 @@ async def send_message(websocket, message):
         "data": message
     })
 
-def format_card(card, index):
+def format_card(index, card):
     return f" [{index}] {card.name}"
 
 def format_area(engine, player, area):
     can_look, area_contents = engine.kernel.look_at(player, area)
     if can_look:
-        output = f"{area.name} (visible)\n"
+        output = f"{area.id} "
+        if AreaFlag.PLAY_AREA in area.flags:
+            score = engine.kernel.score_area(area)
+            output += f"({score} points)"
+        else:
+            output += "(visible)"
+        output += "\n"
 
         for i in range(len(area_contents)):
             card = area_contents[i]
-            output += format_card(i, card) + "\n"
+            output += format_card(i+1, card) + "\n"
 
         return output[:-1]
     else:
-        return f"{area.name} ({area_contents} cards)"
+        return f"{area.id} ({area_contents} cards)"
 
 async def send_update(websocket, engine, player):
     hand_field = ""
     play_field = ""
 
-    for area in engine.game.all_areas:
+    for area in engine.game.all_areas.values():
         if AreaFlag.PLAY_AREA in area.flags:
             play_field += format_area(engine, player, area) + "\n\n"
         else:
@@ -91,13 +98,32 @@ class Room():
         return True
 
     async def broadcast_message(self, message):
-        # FIXME: currently, if another client is disconnected, this will cause
-        # any client that tries to broadcast to them to also get disconnected
-        # because the disconnected client will throw a "DisconnectedError" or
-        # something inside the stil-connected client
-        # FIX THIS PLS
-        await asyncio.gather(
-                *[send_message(client, message) for _, client in self.clients.items()])
+        for client in self.clients.values():
+            try:
+                await send_message(client, message)
+            except ConnectionClosedError:
+                # Currently, if another client is disconnected, this could cause
+                # any client that tries to broadcast to them to also get disconnected
+                # because the disconnected client will throw a "DisconnectedError" or
+                # something inside the stil-connected client
+                # So, we ignore that and error and let the handler in the main code
+                # take care of removing clients
+                pass
+
+    async def broadcast_update(self):
+        for player_name, client in self.clients.items():
+            player = self.engine.get_player(player_name)
+            try:
+                print(f"broadcast_update to {player_name}")
+                await send_update(client, self.engine, player)
+            except ConnectionClosedError:
+                # Same as in broadcast_message
+                pass
+
+    def remove_player(self, player_name):
+        if player_name in self.clients:
+            self.engine.remove_player(player_name)
+            del self.clients[player_name]
 
 
 class RoomManager():
@@ -132,10 +158,7 @@ class RoomManager():
 
             await self.handle_command(websocket, room, player_name, cmd, response)
 
-        await room.stopped.wait()
-
-    def remove_from_room(self, room_name, player_name):
-        pass
+        await send_message(websocket, "Game is over, you may leave now")
 
     async def handle_command(self, websocket, room, player_name, cmd, data):
         if cmd == "end":
@@ -145,7 +168,7 @@ class RoomManager():
                 return 
 
             room.turn_over.set()
-            comment = response.get("comment", None)
+            comment = data.get("comment", None)
             if comment:
                 await room.broadcast_message(f"Player {player_name} ended their turn")
             else:
@@ -154,6 +177,10 @@ class RoomManager():
         elif cmd == "move":
             player = room.engine.get_player(player_name)
             from_area = room.engine.get_area(data["src"])
+            if from_area is None:
+                await send_message(websocket, f"Source area '{data['src']}' does not exist!")
+                return
+
             index = data["index"] - 1
             if index < 0 or index >= len(from_area.contents):
                 await send_message(websocket, f"Index {index+1} is out of range for area {data['src']}!")
@@ -161,18 +188,24 @@ class RoomManager():
             
             card = from_area.contents[index]
             to_area = room.engine.get_area(data["dst"])
+            if to_area is None:
+                await send_message(websocket, f"Destination area '{data['dst']}' does not exist!")
+                return
 
             can_move = room.engine.kernel.move_card(player, card, from_area, to_area)
             if not can_move:
                 await send_message(websocket, "You cannot move this card!")
-                return
-
-            # The kernel moves the card if it succeeds, no need to do anything else
+            else:
+                # The kernel moves the card if it succeeds, no need to do anything else
+                await room.broadcast_update()
 
         elif cmd == "inspect":
             player = room.engine.get_player(player_name)
             index = data["index"] - 1
             area = room.engine.get_area(data["area"])
+            if area is None:
+                await send_message(websocket, f"Area '{data['area']}' does not exist!")
+                return
 
             can_look, area_contents = room.engine.kernel.look_at(player, area)
             if not can_look:
@@ -184,6 +217,8 @@ class RoomManager():
                 return
             
             card = area_contents[index]
+
+            await send_card(websocket, card)
         else:
             await send_message(websocket, f"The command '{cmd}' is not supported on this server")
 
@@ -200,6 +235,7 @@ class RoomManager():
         room.engine.setup_game()
         # TODO: write the game loop better
         while not room.engine.is_game_over():
+            await room.broadcast_update()
             current_player = room.engine.game.current_player.username
             await room.broadcast_message(f"Current player: {current_player}")
             
@@ -209,6 +245,12 @@ class RoomManager():
             room.engine.advance_turn()
 
         room.stopped.set()
+    
+    def remove_from_room(self, room_name, player_name):
+        print(f"Removing {player_name} from room '{room_name}'")
+        room = self.rooms.get(room_name, None)
+        if room is not None:
+            room.remove_player(player_name)
 
     """
     Paths defined:

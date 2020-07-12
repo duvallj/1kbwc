@@ -10,8 +10,11 @@ class Kernel:
 
     def __update_card_in_game(self, card):
         """
-        When a card is played, it gets bumped to the highest callback priority
-        * this attempts to move said card in the game's all_cards list
+        When a card is played, it gets bumped to the highest callback priority,
+        this attempts to move said card in the game's all_cards list.  Cards
+        near the front of the list have their handlers called first
+
+        :param card: the card to be update
         """
         try:
             index = self.__game.all_cards.index(card)
@@ -23,7 +26,7 @@ class Kernel:
     def __run_card_handler(self, card, handler_str, *args):
         """
         Run a Card's handler function.  This will automatically immutablize everything
-        in *args to make sure that the card doesn't modify anything it shouldn't.
+        in *args to make sure that the card can't modify anything it shouldn't.
         It also passes in Kernel as the default argument.
 
         :param card: specifies the card whose handler is called
@@ -52,13 +55,12 @@ class Kernel:
     def look_at(self, player, play_area) -> Tuple[bool, Union[int, List[Card]]]:
         """
         Callback for revealing an area to a player
-        -> player is the player that the area will be revealed to
-        -> play_area is the area to be revealed
+        Polls the cards to see if the operation is allowed
+        If no cards return True or False, calls __default_look_handler
 
-        * polls the cards to see if the operation is allowed
-        * if no cards return True or False, calls __default_look_handler
-
-        <- if allowed, returns the contents of the area
+        :param player: the player that the area will be revealed to
+        :param play_area: the area to be revealed
+        :return: contents of the area if allowed, None otherwise
         """
         player = self.__mutablize_obj(player)
         play_area = self.__mutablize_obj(play_area)
@@ -73,9 +75,9 @@ class Kernel:
             can_look = self.__default_look_handler(player, play_area)
 
         if can_look:
-            return True, play_area.cards
+            return True, play_area.contents
         else:
-            return False, len(play_area.cards)
+            return False, len(play_area.contents)
 
     def __default_look_handler(self, player, play_area) -> bool:
         """
@@ -96,27 +98,26 @@ class Kernel:
         return True
 
     # TODO ordering in areas - from top of draw pile or to top of discard pile????
-    def move_card(self, player, card, from_area, to_area) -> bool:
+    def move_card(self, player, move_card, from_area, to_area) -> bool:
         """
         Callback for moving a card between play areas
-        -> player is the player responsible for the action
-        -> card is the card being moved
-        -> from_area is the area the card is being removed from
-        -> to_area is the area the card is being added to
+        polls the cards to see if the operation is allowed
+        if no cards return True or False, calls __default_move_handler
+        if allowed, moves the card
 
-        * polls the cards to see if the operation is allowed
-        * if no cards return True or False, calls __default_move_handler
-        * if allowed, moves the card and
-
-        <- returns whether the action was performed
+        :param player: the player responsible for the action
+        :param card: the card being moved
+        :param from_area: the area the card is being removed from
+        :param to_area: the area the card is being added to
+        :return: whether the action was performed
         """
 
         player = self.__mutablize_obj(player)
-        card = self.__mutablize_obj(card)
+        move_card = self.__mutablize_obj(move_card)
         from_area = self.__mutablize_obj(from_area)
         to_area = self.__mutablize_obj(to_area)
 
-        if card not in from_area.cards:
+        if card not in from_area.contents:
             return False
 
         if from_area == to_area:
@@ -124,35 +125,47 @@ class Kernel:
 
         can_move = None
         for card in self.__game.all_cards:
-            can_move = self.__run_card_handler(card, "handle_move", player, card, from_area, to_area, self.__game)
+            can_move = self.__run_card_handler(card, "handle_move", player, move_card, from_area, to_area, self.__game)
             if can_move is not None:
                 break
 
         if can_move is None:
-            can_move = self.__default_move_handler(player, card, from_area, to_area)
+            can_move = self.__default_move_handler(player, move_card, from_area, to_area)
 
+        # Current player is playing
         if AreaFlag.HAND_AREA in from_area.flags and \
                 AreaFlag.PLAY_AREA in to_area.flags and \
                 player in from_area.owners and \
                 player == self.__game.current_player and \
                 CardFlag.PLAY_ANY_TIME not in card.flags:
             self.__game.cards_played_this_turn += 1
+            move_card._player = player
+        
+        # PLAY action
+        if AreaFlag.PLAY_AREA not in from_area.flags and \
+                AreaFlag.PLAY_AREA in to_area.flags:
+            self.__run_card_handler(move_card, 'on_play', self.__game, player)
 
+        # DRAW action
         if AreaFlag.DRAW_AREA in from_area.flags and \
                 AreaFlag.HAND_AREA in to_area.flags and \
                 player in to_area.owners and \
                 player == self.__game.current_player:
             self.__game.cards_drawn_this_turn += 1
 
+        # DISCARD action
+        if AreaFlag.DISCARD_AREA in to_area.flags and \
+                AreaFlag.DISCARD_AREA not in from_area.flags:
+            self.__run_card_handler(move_card, 'on_discard', self.__game)
+
         if can_move:
-            index = from_area.cards.index(card)
-            from_area.cards = from_area.cards[:index] + from_area.cards[index + 1:]
-            to_area.cards = [card] + to_area.cards
-            card._owners = to_area.owners
+            index = from_area.contents.index(move_card)
+            from_area.contents = from_area.contents[:index] + from_area.contents[index + 1:]
+            to_area.contents = [move_card] + to_area.contents
+            move_card._owners = to_area.owners
+            move_card._area = to_area
 
             self.__update_card_in_game(card)
-
-        # TODO CALL ON_PLAY, ON_DISCARD
 
         return can_move
 
@@ -195,13 +208,12 @@ class Kernel:
     def end_turn(self, player) -> bool:
         """
         Advances to the next turn
-        -> player - the player whose turn is ending
-
-        * polls the cards to see if the operation is allowed
-        * if no cards return True or False, calls __default_end_turn_handler
-        * if allowed, calls the game's advance_turn function
-
-        <- returns whether the action was performed
+        polls the cards to see if the operation is allowed
+        if no cards return True or False, calls __default_end_turn_handler
+        if allowed, calls the game's advance_turn function
+        
+        :param player: the player whose turn is ending
+        :return: True/False, whether the action was performed
         """
         player = self.__mutablize_obj(player)
 
@@ -233,31 +245,29 @@ class Kernel:
     def score_area(self, score_area):
         """
         Gets the score of an area
-        -> score_area - the area to score
-
-        * polls the cards to see if a custom scoring operation is needed
-        * if no cards return a score, calls __default_score_area_handler
-    
-        <- returns the score
+        polls the cards to see if a custom scoring operation is needed
+        if no cards return a score, calls __default_score_area_handler
+        
+        :param score_area: the area to score
+        :return: the score
         """
 
         score_area = self.__mutablize_obj(score_area)
 
         score = None
+        default_score = sum(self.score_card(card) for card in score_area.contents)
 
         for card in self.__game.all_cards:
-            score = self.__run_card_handler(card, 'handle_score_area', score_area, self.__game)
+            score = self.__run_card_handler(card, 'handle_score_area', score_area, default_score, self.__game)
 
             if score is not None:
                 break
 
         if score is None:
-            # Default is the sum of all card's scores
-            score = sum(self.score_card(card) for card in score_area.contents)
+            score = default_score
 
         return score
 
-    #  ############### TODO / WARNING: SHOULD THE SCORE_CARD HOOK EXIST OR CAN IT BE DEPRECATED IN FAVOR OF ALWAYS USING Card.val AND WOULD-BE-HANDLERS USING `get_mutable_card` AND CHANGING THE Card.val FIELD????????????????
 
     def score_card(self, score_card: Card):
         """
@@ -287,13 +297,12 @@ class Kernel:
     def get_mutable_card(self, player, requested_card):
         """
         Returns a mutable copy of a card
-        -> player, the player behind the card request
-        -> requested_card, the card the requestor wants a mutable version of
-        
-        * polls the cards to see if the requestor is allowed to edit the requested card
-        * if no cards return a True or False, calls __default_score_card_handler
+        polls the cards to see if the requestor is allowed to edit the requested card
+        if no cards return a True or False, calls __default_score_card_handler
 
-        <- if allowed, returns a mutable reference the card, otherwise None
+        :paramplayer: the player behind the card request
+        :param requested_card: the card the requestor wants a mutable version of
+        :return: if allowed, a mutable reference the card, otherwise None
         """
 
         player = self.__mutablize_obj(player)

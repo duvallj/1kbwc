@@ -89,7 +89,7 @@ class Card:
         """
         pass
 
-    def handle_score_area(self, kernel, area, gamestate):
+    def handle_score_area(self, kernel, area, default_score, gamestate):
         """
         This handler is called when the score of ANY Area is calculated.  Use it
         to modify what an area's score should be.
@@ -97,6 +97,7 @@ class Card:
 
         :param kernel: the game's Kernel object
         :param area: the Area whose score is being calculated
+        :param default_score: what this area's score would be without intervention
         :param gamestate: the entire state of the game
         :return: the score, or None if you don't wish to modify it
         """
@@ -141,16 +142,44 @@ class Card:
         pass
 
     def on_play(self, kernel, gamestate, player):
+        """
+        Ease-of-use handler, called after this card is successfully played (defined
+        as moving from a non play area to a play area)
+        If you wish to be able to stop this card from being played, use handle_move instead
+
+        :param kernel: the game's Kernel object
+        :param gamestate: the entire state of the game
+        :param player: the player that played this card, equivalent to self.player
+        :return:
+        """
         pass
 
-    def on_discard(self, kernel, gamestate):
+    def on_discard(self, kernel, gamestate, player):
+        """
+        Ease-of-use handler, called when this card is discarded (defined as moved into
+        a discard area)
+        If you wish to be able to stop this card from being moved, use handle_move instead
+        !! IMPORTANT: cards can be discarded from *any* area, don't assume it was last in
+        a play area!
+
+        :param kernel: the game's Kernel object
+        :param gamestate: the entire state of the game
+        :param player: the player responsible for discarding this card, NOT self.player
+        :return:
+        """
         pass
 
 
 class CardFlag(Enum):
     PLAY_ANY_TIME = 'Play at any time'
+    """
+    This flag marks a card that can be played even when it isn't the player's turn,
+    and whose play does not use up a turn's play action.
+    """
     ALWAYS_GET_EVENTS = 'Get events in any area'
-
+    """
+    This flag marks a card that *always* has its' handlers called, even if it isn't in play
+    """
 
 class Area:
     def __init__(self):

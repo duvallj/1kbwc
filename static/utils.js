@@ -1,6 +1,7 @@
 const SCHEME = window.location.protocol == "https:" ? "wss": "ws";
 const HOST = window.location.host;
-const PATH = SCHEME + "://" + HOST + "/"
+const PATH = SCHEME + "://" + HOST + "/";
+const IMAGE_BASE_URL = "/cards/images/";
 
 const socket_path = document.getElementById("socketPath");
 socket_path.value = PATH;
@@ -77,6 +78,16 @@ function on_close(){
 	socket_connected = false;
 }
 
+function has_all(obj, keys) {
+    for (var i in keys) {
+        let key = keys[i];
+        if (!(key in obj)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 /// Send socket message data to the output box.
 function on_message(content){
 	console.log(content);
@@ -86,14 +97,14 @@ function on_message(content){
 	}else{
 		switch(m.type){
 			case "message":
-				if(m.data){
+				if(has_all(m, ["data"])){
 					add_to_output("<<< " + m.data);
 				}else{
 					console.log("Message had no data: " + content);
 				}
 				break;
 			case "update":
-				if(m.hand && m.play){
+				if(has_all(m, ["hand", "play"])){
 					document.getElementById("hand-state").innerHTML = m.hand;
 					document.getElementById("play-state").innerHTML = m.play;
 				}else{
@@ -101,8 +112,8 @@ function on_message(content){
 				}
 				break;
 			case "inspect":  // TODO: This can't be right...
-				if(m.url && m.title && m.value && m.flags){
-					document.getElementById("inspect-image").src = m.url;
+				if(has_all(m, ["url", "title", "value", "flags"])){
+					document.getElementById("inspect-image").src = IMAGE_BASE_URL + m.url;
 					document.getElementById("inspect-title").innerHTML = m.title;
 					document.getElementById("inspect-value").innerHTML = m.value;
 					document.getElementById("inspect-flags").innerHTML = m.flags;
@@ -120,7 +131,7 @@ function on_message(content){
 function init_socket(socket){
 	socket.onopen = on_open;
 	socket.onclose = on_close;
-	socket.onmessage = on_message;
+	socket.onmessage = (raw) => on_message(raw.data);
 }
 
 /// Connect to a socket on the address in the address input field.

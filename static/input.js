@@ -97,7 +97,7 @@ function parse(v){
 			break;
 		case "draw":
 			if(args.length === 0){
-				args = ["deck", 0, playerName + ".hand"];
+				args = ["drawpile", 1, playerName + ".hand"];
 				return move(r, args);
 			}
 			r.output = "fail";

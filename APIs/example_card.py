@@ -11,5 +11,5 @@ class example_card(Card):
         self.image = 'example.png'
         self.flags = set()
 
-    def on_play(self, kernel):
+    def on_play(self, kernel, gamestate, player):
         pass

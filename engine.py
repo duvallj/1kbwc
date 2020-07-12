@@ -41,7 +41,7 @@ class Engine:
             area = Area()
             area.owners = [player]
             area.viewers = list(self.game.players.values())
-            area.id = f'{player.username}_play'
+            area.id = f'{player.username}.play'
             area.flags = {AreaFlag.PLAY_AREA}
             player.area = area
             self.game.all_areas[area.id] = area
@@ -53,7 +53,7 @@ class Engine:
             hand.viewers = [player]
             player.hand = hand
             hand.flags = {AreaFlag.HAND_AREA}
-            hand.id = f'{player.username}_hand'
+            hand.id = f'{player.username}.hand'
             hand.contents = card_deck[:5]
             deck = card_deck[5:]
             self.game.all_areas[hand.id] = hand
@@ -73,6 +73,10 @@ class Engine:
         new_player = Player()
         new_player.username = username
         self.game.players[username] = new_player
+
+    def remove_player(self, username):
+        # TODO: actually remove the player from the game
+        pass
 
     def advance_turn(self):
         self.game.turn_num += 1
@@ -95,5 +99,5 @@ class Engine:
 
     def get_area(self, area_name):
         if area_name in self.game.all_areas:
-            return self.game.areas[area_name]
+            return self.game.all_areas[area_name]
         return None
