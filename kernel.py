@@ -1,5 +1,5 @@
 import traceback
-from typing import List, Optional
+from typing import List, Optional, Tuple, Union
 from objects import *
 from util import immutablize
 
@@ -130,7 +130,7 @@ class Kernel:
         if card not in from_area.cards:
             return False
 
-        if from_area is to_area:
+        if from_area == to_area:
             return False
 
         can_move = None
@@ -144,14 +144,14 @@ class Kernel:
         if AreaFlag.HAND_AREA in from_area.flags and \
                 AreaFlag.PLAY_AREA in to_area.flags and \
                 player in from_area.owners and \
-                player is self.__game.current_player and \
+                player == self.__game.current_player and \
                 CardFlag.PLAY_ANY_TIME not in card.flags:
             self.__game.cards_played_this_turn += 1
 
         if AreaFlag.DRAW_AREA in from_area.flags and \
                 AreaFlag.HAND_AREA in to_area.flags and \
                 player in to_area.owners and \
-                player is self.__game.current_player:
+                player == self.__game.current_player:
             self.__game.cards_drawn_this_turn += 1
 
         if can_move:
@@ -183,7 +183,7 @@ class Kernel:
                 player in from_area.owners:
             if CardFlag.PLAY_ANY_TIME in card.flags:
                 return True
-            elif player is self.__game.current_player and \
+            elif player == self.__game.current_player and \
                     self.__game.cards_played_this_turn == 0 and \
                     self.__game.cards_drawn_this_turn < 2:
                 return True
@@ -191,7 +191,7 @@ class Kernel:
         if AreaFlag.DRAW_AREA in from_area.flags and \
                 AreaFlag.HAND_AREA in to_area.flags and \
                 player in to_area.owners:
-            if player is self.__game.current_player and \
+            if player == self.__game.current_player and \
                     (self.__game.cards_drawn_this_turn == 0 or
                      (self.__game.cards_drawn_this_turn == 1 and
                       self.__game.cards_played_this_turn == 0)):
@@ -211,7 +211,7 @@ class Kernel:
 
         <- returns whether the action was performed
         """
-        player = self.mutablize_obj(player)
+        player = self.__mutablize_obj(player)
 
         can_end_turn = None
 
@@ -229,11 +229,13 @@ class Kernel:
         """
         Checks if the current player has either drawn & played, or drawn twice
         """
-        if player is self.__game.current_player:
+        if player == self.__game.current_player:
+            print("Is current player!")
             if self.__game.cards_drawn_this_turn + \
                     self.__game.cards_played_this_turn >= 2:
                 return True
 
+        print("is not current player")
         return False
 
     def score_area(self, score_area):
@@ -247,7 +249,7 @@ class Kernel:
         <- returns the score
         """
         
-        score_area = self.mutablize_obj(score_area)
+        score_area = self.__mutablize_obj(score_area)
 
         score = None
 
@@ -286,7 +288,7 @@ class Kernel:
         <- returns the score
         """
 
-        score_card = self.mutablize_obj(score_card)
+        score_card = self.__mutablize_obj(score_card)
 
         score = None
 
@@ -318,8 +320,8 @@ class Kernel:
         <- if allowed, returns a mutable reference the card, otherwise None
         """
 
-        player = self.mutablize_obj(player)
-        requested_card = self.mutablize_obj(requested_card)
+        player = self.__mutablize_obj(player)
+        requested_card = self.__mutablize_obj(requested_card)
 
         is_allowed = None
 

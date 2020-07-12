@@ -2,7 +2,7 @@ import asyncio
 import argparse
 import json
 import websockets
-from objects import AreaFlags
+from objects import AreaFlag
 from engine import Engine
 
 NOT_FOUND_CARD = "/placeholder-card.png"
@@ -48,7 +48,7 @@ async def send_update(websocket, engine, player):
     play_field = ""
 
     for area in engine.game.all_areas:
-        if AreaFlags.PLAY_AREA in area.flags:
+        if AreaFlag.PLAY_AREA in area.flags:
             play_field += format_area(engine, player, area) + "\n\n"
         else:
             hand_field += format_area(engine, player, area) + "\n\n"
