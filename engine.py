@@ -14,7 +14,7 @@ class Engine:
 
     def setup_game(self):
         self.setup_areas()
-        self.game.turn_order = self.game.players[:]
+        self.game.turn_order = list(self.game.players.values())
         self.game.current_player = self.game.turn_order[self.game.turn_order_index]
 
     def setup_areas(self):
@@ -29,25 +29,25 @@ class Engine:
 
         # center
         center = Area()
-        center.owners = self.game.players[:]
-        center.viewers = self.game.players[:]
+        center.owners = list(self.game.players.values())
+        center.viewers = list(self.game.players.values())
         center.id = "center"
         center.flags = {AreaFlag.PLAY_AREA}
         self.game.center = center
         self.game.all_areas[center.id] = center
 
         # players' play areas
-        for player in self.game.players:
+        for player in self.game.players.values():
             area = Area()
             area.owners = [player]
-            area.viewers = self.game.players[:]
+            area.viewers = list(self.game.players.values())
             area.id = f'{player.username}_play'
             area.flags = {AreaFlag.PLAY_AREA}
             player.area = area
             self.game.all_areas[area.id] = area
 
         # players' hands
-        for player in self.game.players:
+        for player in self.game.players.values():
             hand = Area()
             hand.owners = [player]
             hand.viewers = [player]
@@ -94,6 +94,6 @@ class Engine:
         return None
 
     def get_area(self, area_name):
-        if area_name in self.all_areas:
+        if area_name in self.game.all_areas:
             return self.game.areas[area_name]
         return None
