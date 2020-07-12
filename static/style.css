@@ -1,0 +1,98 @@
+html, body {
+    height: 100%;
+    margin: 0;
+	font-family: Futura,Trebuchet MS,Arial,sans-serif;
+	background-color: #e2e2e2;
+}
+
+.main {
+    height: 100%;
+    display: grid;
+    grid-template-columns: 0pt 2fr 2fr 1fr 0pt;
+    grid-template-rows: 0pt auto 1fr 0pt;
+    grid-template-areas:
+        ". . . . ."
+        ". console play settings ."
+        ". console play card ."
+        ". . . . .";
+    grid-column-gap: 6pt;
+    grid-row-gap: 6pt;
+}
+
+.console {
+    height: 100%;
+    grid-area: console;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto;
+    grid-row-gap: 6pt;
+}
+
+.box {
+	border: 1px solid black;
+	background-color: #fff;
+}
+
+.center-text {
+	text-align: center;
+}
+
+button {
+	background-color: #f2f2f2;
+	width: 70%;
+}
+
+#submit {
+	width: 35%;
+	float: right;
+}
+
+#input {
+	width: 60%;
+}
+
+.console-output {
+    height: 100%;
+	overflow-y: auto;
+}
+
+.gameState {
+    grid-area: play;
+}
+
+.settings {
+    grid-area: settings;
+}
+
+.settings-label {
+	float: left;
+	width: 25%;
+}
+
+.settings-input {
+	float: left;
+	width: 70%;
+}
+
+.cardViewer {
+    grid-area: card;
+}
+
+.card {
+	margin: auto;
+}
+
+.preline {
+	white-space: pre-line;
+}
+.inspect-detail {
+	padding-left: 3px;
+	padding-right: 2px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+}
+
+img{
+	height: 250px;
+	width: 150px;
+}

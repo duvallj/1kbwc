@@ -8,3 +8,5 @@ __pycache__/
 # ideaaaaa
 .idea
 .pycharm_helpers
+
+.vagrant
