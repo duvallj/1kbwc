@@ -45,7 +45,7 @@ function update(){
 	let flagsSet = [];
 	for(let i = 0; i < flagBoxes.length; ++i){
 		if(flagBoxes[i].checked){
-			flagsSet.push(flagBoxes[i].value);
+			flagsSet.push("CardArea." + flagBoxes[i].value);
 		}
 	}
 	if(flagsSet.length > 0){
