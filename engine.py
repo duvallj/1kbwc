@@ -10,7 +10,7 @@ class Engine:
 
     def reset(self):
         self.game = Game()
-        self.kernel = Kernel(self.game, self)
+        self.kernel = Kernel(self.game)
 
     def setup_game(self):
         self.setup_areas()

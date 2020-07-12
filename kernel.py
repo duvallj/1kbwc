@@ -5,7 +5,7 @@ from util import immutablize
 
 
 class Kernel:
-    def __init__(self, game, engine):
+    def __init__(self, game):
         self.__game = game
 
     def __update_card_in_game(self, card):
@@ -13,8 +13,6 @@ class Kernel:
         When a card is played, it gets bumped to the highest callback priority
         * this attempts to move said card in the game's all_cards list
         """
-        index = None
-
         try:
             index = self.__game.all_cards.index(card)
         except ValueError:
@@ -24,15 +22,14 @@ class Kernel:
 
     def __run_card_handler(self, card, handler_str, *args):
         """
-        Run a Card's handler function
-        -> card specifies the card whose handler is called
-        -> handler_str is the name of the function to call
-        -> *args is all args to be passed to the handler
+        Run a Card's handler function.  This will automatically immutablize everything
+        in *args to make sure that the card doesn't modify anything it shouldn't.
+        It also passes in Kernel as the default argument.
 
-        * automatically immutablizes everything in *args before passing it on
-        * automatically passes self (this Kernel) as the first argument
-
-        <- returns the return value from the handler call
+        :param card: specifies the card whose handler is called
+        :param handler_str: the name of the function to call
+        :param *args: all remaining args will be passed to the handler
+        :return: the return value from the handler call
         """
         if AreaFlag.PLAY_AREA in card._area.flags or CardFlag.ALWAYS_GET_EVENTS in card.flags:
             handler = getattr(card, handler_str, None)
@@ -49,16 +46,10 @@ class Kernel:
         else:
             return None
 
-    # DEAR FUTURE PERSON, I HOPE THIS WORKS BUT IT MIGHT BE TOO JANK
-    # MY APOLOGIES OF IT IS THE LATTER
     def __mutablize_obj(self, obj):
-        try:
-            obj = obj._backing_obj
-        except:
-            pass
-        return obj
+        return getattr(obj, "_backing_obj", obj)
 
-    def look_at(self, player, play_area) -> Optional[List[Card]]:
+    def look_at(self, player, play_area) -> Tuple[bool, Union[int, List[Card]]]:
         """
         Callback for revealing an area to a player
         -> player is the player that the area will be revealed to
@@ -82,9 +73,9 @@ class Kernel:
             can_look = self.__default_look_handler(player, play_area)
 
         if can_look:
-            return (True, play_area.cards)
+            return True, play_area.cards
         else:
-            return (False, len(play_area.cards))
+            return False, len(play_area.cards)
 
     def __default_look_handler(self, player, play_area) -> bool:
         """
@@ -119,12 +110,12 @@ class Kernel:
 
         <- returns whether the action was performed
         """
-        
+
         player = self.__mutablize_obj(player)
         card = self.__mutablize_obj(card)
         from_area = self.__mutablize_obj(from_area)
         to_area = self.__mutablize_obj(to_area)
-        
+
         if card not in from_area.cards:
             return False
 
@@ -134,7 +125,8 @@ class Kernel:
         can_move = None
         for card in self.__game.all_cards:
             can_move = self.__run_card_handler(card, "handle_move", player, card, from_area, to_area, self.__game)
-            if can_move is not None: break
+            if can_move is not None:
+                break
 
         if can_move is None:
             can_move = self.__default_move_handler(player, card, from_area, to_area)
@@ -248,7 +240,7 @@ class Kernel:
     
         <- returns the score
         """
-        
+
         score_area = self.__mutablize_obj(score_area)
 
         score = None
@@ -260,32 +252,21 @@ class Kernel:
                 break
 
         if score is None:
-            score = self.__default_score_area_handler(score_area)
+            # Default is the sum of all card's scores
+            score = sum(self.score_card(card) for card in score_area.contents)
 
         return score
 
-    def __default_score_area_handler(self, score_area):
+    #  ############### TODO / WARNING: SHOULD THE SCORE_CARD HOOK EXIST OR CAN IT BE DEPRECATED IN FAVOR OF ALWAYS USING Card.val AND WOULD-BE-HANDLERS USING `get_mutable_card` AND CHANGING THE Card.val FIELD????????????????
+
+    def score_card(self, score_card: Card):
         """
-        Loops through the cards in an area and calls the score_card callback on each
-        """
-        score = 0
+        Gets the score of a card.
+        Polls the cards to see if a custom score value should be returned.
+        If no cards return a custom score, calls __default_score_card_handler.
 
-        for card in score_area.contents:
-            score += self.score_card(card)
-
-        return score
-
-################ TODO / WARNING: SHOULD THE SCORE_CARD HOOK EXIST OR CAN IT BE DEPRECATED IN FAVOR OF ALWAYS USING Card.val AND WOULD-BE-HANDLERS USING `get_mutable_card` AND CHANGING THE Card.val FIELD????????????????
-
-    def score_card(self, score_card):
-        """
-        Gets the score of a card
-        -> score_card - the area to score
-
-        * polls the cards to see if a custom score value should be returned
-        * if no cards return a custom score, calls __default_score_card_handler
-    
-        <- returns the score
+        :param score_card: - the card to score
+        :return: the score
         """
 
         score_card = self.__mutablize_obj(score_card)
@@ -298,15 +279,10 @@ class Kernel:
                 break
 
         if score is None:
-            score = self.__default_score_card_handler(score_card)
+            # Default is just the defined value
+            score = score_card.val
 
         return score
-
-    def __default_score_card_handler(self, score_card):
-        """
-        Bruh, we don't need a docstring here.  The docstring is longer than the method
-        """
-        return score_card.val
 
     def get_mutable_card(self, player, requested_card):
         """
@@ -326,39 +302,33 @@ class Kernel:
         is_allowed = None
 
         for card in self.__game.all_cards:
-            is_allowed = self.__run_card_handler(card, 'handle_get_mutable_card', 
-                    player, requested_card, self.__game)
-
+            is_allowed = self.__run_card_handler(card, 'handle_get_mutable_card',
+                                                 player, requested_card, self.__game)
             if is_allowed is not None:
                 break
 
         if is_allowed is None:
-            is_allowed = self.__default_get_mutable_card_handler(player, requested_card)
+            # Default is to allow.
+            is_allowed = True
 
-        if is_allowed: # requested_card has been unimmutablized
+        if is_allowed:  # requested_card has been unimmutablized
             return requested_card
 
         return None
 
-    def __default_get_mutable_card_handler(self, player, requested_card):
-        """
-        Allow it
-        """
-        return True
-    
-    #TODO this should actually end the game
+    # TODO this should actually end the game
     def end_game(self):
         """
         Calls card's end_game hooks right before the game ends.
         """
         for card in self.__game.all_cards:
-            self.__run_card_handler(self, 'handle_end_game', self.__game)
+            self.__run_card_handler(card, 'handle_end_game', self.__game)
 
     def send_message(self, players, message):
         """
         Send `message` to each player in `players`
         """
-        pass
+        raise NotImplementedError("PLZ IMPLEMENT")
 
     def get_player_input(self, player, choices):
         """
@@ -366,7 +336,7 @@ class Kernel:
         Pause execution until the player makes a choice,
         And return which choice they chose
         """
-        pass
+        raise NotImplementedError("PLZ IMPLEMENT")
 
     def create_new_area(self, new_area):
         """

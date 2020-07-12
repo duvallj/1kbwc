@@ -1,0 +1,9 @@
+[Unit]
+Description=1000 Blank White Cards Websocket Server
+
+[Service]
+ExecStart=/usr/bin/python3 server.py
+WorkingDirectory=/1kbwc
+
+[Install]
+WantedBy=multi-user.target

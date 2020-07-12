@@ -55,7 +55,7 @@ class Card:
         # called just before the game is ending
 	# use this to clean up loose ends, but you can't stop the game from ending :(
 
-    def on_play(kernel, gamestate):
+    def on_play(kernel, gamestate, player):
         # called when this card is played
 
     def on_discard(kernel, gamestate):

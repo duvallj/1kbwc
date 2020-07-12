@@ -9,10 +9,12 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get \
   -y --allow-downgrades --allow-remove-essential --allow-change-held-packages python3-pip nginx
 COPY ./requirements.txt /1kbwc-app/
 RUN cd /1kbwc-app && pip3 install -r requirements.txt
+COPY package-support/run.sh /1kbwc-app/
+COPY package-support/1kbwc.service /etc/systemd/system
 EXPOSE 80
 COPY package-support/nginx.conf /etc/nginx/nginx.conf
 COPY ./*.py /1kbwc-app/
-COPY ./cards /1kbwc-app/cards
 COPY static /srv/http
+COPY ./cards /1kbwc-app/cards
 
-CMD nginx && cd /1kbwc-app && python3 server.py &
+CMD ['/bin/sh' '/1kbwc-app/run.sh']
