@@ -1,0 +1,45 @@
+html, body {
+	height: 100%;
+    margin: 0;
+	font-family: Futura,Trebuchet MS,Arial,sans-serif;
+	background-color: #e2e2e2;
+}
+
+h1 {
+}
+
+.center {
+	text-align: center;
+}
+
+input {
+	width: auto;
+}
+
+#cardImage {
+	width: 150px;
+	display: none;
+}
+
+#preview {
+	background-color: #fff;
+}
+
+#gridContainer {
+	display: grid;
+	grid-template-columns: 1fr auto auto;
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-top: 10px;
+	grid-column-gap: 10px;
+	height: 100%;
+}
+
+#editorContainer {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	align-content: start;
+}
+
+#previewContainer {
+}

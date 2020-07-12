@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Card Maker</title>
+<link rel="stylesheet" href="maker.css"></link>
+<link rel="stylesheet" href="styles/a11y-light.css"></link>
+</head>
+<body>
+	<h1 class="center">Simple Card Maker!</h1>
+	<div id="controlButtons" class="center">
+		<button id="reset" onclick="reset();">Reset!</button>
+		<a id="downloadButton" download="example_card.py" href="">
+			<button id="download" onclick="download();">Export!</button>
+		</a>
+	</div>
+	<div id="gridContainer">
+		<div id="editorContainer">
+			<label for="class">Class:</label>
+			<input id="class" type="text" placeholder="example_card" oninput="update();">
+			<label for="title">Title:</label>
+			<input id="title" type="text" placeholder="Example Card" oninput="update();">
+			<label for="value">Value:</label>
+			<input id="value" type="number" step="any" placeholder="Value" value=0 oninput="update();">
+			<label for="path">Path:</label>
+			<input id="path" type="text" placeholder="C:/Users/Me/Documents/GitHub/1kbwc/maker/" oninput="update();">
+			<label for="image">Image:</label>
+			<input id="image" type="file" accept="image" oninput="update();">
+			<label>Flags:</label>
+			<div class="checkbox">
+				<input name="flags" class="flags" type="checkbox" value="PLAY_ANY_TIME" id="PLAY_ANY_TIME" oninput="update();">
+				<label for="PLAY_ANY_TIME">Play at any time</label>
+			</div>
+			<div></div>
+			<div class="checkbox">
+				<input name="flags" class="flags" type="checkbox" value="ALWAYS_GET_EVENTS" id="ALWAYS_GET_EVENTS" oninput="update();">
+				<label for="ALWAYS_GET_EVENTS">Always get events</label>
+			</div>
+		</div>
+		<div id="imageContainer">
+			<img id="cardImage" src="FairAndBalanced.png" />
+		</div>
+		<div id="previewContainer">
+			<pre><code id="preview" class="lang-python">Code!</code></pre>
+		</div>
+	</div>
+	<script src="highlight.pack.js"></script>
+	<script src="maker.js"></script>
+</body>
+</html>
