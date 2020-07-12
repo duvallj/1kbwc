@@ -82,3 +82,9 @@ class Engine:
 
     def is_game_over(self):
         return len(self.game.draw.contents) == 0
+
+    def get_player(self, player_name):
+        pass
+
+    def get_area(self, area_name):
+        pass

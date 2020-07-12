@@ -69,15 +69,53 @@ class RoomManager():
             response = json.loads(response)
             cmd = response.get("cmd", None)
 
-            if cmd == "end":
-                room.turn_over.set()
-                comment = response.get("comment", None)
-                if comment is None:
-                    await room.broadcast_message(f"Player {player_name} ended their turn")
-                else:
-                    await room.broadcast_message(f"Player {player_name} ended their turn \"{comment}\"")
+            await self.handle_command(
+                    websocket, room, player_name, cmd, response)
 
         await room.stopped.wait()
+
+    def remove_from_room(self, room_name, player_name):
+        pass
+
+    async def handle_command(self, websocket, room, player_name, cmd, data):
+        if cmd == "end":
+            can_end = room.engine.kernel.end_turn(room.engine.get_player(player_name))
+            if not can_end:
+                await websocket.send("You are not allowed to end your turn!")
+                return 
+
+            room.turn_over.set()
+            comment = response.get("comment", None)
+            if comment:
+                await room.broadcast_message(f"Player {player_name} ended their turn")
+            else:
+                await room.broadcast_message(f"Player {player_name} ended their turn \"{comment}\"")
+
+        elif cmd == "move":
+            player = room.engine.get_player(player_name)
+            from_area = room.engine.get_area(data["src"])
+            index = data["index"] - 1
+            if index <= 0 or index > len(from_area.contents):
+                await websocket.send(f"Index {index} is out of range for area {data['src']}!")
+                return
+            
+            to_area = room.engine.get_area(data["dst"])
+
+            can_move = room.engine.kernel.move_card(player, from_area, to_area)
+            if not can_move:
+                await websocket.send("You cannot move this card!")
+                return
+
+            # The kernel moves the card if it succeeds, no need to do anything else
+
+        elif cmd == "inspect":
+            player = room.engine.get_player(player_name)
+            area = room.engine.get_area(dst["area"])
+
+            area_contents = room.engine.kernel.look_at(player, area)
+
+        else:
+            await websocket.send(f"The command '{cmd}' is not supported on this server")
 
     async def run_game(self, websocket, room_name):
         print(f"run_game {room_name}")
@@ -123,7 +161,10 @@ class RoomManager():
                 return
 
             room_name, player_name = rest
-            await self.join_room(websocket, room_name, player_name)
+            try:
+                await self.join_room(websocket, room_name, player_name)
+            finally:
+                self.remove_from_room(room_name, player_name)
 
         elif path.startswith("/start/"):
             rest = path[7:]
