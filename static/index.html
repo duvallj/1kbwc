@@ -7,13 +7,15 @@
 <body>
     <div class="main">
         <div class="console">
-            <div id="output" class="console-output box preline">Let's start!</div>
+            <div id="output" class="console-output box prewrap">Let's start!</div>
             <div class="console-input">
                 <input id="input" placeholder="Type a command here..."></input>
                 <button id="submit" onclick="on_submit();">Submit</button>
             </div>
         </div>
-        <div id="gamestate" class="gameState box preline">Game view state stuff goes here
+        <div id="inState" class="in box prewrap">Game view state stuff goes here
+        </div>
+		<div id="outState" class="out box prewrap">Game view state stuff goes here
         </div>
         <div class="settings">
             <div class="settings-connected">

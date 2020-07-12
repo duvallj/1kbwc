@@ -8,13 +8,13 @@ html, body {
 .main {
     height: 100%;
     display: grid;
-    grid-template-columns: 0pt 2fr 2fr 1fr 0pt;
+    grid-template-columns: 0pt 2fr 2fr 2fr 1fr 0pt;
     grid-template-rows: 0pt auto 1fr 0pt;
     grid-template-areas:
-        ". . . . ."
-        ". console play settings ."
-        ". console play card ."
-        ". . . . .";
+        ". . . . . ."
+        ". console in out settings ."
+        ". console in out card ."
+        ". . . . . .";
     grid-column-gap: 6pt;
     grid-row-gap: 6pt;
 }
@@ -56,8 +56,12 @@ button {
 	overflow-y: auto;
 }
 
-.gameState {
-    grid-area: play;
+.in {
+    grid-area: in;
+}
+
+.out {
+	grid-area: out;
 }
 
 .settings {
@@ -82,8 +86,8 @@ button {
 	margin: auto;
 }
 
-.preline {
-	white-space: pre-line;
+.prewrap {
+	white-space: pre-wrap;
 }
 .inspect-detail {
 	padding-left: 3px;
