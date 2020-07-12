@@ -36,31 +36,31 @@ class Card:
     def area(self):
         return immutablize(self._area)
 
-    def handle_look(kernel, player, area, gamestate):
+    def handle_look(self, kernel, player, area, gamestate):
         pass
 
-    def handle_move(kernel, player, card, from_area, to_area, gamestate):
+    def handle_move(self, kernel, player, card, from_area, to_area, gamestate):
         pass
 
-    def handle_end_turn(kernel, player, gamestate):
+    def handle_end_turn(self, kernel, player, gamestate):
         pass
 
-    def handle_score_area(kernel, area, gamestate):
+    def handle_score_area(self, kernel, area, gamestate):
         pass
 
-    def handle_score_card(kernel, card, gamestate):
+    def handle_score_card(self, kernel, card, gamestate):
         pass
 
-    def handle_get_mutable_card(kernel, player, card, gamestate):
+    def handle_get_mutable_card(self, kernel, player, card, gamestate):
         pass
 
-    def handle_end_game(kernel, gamestate):
+    def handle_end_game(self, kernel, gamestate):
         pass
 
-    def on_play(kernel, gamestate):
+    def on_play(self, kernel, gamestate):
         pass
 
-    def on_discard(kernel, gamestate):
+    def on_discard(self, kernel, gamestate):
         pass
 
 
