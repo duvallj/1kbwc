@@ -31,7 +31,7 @@ function update(){
 	
 	title = titleInput.value || 'Example Card';
 	if(!classCheck.checked){
-		classInput.value = titleInput.value.replaceAll(' ', '_').toLowerCase();
+		classInput.value = titleInput.value.replace(/[^a-zA-Z0-9 ]/g, "").replaceAll(' ', '_').toLowerCase();
 	}
 	filename = classInput.value || 'example_card';
 	value = valueInput.value;
