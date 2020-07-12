@@ -7,7 +7,7 @@ class Cryptocurrency(Card):
         self.image = 'Cryptocurrency.png'
         self.flags = set()
 
-    def on_play(self, kernel, gamestate):
+    def on_play(self, kernel, gamestate, player):
         self.turn_played = gamestate.turn_num
 
     def handle_end_turn(self, kernel, player, gamestate):
