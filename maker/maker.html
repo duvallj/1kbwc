@@ -16,7 +16,12 @@
 	<div id="gridContainer">
 		<div id="editorContainer">
 			<label for="class">Class:</label>
-			<input id="class" type="text" placeholder="example_card" oninput="update();">
+			<input id="class" type="text" placeholder="example_card" oninput="update();" disabled>
+			<div></div>
+			<div>
+				<input id="enableClass" type="checkbox" onclick="classUpdate();">
+				<label for="enableClass">Use unique class name</label>
+			</div>
 			<label for="title">Title:</label>
 			<input id="title" type="text" placeholder="Example Card" oninput="update();">
 			<label for="value">Value:</label>

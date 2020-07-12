@@ -7,6 +7,7 @@ let preview = document.getElementById("preview");
 let copyArea = document.getElementById("copyArea");
 
 let classInput = document.getElementById("class");
+let classCheck = document.getElementById("enableClass");
 let titleInput = document.getElementById("title");
 let valueInput = document.getElementById("value");
 let pathInput = document.getElementById("path");
@@ -27,8 +28,12 @@ let url;
 function update(){
 	pathInput.value = pathInput.value.replaceAll('\\', '/');
 	
-	filename = classInput.value || 'example_card';
+	
 	title = titleInput.value || 'Example Card';
+	if(!classCheck.checked){
+		classInput.value = titleInput.value.replaceAll(' ', '_').toLowerCase();
+	}
+	filename = classInput.value || 'example_card';
 	value = valueInput.value;
 	
 	imagename = imageInput.value;
@@ -64,6 +69,11 @@ function update(){
 	url = window.URL.createObjectURL(data);
 	downloadButton.download = filename + ".py";
 	downloadButton.href = url;
+}
+
+function classUpdate(){
+	classInput.disabled = !classCheck.checked;
+	update();
 }
 
 function reset(){
