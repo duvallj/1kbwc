@@ -12,8 +12,8 @@ html, body {
     grid-template-rows: 0pt auto 1fr 0pt;
     grid-template-areas:
         ". . . . . ."
-        ". console in out settings ."
-        ". console in out card ."
+        ". console hand play settings ."
+        ". console hand play card ."
         ". . . . . .";
     grid-column-gap: 6pt;
     grid-row-gap: 6pt;
@@ -56,12 +56,12 @@ button {
 	overflow-y: auto;
 }
 
-.in {
-    grid-area: in;
+#hand-state {
+    grid-area: hand;
 }
 
-.out {
-	grid-area: out;
+#play-state {
+	grid-area: play;
 }
 
 .settings {

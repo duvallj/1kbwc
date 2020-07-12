@@ -79,7 +79,40 @@ function on_close(){
 
 /// Send socket message data to the output box.
 function on_message(content){
-	add_to_output("<<< " + content.data);
+	let m = JSON.parse(content);
+	if(!m){
+		console.log("Invalid JSON");
+	}else{
+		switch(m.type){
+			case "message":
+				if(m.data){
+					add_to_output("<<< " + m.data);
+				}else{
+					console.log("Message had no data: " + content);
+				}
+				break;
+			case "update":
+				if(m.hand && m.play){
+					document.getElementById("hand-state").innerHTML = m.hand;
+					document.getElementById("play-state").innerHTML = m.play;
+				}else{
+					console.log("Update lacked hand or play: " + content);
+				}
+				break;
+			case "inspect":  // TODO: This can't be right...
+				if(m.url && m.title && m.value && m.flags){
+					document.getElementById("inspect-image").src = m.url;
+					document.getElementById("inspect-title").innerHTML = m.title;
+					document.getElementById("inspect-value").innerHTML = m.value;
+					document.getElementById("inspect-flags").innerHTML = m.flags;
+				}else{
+					console.log("Inspect lacked url, title, value, or flags: " + content);
+				}
+				break;
+			default:
+				console.log("Weird request: " + content);
+		}
+	}
 }
 
 /// Set the socket callbacks.
