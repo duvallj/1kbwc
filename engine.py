@@ -22,6 +22,7 @@ class Engine:
 
         # discard
         discard = Area()
+        discard.id = "discard"
         discard.flags = {AreaFlag.DISCARD_AREA}
         self.game.discard = discard
         self.game.all_areas.append(discard)
@@ -30,6 +31,7 @@ class Engine:
         center = Area()
         center.owners = self.game.players[:]
         center.viewers = self.game.players[:]
+        center.id = "center"
         center.flags = {AreaFlag.PLAY_AREA}
         self.game.center = center
         self.game.all_areas.append(center)
@@ -39,6 +41,7 @@ class Engine:
             area = Area()
             area.owners = [player]
             area.viewers = self.game.players[:]
+            area.id = f'{player.username}_play'
             area.flags = {AreaFlag.PLAY_AREA}
             player.area = area
             self.game.all_areas.append(area)
@@ -50,6 +53,7 @@ class Engine:
             hand.viewers = [player]
             player.hand = hand
             hand.flags = {AreaFlag.HAND_AREA}
+            hand.id = f'{player.username}_hand'
             hand.contents = card_deck[:5]
             deck = card_deck[5:]
             self.game.all_areas.append(hand)
@@ -57,6 +61,7 @@ class Engine:
         # draw pile
         draw = Area()
         draw.contents = card_deck
+        draw.id = "drawpile"
         draw.flags = {AreaFlag.DRAW_AREA}
         self.game.draw = draw
         self.game.all_areas.append(draw)
@@ -67,7 +72,7 @@ class Engine:
 
         new_player = Player()
         new_player.username = username
-        self.game.players.append(new_player)
+        self.game.players[username] = new_player
 
     def advance_turn(self):
         self.game.turn_num += 1
@@ -84,7 +89,11 @@ class Engine:
         return len(self.game.draw.contents) == 0
 
     def get_player(self, player_name):
-        pass
+        if player_name in self.game.players:
+            return self.game.players[player_name]
+        return None
 
     def get_area(self, area_name):
-        pass
+        if area_name in self.all_areas:
+            return self.game.areas[area_name]
+        return None

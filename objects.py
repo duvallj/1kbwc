@@ -1,4 +1,4 @@
-from util import immutablize
+from util import immutablize, random_id
 from enum import Enum
 
 
@@ -74,6 +74,7 @@ class Area:
         self.owners = []  # players who can play from or are affected by this area
         self.viewers = self.owners  # players who can see the contents of this area
         self.contents = []  # the cards in this area
+        self.id = random_id()
         self.flags = set()  # extra data associated with this area
 
     def __eq__(self, other):
@@ -104,15 +105,15 @@ class Player:
 
 class Game:
     def __init__(self):
-        self.players = []  # all the players
+        self.players = {}  # all the players
 
         self.center = None  # reference to the center
         self.draw = None  # reference to the draw pile
         self.discard = None  # reference to the discard pile
-        self.all_areas = []  # references to *every* area in the game
+        self.all_areas = {}  # references to *every* area in the game
         self.all_cards = []  # references to each card in the game; as cards are played they are moved towards the front
 
-        self.turn_order = self.players  # normal turn rotation
+        self.turn_order = self.players.values()  # normal turn rotation
         self.turn_q = []  # turn rotation override
 
         self.turn_num = 0  # incremented each turn, mostly for use by cards w/ timers
