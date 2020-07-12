@@ -25,7 +25,7 @@ class Engine:
         discard.id = "discard"
         discard.flags = {AreaFlag.DISCARD_AREA}
         self.game.discard = discard
-        self.game.all_areas.append(discard)
+        self.game.all_areas[discard.id] = discard
 
         # center
         center = Area()
@@ -34,7 +34,7 @@ class Engine:
         center.id = "center"
         center.flags = {AreaFlag.PLAY_AREA}
         self.game.center = center
-        self.game.all_areas.append(center)
+        self.game.all_areas[center.id] = center
 
         # players' play areas
         for player in self.game.players:
@@ -44,7 +44,7 @@ class Engine:
             area.id = f'{player.username}_play'
             area.flags = {AreaFlag.PLAY_AREA}
             player.area = area
-            self.game.all_areas.append(area)
+            self.game.all_areas[area.id] = area
 
         # players' hands
         for player in self.game.players:
@@ -56,7 +56,7 @@ class Engine:
             hand.id = f'{player.username}_hand'
             hand.contents = card_deck[:5]
             deck = card_deck[5:]
-            self.game.all_areas.append(hand)
+            self.game.all_areas[hand.id] = hand
 
         # draw pile
         draw = Area()
@@ -64,7 +64,7 @@ class Engine:
         draw.id = "drawpile"
         draw.flags = {AreaFlag.DRAW_AREA}
         self.game.draw = draw
-        self.game.all_areas.append(draw)
+        self.game.all_areas[draw.id] = draw
 
     def add_player(self, username):
         if self.game is None:
