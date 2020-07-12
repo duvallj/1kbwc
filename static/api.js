@@ -7,12 +7,12 @@ const playerName_input = document.getElementById("playerName");
 
 function makeRoom() {
     const call_path = MAKE_ROOM_PATH + roomName_input.value;
-    websocketOnce(call_path, add_to_output);
+    websocketOnce(call_path, on_message);
 }
 
 function startRoom() {
     const call_path = START_ROOM_PATH + roomName_input.value;
-    websocketOnce(call_path, add_to_output);
+    websocketOnce(call_path, on_message);
 }
 
 function joinRoom() {

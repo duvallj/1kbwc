@@ -79,6 +79,7 @@ function on_close(){
 
 /// Send socket message data to the output box.
 function on_message(content){
+	console.log(content);
 	let m = JSON.parse(content);
 	if(!m){
 		console.log("Invalid JSON");
