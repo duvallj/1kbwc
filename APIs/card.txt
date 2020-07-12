@@ -1,0 +1,63 @@
+EXPLANATION OF CARD FIELDS AND METHODS
+See "example_card.py" for an example of how to write cards
+See "gamestate.txt" for a description of what a gamestate is
+
+class Card:
+	# these fields should be set in the card's `init` method
+	# the card can edit these fields whenever it wishes
+        self.val = 0  # point value of card
+        self.name = ''  # name of card
+        self.image = None  # image on card
+        self.flags = set()  # identifiers for card
+		# CardFlag.PLAY_ANY_TIME allows the card to be played any time
+		# CardFlag.ALWAYS_GET_EVENTS means this card's methods will be called even if it isn't in play
+
+	# These fields are READ-ONLY, invoke a kernel method to change them
+        self._owners = []  # owners of the area this card is in
+        self._player = None  # person who moved this card into play
+        self._area = None  # area this card resides in (hand, play, deck, etc.)
+
+
+# Arguments passed to all of these functions are READ-ONLY, invoke a kernel method to change them
+
+    def handle_look(kernel, player, area, gamestate):
+        # called whenever someone tries to examine an area.
+	# return True to allow the action, False to deny it, or None if you don't care
+
+    def handle_move(kernel, player, card, from_area, to_area, gamestate):
+        # called whenever a card is moved between any play areas.
+	# This includes drawing, playing, discarding, or moving cards between hands
+	# return True to allow the action, False to deny it, or None if you don't care
+
+    def handle_end_turn(kernel, player, gamestate):
+	# called when a player attempts to end their turn
+	# use this to allow a player's turn to end before they draw and play,
+	# or cancel their turn end so they can do more actions
+	# return True to allow the action, False to deny it, or None if you don't care
+
+    def handle_score_area(kernel, area, gamestate):
+        # called when the score of an area is calculated
+	# use this to modify what an area's score should be
+	# return the score, or None if you don't wish to modify it
+
+    def handle_score_card(kernel, card, gamestate):
+        # called when the score of a card is calculated
+	# use this to modify what a card's score should be
+	# you could instead request a mutable card and edit it's value field, but this is preferred for non-permanent changes.
+	# return the score, or None if you don't wish to modify it
+
+    def handle_get_mutable_card(kernel, player, card, gamestate):
+        # called when a card requests a mutable (editable) version of another card
+	# use this to prevent cards from being edited
+	# return True to allow the action, False to deny it, or None if you don't care
+
+    def handle_end_game(kernel, gamestate):
+        # called just before the game is ending
+	# use this to clean up loose ends, but you can't stop the game from ending :(
+
+    def on_play(kernel, gamestate):
+        # called when this card is played
+
+    def on_discard(kernel, gamestate):
+        # called when this card is discarded
+

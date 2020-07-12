@@ -1,3 +1,5 @@
+from random import choice
+
 def immutablize(target):
     if target is None:
         return None
@@ -31,3 +33,8 @@ def immutablize(target):
             return str(self._backing_obj)
     
     return Proxy(target)
+
+def random_id():
+    with open('words.txt', 'r') as f:
+        return choice(f.read().strip().split('\n'))
+    return 'THIS_ID'

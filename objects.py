@@ -1,4 +1,4 @@
-from util import immutablize
+from util import immutablize, random_id
 from enum import Enum
 
 
@@ -36,31 +36,31 @@ class Card:
     def area(self):
         return immutablize(self._area)
 
-    def handle_look(kernel, player, area, gamestate):
+    def handle_look(self, kernel, player, area, gamestate):
         pass
 
-    def handle_move(kernel, player, card, from_area, to_area, gamestate):
+    def handle_move(self, kernel, player, card, from_area, to_area, gamestate):
         pass
 
-    def handle_end_turn(kernel, player, gamestate):
+    def handle_end_turn(self, kernel, player, gamestate):
         pass
 
-    def handle_score_area(kernel, area, gamestate):
+    def handle_score_area(self, kernel, area, gamestate):
         pass
 
-    def handle_score_card(kernel, card, gamestate):
+    def handle_score_card(self, kernel, card, gamestate):
         pass
 
-    def handle_get_mutable_card(kernel, player, card, gamestate):
+    def handle_get_mutable_card(self, kernel, player, card, gamestate):
         pass
 
-    def handle_end_game(kernel, gamestate):
+    def handle_end_game(self, kernel, gamestate):
         pass
 
-    def on_play(kernel, gamestate):
+    def on_play(self, kernel, gamestate):
         pass
 
-    def on_discard(kernel, gamestate):
+    def on_discard(self, kernel, gamestate):
         pass
 
 
@@ -74,6 +74,7 @@ class Area:
         self.owners = []  # players who can play from or are affected by this area
         self.viewers = self.owners  # players who can see the contents of this area
         self.contents = []  # the cards in this area
+        self.id = random_id()
         self.flags = set()  # extra data associated with this area
 
     def __eq__(self, other):
@@ -104,15 +105,15 @@ class Player:
 
 class Game:
     def __init__(self):
-        self.players = []  # all the players
+        self.players = {}  # all the players
 
         self.center = None  # reference to the center
         self.draw = None  # reference to the draw pile
         self.discard = None  # reference to the discard pile
-        self.all_areas = []  # references to *every* area in the game
+        self.all_areas = {}  # references to *every* area in the game
         self.all_cards = []  # references to each card in the game; as cards are played they are moved towards the front
 
-        self.turn_order = self.players  # normal turn rotation
+        self.turn_order = self.players.values()  # normal turn rotation
         self.turn_q = []  # turn rotation override
 
         self.turn_num = 0  # incremented each turn, mostly for use by cards w/ timers

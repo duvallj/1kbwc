@@ -48,6 +48,17 @@ class Kernel:
             return result
         else:
             return None
+
+    # DEAR FUTURE PERSON, I HOPE THIS WORKS BUT IT MIGHT BE TOO JANK
+    # MY APOLOGIES OF IT IS THE LATTER
+    def __mutablize_obj(self, obj):
+        try:
+            obj = obj._backing_obj
+        except:
+            pass
+        return obj
+
+
     #TODO should we give client's some form of IDing areas without giving them access to contents?
     def look_at(self, player, play_area) -> Optional[List[Card]]:
         """
@@ -60,6 +71,9 @@ class Kernel:
 
         <- if allowed, returns the contents of the area
         """
+        player = self.__mutablize_obj(player)
+        play_area = self.__mutablize_obj(play_area)
+
         can_look = None
 
         for card in self.__game.all_cards:
@@ -107,6 +121,12 @@ class Kernel:
 
         <- returns whether the action was performed
         """
+        
+        player = self.__mutablize_obj(player)
+        card = self.__mutablize_obj(card)
+        from_area = self.__mutablize_obj(from_area)
+        to_area = self.__mutablize_obj(to_area)
+        
         if card not in from_area.cards:
             return False
 
@@ -191,6 +211,8 @@ class Kernel:
 
         <- returns whether the action was performed
         """
+        player = self.mutablize_obj(player)
+
         can_end_turn = None
 
         for card in self.__game.all_cards:
@@ -224,6 +246,9 @@ class Kernel:
     
         <- returns the score
         """
+        
+        score_area = self.mutablize_obj(score_area)
+
         score = None
 
         for card in self.__game.all_cards:
@@ -260,6 +285,9 @@ class Kernel:
     
         <- returns the score
         """
+
+        score_card = self.mutablize_obj(score_card)
+
         score = None
 
         for card in self.__game.all_cards:
@@ -289,7 +317,26 @@ class Kernel:
 
         <- if allowed, returns a mutable reference the card, otherwise None
         """
-        pass
+
+        player = self.mutablize_obj(player)
+        requested_card = self.mutablize_obj(requested_card)
+
+        is_allowed = None
+
+        for card in self.__game.all_cards:
+            is_allowed = self.__run_card_handler(card, 'handle_get_mutable_card', 
+                    player, requested_card, self.__game)
+
+            if is_allowed is not None:
+                break
+
+        if is_allowed is None:
+            is_allowed = self.__default_get_mutable_card_handler(player, requested_card)
+
+        if is_allowed: # requested_card has been unimmutablized
+            return requested_card
+
+        return None
 
     def __default_get_mutable_card_handler(self, player, requested_card):
         """
@@ -304,3 +351,17 @@ class Kernel:
         """
         for card in self.__game.all_cards:
             self.__run_card_handler(self, 'handle_end_game', self.__game)
+
+    def send_message(self, players, message):
+        """
+        Send `message` to each player in `players`
+        """
+        pass
+
+    def get_player_input(self, player, choices):
+        """
+        Prompt a player with the choices,
+        Pause execution until the player makes a choice,
+        And return which choice they chose
+        """
+        pass
