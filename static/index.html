@@ -13,9 +13,9 @@
                 <button id="submit" onclick="on_submit();">Submit</button>
             </div>
         </div>
-        <div id="inState" class="in box prewrap">Game view state stuff goes here
+        <div id="hand-state" class="box prewrap">Game view state stuff goes here HANDS
         </div>
-		<div id="outState" class="out box prewrap">Game view state stuff goes here
+		<div id="play-state" class="box prewrap">Game view state stuff goes here AREAS
         </div>
         <div class="settings">
             <div class="settings-connected">
@@ -42,11 +42,11 @@
         </div>
         <div class="cardViewer">
 			<div class="center-text">
-				<img src="placeholder-card.png" class="card" />
+				<img id="inspect-image" src="placeholder-card.png" class="card" />
 			</div>
 			<div id="detail-container" class="box">
 				<div id="inspect-title" class="inspect-detail">Title: </div>
-				<div id="inspect-value" class="inspect-detail">Score: </div>
+				<div id="inspect-value" class="inspect-detail">Value: </div>
 				<div id="inspect-flags" class="inspect-detail">Flags: </div>
 			</div>
         </div>
