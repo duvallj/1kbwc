@@ -60,7 +60,7 @@ class Kernel:
 
 
     #TODO should we give client's some form of IDing areas without giving them access to contents?
-    def look_at(self, player, play_area) -> Optional[List[Card]]:
+    def look_at(self, player, play_area) -> Tuple[bool, Union[int, List[Card]]]:
         """
         Callback for revealing an area to a player
         -> player is the player that the area will be revealed to
@@ -84,9 +84,9 @@ class Kernel:
             can_look = self.__default_look_handler(player, play_area)
 
         if can_look:
-            return play_area.cards
+            return (True, play_area.cards)
         else:
-            return None
+            return (False, len(play_area.cards))
 
     def __default_look_handler(self, player, play_area) -> bool:
         """
