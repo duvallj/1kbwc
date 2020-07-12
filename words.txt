@@ -26,12 +26,10 @@ example
 state
 business
 night
-area
 water
 thing
 family
 head
-hand
 order
 john
 side
@@ -48,7 +46,6 @@ market
 problem
 court
 lot
-a
 war
 police
 interest
