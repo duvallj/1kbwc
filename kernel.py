@@ -399,13 +399,20 @@ class Kernel:
         Add a new area to the game, if poll allows
         """
         # TODO do a poll to see if the action should be cancelled
-        area = Area()
+        area = Area()  #disallow list for ids: [p.username for p in self.__game.players] + [a.id for a in self.__game.all_areas]
         for owner in new_area.owners:
             area.owners.append(self.__game.players[owner.username])
         for viewer in new_area.viewers:
             area.viewers.append(self.__game.players[viewer.username])
         for content in new_area.contents:
             area.contents.append(self.__mutablize_obj(content))
+        if area.id in [p.username for p in self.__game.players] or \
+                area.id in [a.id for a in self.__game.all_areas]:  # Add a digit to duplicate ids
+            n = 1
+            disallowed = [p.username for p in self.__game.players] + [a.id for a in self.__game.all_areas];
+            while f"{area.id}{n}" in disallowed:  # No I didn't test this lol it compiles
+                n += 1
+            area.id = f"{area.id}{n}"
         area.id = self.__mutablize_obj(new_area.id)
         area.flags = self.__mutablize_obj(new_area.flags)
 

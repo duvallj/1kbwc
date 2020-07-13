@@ -34,7 +34,10 @@ def immutablize(target):
     
     return Proxy(target)
 
-def random_id():
+def random_id(disallowed=[]):
     with open('words.txt', 'r') as f:
-        return choice(f.read().strip().split('\n'))
+        while(True):
+            c = choice(f.read().strip().split('\n'))
+            if c not in disallowed:
+                return c
     return 'THIS_ID'

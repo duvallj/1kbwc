@@ -302,11 +302,11 @@ class CardFlag(Enum):
     """
 
 class Area:
-    def __init__(self):
+    def __init__(self, disallowed=[]):
         self.owners = []  # players who can play from or are affected by this area
         self.viewers = self.owners  # players who can see the contents of this area
         self.contents = []  # the cards in this area
-        self.id = random_id()
+        self.id = random_id(disallowed)
         self.flags = set()  # extra data associated with this area
 
     def __eq__(self, other):
