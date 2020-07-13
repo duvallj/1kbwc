@@ -8,9 +8,13 @@
     <div class="main">
         <div class="console">
             <div id="output" class="console-output box prewrap">Let's start!</div>
-            <div class="console-input">
-                <input id="input" placeholder="Type a command here..."></input>
-                <button id="submit" onclick="on_submit();">Submit</button>
+            <div id="console-input">
+				<div id="console-input-wrapper">
+					<input id="input" placeholder="Type a command here..."></input>
+				</div>
+				<div id="console-submit-wrapper">
+					<button id="submit" onclick="on_submit();">Submit</button>
+				</div>
             </div>
         </div>
         <div id="hand-state" class="box prewrap">Game view state stuff goes here HANDS

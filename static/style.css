@@ -42,13 +42,29 @@ button {
 	width: 70%;
 }
 
+#console-input{
+	display: flex;
+	justify-content: space-between;
+	padding-top: 4px;
+	padding-bottom: 4px;
+}
+
+#console-input-wrapper {
+	width: 70%;
+}
+
+#console-submit-wrapper {
+	width: 30%;
+}
+
 #submit {
-	width: 35%;
+	width: 95%;
+	padding: 0px;
 	float: right;
 }
 
 #input {
-	width: 60%;
+	width: 95%;
 }
 
 .console-output {
@@ -70,12 +86,12 @@ button {
 
 .settings-label {
 	float: left;
-	width: 25%;
+	width: 35%;
 }
 
 .settings-input {
-	float: left;
-	width: 70%;
+	float: right;
+	width: 60%;
 }
 
 .cardViewer {

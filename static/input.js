@@ -1,6 +1,10 @@
 let choices = [];  // Options for the choice state, empty indicates non-choice state
 let playerName = "nonexistent";
 
+let commandHistory = [];
+let historyIndex = -1;
+let historyBuffer = "";
+
 /// Process the input field when the button is clicked.
 function on_submit(){
 	let v = input.value;
@@ -21,6 +25,9 @@ function on_submit(){
 		}
 		if(r.clear){
 			input.value = "";
+			commandHistory.unshift(v);
+			historyIndex = -1;
+			historyBuffer = "";
 		}
 	}
 }
@@ -93,9 +100,11 @@ function parse(v){
 	
 	switch(command.toLowerCase()){
 		case "help":
+		case "h":
 			return help(r, args)
 			break;
 		case "draw":
+		case "d":
 			if(args.length === 0){
 				args = ["drawpile", 1, playerName + ".hand"];
 				return move(r, args);
@@ -104,8 +113,16 @@ function parse(v){
 			return r;
 			break;
 		case "play":
+		case "p":
 			if(args.length === 2){
 				args.unshift(playerName + ".hand");
+				if(args[2].indexOf('.') === -1){  // Might be a player name
+					if(document.getElementById("play-state").innerHTML.indexOf("<span class=\"playerName\">" + args[2] + "</span>") !== -1){
+						// There exists a player with the name in args[2]
+						args[2] += ".play";
+						console.log("modified play target to " + args[2]);
+					}
+				}
 				return move(r, args);
 			}
 			if(args.length < 2){
@@ -118,9 +135,11 @@ function parse(v){
 			return r;
 			break;
 		case "end":
+		case "e":
 			return end(r, args);
 			break;
 		case "inspect":
+		case "i":
 			if(args.length === 2){
 				return inspect(r, args);
 			}
@@ -148,6 +167,7 @@ function parse(v){
 			return r;
 			break;
 		case "move":
+		case "m":
 			if(args.length === 3){
 				return move(r, args);
 			}
@@ -250,12 +270,41 @@ function move(r, args){
 	return r;
 }
 
+function historyUpdate(){
+	input.value = historyIndex >= 0 ? commandHistory[historyIndex] : historyBuffer;
+}
+
 /// Send command on enter.
 window.onload = function(){
 	input.addEventListener("keyup", function(event){
-		if(event.keyCode === 13){
-			event.preventDefault();
-			document.getElementById("submit").click();
+		switch(event.keyCode){
+			case 13:  // Enter
+				event.preventDefault();
+				document.getElementById("submit").click();
+				break;
+		}
+	});
+	input.addEventListener("keydown", function(event){
+		switch(event.keyCode){
+			case 38:  // Up 
+				event.preventDefault();
+				historyIndex = Math.min(historyIndex + 1, commandHistory.length - 1);
+				historyUpdate();
+				break;
+			case 40:  // Down arrow
+				event.preventDefault();
+				historyIndex = Math.max(historyIndex - 1, -1);
+				historyUpdate();
+				break;
+			case 27:  // Esc
+				historyIndex = -1;
+				historyBuffer = "";
+				historyUpdate();
+				break;
+			default:
+				if(historyIndex === -1){
+					historyBuffer = input.value;
+				}
 		}
 	});
 }
