@@ -53,10 +53,19 @@ class Kernel:
             return None
 
     def __run_all_hooks(self, hook_str, *args):
+        """
+        Run the function on every card
+        For hooks that run after a successful action
+        Immutablizes all *args, and passes kernel as first argument
+        
+        :param hook_str: the name of the function to run
+        :param *args: the args to be passed to the function
+        :return:
+        """
         immutable_args = [immutablize(arg) for arg in args]
         for card in self.__game.all_cards:
             if AreaFlag.PLAY_AREA in card._area.flags or CardFlag.ALWAYS_GET_EVENTS in card.flags:
-                handler = getattr(card, handler_str, None)
+                handler = getattr(card, hook_str, None)
                 if handler is not None:
                     try:
                         handler(self, *immutable_args)
