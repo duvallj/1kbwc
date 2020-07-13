@@ -100,3 +100,23 @@ img{
 	height: 250px;
 	width: 150px;
 }
+
+.area{
+}
+
+.handArea{
+}
+
+.playArea{
+}
+
+.drawArea{
+}
+
+.discardArea{
+}
+
+.playerName{
+	color: #1133cc;
+	font-weight: bold;
+}

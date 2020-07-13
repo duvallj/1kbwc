@@ -38,7 +38,7 @@ def format_card(index, card):
 def format_area(engine, player, area):
     can_look, area_contents = engine.kernel.look_at(player, area)
     if can_look:
-        output = f"{area.id} "
+        output = f"{markup_id(area)} "
         if AreaFlag.PLAY_AREA in area.flags:
             score = engine.kernel.score_area(area)
             output += f"({score} points)"
@@ -52,7 +52,26 @@ def format_area(engine, player, area):
 
         return output[:-1]
     else:
-        return f"{area.id} ({area_contents} cards)"
+        return f"{markup_id(area)} ({area_contents} cards)"
+
+def markup_id(area):
+    classes = "area"
+    id = area.id
+    if '.' in id:
+        first = id[:id.index('.')]
+        second = id[id.index('.'):]
+        id = f'<span class="playerName">{first}</span>{second}'
+    
+    if AreaFlag.PLAY_AREA in area.flags:
+        classes += " playArea"
+    if AreaFlag.DRAW_AREA in area.flags:
+        classes += " drawArea"
+    if AreaFlag.HAND_AREA in area.flags:
+        classes += " handArea"
+    if AreaFlag.DISCARD_AREA in area.flags:
+        classes += " discardArea"
+    
+    return f'<span class="{classes}">{id}</span>'
 
 async def send_update(websocket, engine, player):
     hand_field = ""

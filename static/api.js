@@ -3,7 +3,7 @@ const JOIN_ROOM_PATH = "/join/";
 const START_ROOM_PATH = "/start/";
 
 const roomName_input = document.getElementById("roomName");
-const playerName_input = document.getElementById("playerName");
+const playerName_input = document.getElementById("myName");
 
 function makeRoom() {
     const call_path = MAKE_ROOM_PATH + roomName_input.value;
