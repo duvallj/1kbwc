@@ -123,6 +123,11 @@ img{
 .handArea{
 }
 
+.playerName{
+	color: #1133cc;
+	font-weight: bold;
+}
+
 .playArea{
 }
 
@@ -132,7 +137,32 @@ img{
 .discardArea{
 }
 
-.playerName{
-	color: #1133cc;
-	font-weight: bold;
+.tag{
+}
+
+.visible{
+	color: #888;
+}
+
+.card-count{
+	color: #555;
+}
+
+.score{
+}
+
+.negative-score{
+	color: #a45;
+}
+
+.non-negative-score{
+	color: #555;
+}
+
+.index{
+	color: #175;
+}
+
+.card-title{
+	font-style: oblique;
 }

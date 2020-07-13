@@ -33,7 +33,7 @@ async def send_message(websocket, message):
     })
 
 def format_card(index, card):
-    return f" [{index}] {card.name}"
+    return f" <span class=\"index\">[{index}]</span> <span class=\"card-title\">{card.name}</span>"
 
 def format_area(engine, player, area):
     can_look, area_contents = engine.kernel.look_at(player, area)
@@ -41,9 +41,9 @@ def format_area(engine, player, area):
         output = f"{markup_id(area)} "
         if AreaFlag.PLAY_AREA in area.flags:
             score = engine.kernel.score_area(area)
-            output += f"({score} points)"
+            output += f"<span class=\"tag score {'negative-score' if score < 0 else 'non-negative-score'}\">({score} points)</span>"
         else:
-            output += "(visible)"
+            output += "<span class=\"tag visible\">(visible)</span>"
         output += "\n"
 
         for i in range(len(area_contents)):
@@ -52,7 +52,7 @@ def format_area(engine, player, area):
 
         return output[:-1]
     else:
-        return f"{markup_id(area)} ({area_contents} cards)"
+        return f"{markup_id(area)} <span class=\"tag card-count\">({area_contents} cards)</span>"
 
 def markup_id(area):
     classes = "area"
