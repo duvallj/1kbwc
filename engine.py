@@ -19,6 +19,7 @@ class Engine:
 
     def setup_areas(self):
         card_deck = cardreader.make_deck(len(self.game.players) * 10)  # MAGIC NUMBER, AAAAA
+        self.game.all_cards = card_deck[:]
 
         # discard
         discard = Area()
@@ -55,12 +56,16 @@ class Engine:
             hand.flags = {AreaFlag.HAND_AREA}
             hand.id = f'{player.username}.hand'
             hand.contents = card_deck[:5]
+            for card in hand.contents:
+                card._area = hand
             deck = card_deck[5:]
             self.game.all_areas[hand.id] = hand
 
         # draw pile
         draw = Area()
         draw.contents = card_deck
+        for card in draw.contents:
+            card._area = draw
         draw.id = "drawpile"
         draw.flags = {AreaFlag.DRAW_AREA}
         self.game.draw = draw

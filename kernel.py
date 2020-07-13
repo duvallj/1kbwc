@@ -34,8 +34,11 @@ class Kernel:
         :param *args: all remaining args will be passed to the handler
         :return: the return value from the handler call
         """
+        #print(f"attempting handler {handler_str} for {card}")
         if AreaFlag.PLAY_AREA in card._area.flags or CardFlag.ALWAYS_GET_EVENTS in card.flags:
+            print("actually running it")
             handler = getattr(card, handler_str, None)
+            print(f"got handler {handler}")
             result = None
             if handler is not None:
                 immutable_args = [immutablize(arg) for arg in args]
@@ -111,7 +114,7 @@ class Kernel:
         return True
 
     # TODO ordering in areas - from top of draw pile or to top of discard pile????
-    def move_card(self, player, move_card, from_area, to_area) -> bool:
+    def move_card(self, player, card, from_area, to_area) -> bool:
         """
         Callback for moving a card between play areas
         polls the cards to see if the operation is allowed
@@ -126,7 +129,7 @@ class Kernel:
         """
 
         player = self.__mutablize_obj(player)
-        move_card = self.__mutablize_obj(move_card)
+        card = self.__mutablize_obj(card)
         from_area = self.__mutablize_obj(from_area)
         to_area = self.__mutablize_obj(to_area)
 
@@ -138,45 +141,46 @@ class Kernel:
 
         can_move = None
         for card in self.__game.all_cards:
-            can_move = self.__run_card_handler(card, "handle_move", player, move_card, from_area, to_area, self.__game)
+            can_move = self.__run_card_handler(card, "handle_move", player, card, from_area, to_area, self.__game)
             if can_move is not None:
                 break
 
         if can_move is None:
-            can_move = self.__default_move_handler(player, move_card, from_area, to_area)
+            can_move = self.__default_move_handler(player, card, from_area, to_area)
 
-        # Current player is playing
-        if AreaFlag.HAND_AREA in from_area.flags and \
-                AreaFlag.PLAY_AREA in to_area.flags and \
-                player in from_area.owners and \
-                player == self.__game.current_player and \
-                CardFlag.PLAY_ANY_TIME not in card.flags:
-            self.__game.cards_played_this_turn += 1
-            move_card._player = player
-        
-        # PLAY action
-        if AreaFlag.PLAY_AREA not in from_area.flags and \
-                AreaFlag.PLAY_AREA in to_area.flags:
-            self.__run_card_handler(move_card, 'on_play', self.__game, player)
-
-        # DRAW action
-        if AreaFlag.DRAW_AREA in from_area.flags and \
-                AreaFlag.HAND_AREA in to_area.flags and \
-                player in to_area.owners and \
-                player == self.__game.current_player:
-            self.__game.cards_drawn_this_turn += 1
-
-        # DISCARD action
-        if AreaFlag.DISCARD_AREA in to_area.flags and \
-                AreaFlag.DISCARD_AREA not in from_area.flags:
-            self.__run_card_handler(move_card, 'on_discard', self.__game)
 
         if can_move:
-            index = from_area.contents.index(move_card)
+            # Current player is playing
+            if AreaFlag.HAND_AREA in from_area.flags and \
+                    AreaFlag.PLAY_AREA in to_area.flags and \
+                    player in from_area.owners and \
+                    player == self.__game.current_player and \
+                    CardFlag.PLAY_ANY_TIME not in card.flags:
+                self.__game.cards_played_this_turn += 1
+            
+            # PLAY action
+            if AreaFlag.PLAY_AREA not in from_area.flags and \
+                    AreaFlag.PLAY_AREA in to_area.flags:
+                self.__run_card_handler(card, 'on_play', self.__game, player)
+                card._player = player
+
+            # DRAW action
+            if AreaFlag.DRAW_AREA in from_area.flags and \
+                    AreaFlag.HAND_AREA in to_area.flags and \
+                    player in to_area.owners and \
+                    player == self.__game.current_player:
+                self.__game.cards_drawn_this_turn += 1
+
+            # DISCARD action
+            if AreaFlag.DISCARD_AREA in to_area.flags and \
+                    AreaFlag.DISCARD_AREA not in from_area.flags:
+                self.__run_card_handler(card, 'on_discard', self.__game)
+            
+            index = from_area.contents.index(card)
             from_area.contents = from_area.contents[:index] + from_area.contents[index + 1:]
-            to_area.contents = [move_card] + to_area.contents
-            move_card._owners = to_area.owners
-            move_card._area = to_area
+            to_area.contents = [card] + to_area.contents
+            card._owners = to_area.owners
+            card._area = to_area
 
             self.__update_card_in_game(card)
             self.__run_all_hooks('on_move', player, move_card, from_area, to_area, self.__game)
@@ -200,6 +204,7 @@ class Kernel:
         if AreaFlag.HAND_AREA in from_area.flags and \
                 AreaFlag.PLAY_AREA in to_area.flags and \
                 player in from_area.owners:
+            print(f"{card} {card.flags}")
             if CardFlag.PLAY_ANY_TIME in card.flags:
                 return True
             elif player == self.__game.current_player and \
@@ -251,12 +256,13 @@ class Kernel:
         Checks if the current player has either drawn & played, or drawn twice
         """
         if player == self.__game.current_player:
-            print("Is current player!")
+            print(f"{player.username} Drawn: {self.__game.cards_drawn_this_turn} Played: {self.__game.cards_played_this_turn}")
             if self.__game.cards_drawn_this_turn + \
                     self.__game.cards_played_this_turn >= 2:
                 return True
+        else:
+            print("is not current player")
 
-        print("is not current player")
         return False
 
     def score_area(self, score_area):

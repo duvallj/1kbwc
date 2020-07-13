@@ -1,4 +1,4 @@
-from objects import Card
+from objects import Card, CardFlag
 
 
 class ding(Card):
@@ -6,4 +6,4 @@ class ding(Card):
         self.val = 100
         self.name = 'Ding'
         self.image = 'Ding.png'
-        self.flags = {PLAY_ANY_TIME}
+        self.flags = {CardFlag.PLAY_ANY_TIME}

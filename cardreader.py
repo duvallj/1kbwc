@@ -25,3 +25,6 @@ def make_deck(size=0):
     while len(deck) > size:
         del deck[random.randint(0, len(deck) - 1)]
     return deck
+
+if __name__ == "__main__":
+    print(read_cards())

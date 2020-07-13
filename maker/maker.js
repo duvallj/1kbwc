@@ -50,7 +50,7 @@ function update(){
 	let flagsSet = [];
 	for(let i = 0; i < flagBoxes.length; ++i){
 		if(flagBoxes[i].checked){
-			flagsSet.push("CardArea." + flagBoxes[i].value);
+			flagsSet.push("CardFlag." + flagBoxes[i].value);
 		}
 	}
 	if(flagsSet.length > 0){
@@ -95,7 +95,7 @@ function copy(){
 }
 
 function get_formatted(){
-	return `from objects import Card
+	return `from objects import Card, CardFlag
 
 
 class ${filename}(Card):

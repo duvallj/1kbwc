@@ -170,9 +170,9 @@ class RoomManager():
             room.turn_over.set()
             comment = data.get("comment", None)
             if comment:
-                await room.broadcast_message(f"Player {player_name} ended their turn")
-            else:
                 await room.broadcast_message(f"Player {player_name} ended their turn \"{comment}\"")
+            else:
+                await room.broadcast_message(f"Player {player_name} ended their turn")
 
         elif cmd == "move":
             player = room.engine.get_player(player_name)
@@ -188,6 +188,7 @@ class RoomManager():
             
             card = from_area.contents[index]
             to_area = room.engine.get_area(data["dst"])
+            
             if to_area is None:
                 await send_message(websocket, f"Destination area '{data['dst']}' does not exist!")
                 return

@@ -8,8 +8,10 @@ class Cryptocurrency(Card):
         self.flags = set()
 
     def on_play(self, kernel, gamestate, player):
+        print(f"cryptocurrency played at {gamestate.turn_num}")
         self.turn_played = gamestate.turn_num
 
     def handle_end_turn(self, kernel, player, gamestate):
+        print(f"cryptocurrency turn num {gamestate.turn_num}")
         if gamestate.turn_num == self.turn_played + 3:
             self.val = -800
