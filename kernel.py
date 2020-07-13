@@ -114,7 +114,7 @@ class Kernel:
         return True
 
     # TODO ordering in areas - from top of draw pile or to top of discard pile????
-    def move_card(self, player, card, from_area, to_area) -> bool:
+    def move_card(self, player, moving_card, from_area, to_area) -> bool:
         """
         Callback for moving a card between play areas
         polls the cards to see if the operation is allowed
@@ -122,18 +122,18 @@ class Kernel:
         if allowed, moves the card
 
         :param player: the player responsible for the action
-        :param card: the card being moved
+        :param moving_card: the card being moved
         :param from_area: the area the card is being removed from
         :param to_area: the area the card is being added to
         :return: whether the action was performed
         """
 
         player = self.__mutablize_obj(player)
-        card = self.__mutablize_obj(card)
+        moving_card = self.__mutablize_obj(moving_card)
         from_area = self.__mutablize_obj(from_area)
         to_area = self.__mutablize_obj(to_area)
 
-        if card not in from_area.contents:
+        if moving_card not in from_area.contents:
             return False
 
         if from_area == to_area:
@@ -141,12 +141,12 @@ class Kernel:
 
         can_move = None
         for card in self.__game.all_cards:
-            can_move = self.__run_card_handler(card, "handle_move", player, card, from_area, to_area, self.__game)
+            can_move = self.__run_card_handler(card, "handle_move", player, moving_card, from_area, to_area, self.__game)
             if can_move is not None:
                 break
 
         if can_move is None:
-            can_move = self.__default_move_handler(player, card, from_area, to_area)
+            can_move = self.__default_move_handler(player, moving_card, from_area, to_area)
 
 
         if can_move:
@@ -155,14 +155,14 @@ class Kernel:
                     AreaFlag.PLAY_AREA in to_area.flags and \
                     player in from_area.owners and \
                     player == self.__game.current_player and \
-                    CardFlag.PLAY_ANY_TIME not in card.flags:
+                    CardFlag.PLAY_ANY_TIME not in moving_card.flags:
                 self.__game.cards_played_this_turn += 1
             
             # PLAY action
             if AreaFlag.PLAY_AREA not in from_area.flags and \
                     AreaFlag.PLAY_AREA in to_area.flags:
-                self.__run_card_handler(card, 'on_play', self.__game, player)
-                card._player = player
+                self.__run_card_handler(moving_card, 'on_play', self.__game, player)
+                moving_card._player = player
 
             # DRAW action
             if AreaFlag.DRAW_AREA in from_area.flags and \
@@ -174,16 +174,16 @@ class Kernel:
             # DISCARD action
             if AreaFlag.DISCARD_AREA in to_area.flags and \
                     AreaFlag.DISCARD_AREA not in from_area.flags:
-                self.__run_card_handler(card, 'on_discard', self.__game)
+                self.__run_card_handler(moving_card, 'on_discard', self.__game)
             
-            index = from_area.contents.index(card)
+            index = from_area.contents.index(moving_card)
             from_area.contents = from_area.contents[:index] + from_area.contents[index + 1:]
-            to_area.contents = [card] + to_area.contents
-            card._owners = to_area.owners
-            card._area = to_area
+            to_area.contents = [moving_card] + to_area.contents
+            moving_card._owners = to_area.owners
+            moving_card._area = to_area
 
-            self.__update_card_in_game(card)
-            self.__run_all_hooks('on_move', player, move_card, from_area, to_area, self.__game)
+            self.__update_card_in_game(moving_card)
+            self.__run_all_hooks('on_move', player, moving_card, from_area, to_area, self.__game)
 
         return can_move
 
