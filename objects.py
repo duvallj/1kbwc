@@ -59,6 +59,18 @@ class Card:
         """
         pass
 
+    def on_look(self, kernel, player, area, gamestate):
+        """
+        Called after a successful look request
+
+        :param kernel: the game's Kernel object
+        :param player: the player who's looking
+        :param area: the Area they'relooking at
+        :param gamestate: the entire state of the game
+        :return:
+        """
+        pass
+
     def handle_move(self, kernel, player, card, from_area, to_area, gamestate):
         """
         This handler is called whenever a card is moved between ANY Area object in the game.
@@ -72,6 +84,20 @@ class Card:
         :param to_area: the area the card is heading to
         :param gamestate: the entire state of the game
         :return: True to allow the action, False to deny it, or None if you don't care.
+        """
+        pass
+
+    def on_move(self, kernel, player, card, from_area, to_area, gamestate):
+        """
+        Called after a card is successfully moved
+
+        :param kernel: the game's Kernel object
+        :param player: the player that's trying to perform the move
+        :param card: the card being moved
+        :param from_area: the area the card came from
+        :param to_area: the area the card was moved to
+        :param gamestate: the entire state of the game
+        :return:
         """
         pass
 
@@ -89,6 +115,17 @@ class Card:
         """
         pass
 
+    def on_end_turn(self, kernel, player, gamestate):
+        """
+        Called after a player's turn ends
+
+        :param kernel: the game's Kernel object
+        :param player: the player whose turn ended
+        :param gamestate: the entire state of the game
+        :return:
+        """
+        pass
+
     def handle_score_area(self, kernel, area, default_score, gamestate):
         """
         This handler is called when the score of ANY Area is calculated.  Use it
@@ -103,6 +140,18 @@ class Card:
         """
         pass
 
+    def on_score_area(self, kernel, area, score, gamestate):
+        """
+        Called after an area is scored
+        
+        :param kernel: the game's Kernel object
+        :param area: the Area whose score was calculated
+        :param default_score: the calculated score
+        :param gamestate: the entire state of the game
+        :return:
+        """
+        pass
+
     def handle_score_card(self, kernel, card, gamestate):
         """
         This handler is called when the score of ANY Card is calculated.
@@ -112,11 +161,22 @@ class Card:
         :param kernel: the game's Kernel object
         :param card: the Card whose score is being calucalted
         :param gamestate: the entire state of the game
+        :return: the score of the card
+        """
+        pass
+
+    def on_score_card(self, kernel, card, gamestate):
+        """
+        Called after a card is scored
+
+        :param kernel: the game's Kernel object
+        :param card: the Card whose score was calculated
+        :param gamestate: the entire state of the game
         :return:
         """
         pass
 
-    def handle_get_mutable_card(self, kernel, player, card, gamestate):
+    def handle_get_mutable_card(self, kernel, requestor, card, gamestate):
         """
         This handler is called when ANY card requests ANY mutable (editable) version
         of another card.  Use this to prevent cards from being edited, but note that
@@ -125,16 +185,29 @@ class Card:
         return True to allow the action, False to deny it, or None if you don't care
 
         :param kernel: the game's Kernel object
-        :param player: the player that requested the mutable card
+        :param requestor: the card that requested the mutable card
         :param card: the card requested
         :param gamestate: the entire state of the game
         :return: True to allow the action, False to deny it, or None if you don't care
         """
         pass
 
-    def handle_end_game(self, kernel, gamestate):
+    def on_get_mutable_card(self, kernel, requestor, card, gamestate):
         """
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        Called after a successful get_mutable_card_request
+
+        :param kernel: the game's Kernel object
+        :param requestor: the card that requested the mutable card
+        :param card: the card requested
+        :param gamestate: the entire state of the game
+        "return"
+        """
+        pass
+
+    def on_end_game(self, kernel, gamestate):
+        """
+        Called immediately before the game ends
+
         :param kernel: the game's Kernel object
         :param gamestate: the entire state of the game
         :return:

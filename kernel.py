@@ -49,6 +49,18 @@ class Kernel:
         else:
             return None
 
+    def __run_all_hooks(self, hook_str, *args):
+        immutable_args = [immutablize(arg) for arg in args]
+        for card in self.__game.all_cards:
+            if AreaFlag.PLAY_AREA in card._area.flags or CardFlag.ALWAYS_GET_EVENTS in card.flags:
+                handler = getattr(card, handler_str, None)
+                if handler is not None:
+                    try:
+                        handler(self, *immutable_args)
+                    except:
+                        pass
+
+
     def __mutablize_obj(self, obj):
         return getattr(obj, "_backing_obj", obj)
 
@@ -75,6 +87,7 @@ class Kernel:
             can_look = self.__default_look_handler(player, play_area)
 
         if can_look:
+            self.__run_all_hooks("on_look", player, play_area, self.__game)
             return True, play_area.contents
         else:
             return False, len(play_area.contents)
@@ -166,6 +179,7 @@ class Kernel:
             move_card._area = to_area
 
             self.__update_card_in_game(card)
+            self.__run_all_hooks('on_move', player, move_card, from_area, to_area, self.__game)
 
         return can_move
 
@@ -227,6 +241,9 @@ class Kernel:
         if can_end_turn is None:
             can_end_turn = self.__default_end_turn_handler(player)
 
+        if can_end_turn:
+            self.__run_all_hooks('on_end_turn', player, self.__game)
+
         return can_end_turn
 
     def __default_end_turn_handler(self, player) -> bool:
@@ -266,6 +283,7 @@ class Kernel:
         if score is None:
             score = default_score
 
+        self.__run_all_hooks('on_score_area', score_area, score, self.__game)
         return score
 
 
@@ -292,9 +310,11 @@ class Kernel:
             # Default is just the defined value
             score = score_card.val
 
+        self.__run_all_hooks('on_score_card', score_card, self.__game)
+
         return score
 
-    def get_mutable_card(self, player, requested_card):
+    def get_mutable_card(self, requestor, requested_card):
         """
         Returns a mutable copy of a card
         polls the cards to see if the requestor is allowed to edit the requested card
@@ -305,14 +325,14 @@ class Kernel:
         :return: if allowed, a mutable reference the card, otherwise None
         """
 
-        player = self.__mutablize_obj(player)
+        requestor = self.__mutablize_obj(requestor)
         requested_card = self.__mutablize_obj(requested_card)
 
         is_allowed = None
 
         for card in self.__game.all_cards:
             is_allowed = self.__run_card_handler(card, 'handle_get_mutable_card',
-                                                 player, requested_card, self.__game)
+                                                 requestor, requested_card, self.__game)
             if is_allowed is not None:
                 break
 
@@ -321,6 +341,7 @@ class Kernel:
             is_allowed = True
 
         if is_allowed:  # requested_card has been unimmutablized
+            self.__run_all_hooks('on_get_mutable_card', requestor, requested_card, self.__game)
             return requested_card
 
         return None
@@ -331,7 +352,7 @@ class Kernel:
         Calls card's end_game hooks right before the game ends.
         """
         for card in self.__game.all_cards:
-            self.__run_card_handler(card, 'handle_end_game', self.__game)
+            self.__run_card_handler(card, 'on_end_game', self.__game)
 
     def send_message(self, players, message):
         """
