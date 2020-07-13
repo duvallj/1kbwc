@@ -176,6 +176,34 @@ class Card:
         """
         pass
 
+    #TODO
+    def handle_score_player(self, kernel, player, default_score, gamestate):
+        """
+        This handler is called when the score of ANY Player is calculated.  Use it
+        to modify what a player's score should be.
+        return the score, or None if you don't wish to modify it.
+
+        :param kernel: the game's Kernel object
+        :param area: the Player whose score is being calculated
+        :param default_score: what this Player's score would be without intervention
+        :param gamestate: the entire state of the game
+        :return: the score, or None if you don't wish to modify it
+        """
+        pass
+
+    #TODO
+    def on_score_player(self, kernel, player, score, gamestate):
+        """
+        Called after a player's score is calculated
+
+        :param kernel: the game's Kernel object
+        :param area: the Player whose score was calculated
+        :param score: the calculated score
+        :param gamestate: the entire state of the game
+        :return:
+        """
+        pass
+
     def handle_get_mutable_card(self, kernel, requestor, card, gamestate):
         """
         This handler is called when ANY card requests ANY mutable (editable) version
@@ -202,6 +230,25 @@ class Card:
         :param gamestate: the entire state of the game
         "return"
         """
+        pass
+
+    #TODO
+    def handle_create_new_area():
+        pass
+    #TODO
+    def on_create_new_area():
+        pass
+    #TODO
+    def handle_change_turnorder():
+        pass
+    #TODO
+    def on_change_turnorder():
+        pass
+    #TODO
+    def handle_change_temporary_turnorder():
+        pass
+    #TODO
+    def on_change_temporary_turnorder():
         pass
 
     def on_end_game(self, kernel, gamestate):

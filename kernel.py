@@ -53,10 +53,19 @@ class Kernel:
             return None
 
     def __run_all_hooks(self, hook_str, *args):
+        """
+        Run the function on every card
+        For hooks that run after a successful action
+        Immutablizes all *args, and passes kernel as first argument
+        
+        :param hook_str: the name of the function to run
+        :param *args: the args to be passed to the function
+        :return:
+        """
         immutable_args = [immutablize(arg) for arg in args]
         for card in self.__game.all_cards:
             if AreaFlag.PLAY_AREA in card._area.flags or CardFlag.ALWAYS_GET_EVENTS in card.flags:
-                handler = getattr(card, handler_str, None)
+                handler = getattr(card, hook_str, None)
                 if handler is not None:
                     try:
                         handler(self, *immutable_args)
@@ -320,6 +329,17 @@ class Kernel:
 
         return score
 
+    def score_player(self, player: Player):
+        """
+        Gets a player's score
+        By defualt sums all the PLAY_AREAs the player owns
+        Polls cards for a custom score
+
+        :param player: the player whose score is calculated
+        :return: the score
+        """
+        raise NotImplementedError("PLZ IMPLEMENT")
+
     def get_mutable_card(self, requestor, requested_card):
         """
         Returns a mutable copy of a card
@@ -374,9 +394,9 @@ class Kernel:
         """
         raise NotImplementedError("PLZ IMPLEMENT")
 
-    def create_new_area(self, new_area):
+    def create_new_area(self, requestor, new_area):
         """
-        Add a new area to the game
+        Add a new area to the game, if poll allows
         """
         # TODO do a poll to see if the action should be cancelled
         area = Area()
@@ -390,3 +410,30 @@ class Kernel:
         area.flags = self.__mutablize_obj(new_area.flags)
 
         self.__game.all_areas[area.id] = area
+    
+    def change_turnorder(self, requestor, new_order):
+        """
+        Changes the order play rotates
+        Polls cards to see if action is allowed first
+
+        :param requestor: the card that requested the change
+        :param new_order: the new order to be implemented
+        :return: if the change was allowed
+        """
+        raise NotImplementedError("PLZ IMPLEMENT")
+
+    def change_temporary_turnorder(self, requestor, new_order):
+        """
+        Appends something to the temporary turn order queue
+        Use for, say, allowing a player to take one extra turn after the current one
+        Polls cards to see if action is allowed
+
+        :param requestor: the card that requested the change
+        :param new_order: the order to be appended to the temporary turn order queue
+        :return: if the change was allowed
+        """
+        raise NotImplementedError("PLZ IMPLEMENT")
+
+    
+
+

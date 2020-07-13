@@ -58,7 +58,8 @@ class Engine:
             hand.contents = card_deck[:5]
             for card in hand.contents:
                 card._area = hand
-            deck = card_deck[5:]
+                card._owner = player
+            card_deck = card_deck[5:]
             self.game.all_areas[hand.id] = hand
 
         # draw pile
