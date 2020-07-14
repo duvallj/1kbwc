@@ -397,7 +397,7 @@ class Card:
 
     def on_play(self, kernel, gamestate, player):
         """
-        Ease-of-use handler, called after this card is successfully played (defined
+        Ease-of-use handler, called after ONLY THIS card is successfully played (defined
         as moving from a non play area to a play area)
         If you wish to be able to stop this card from being played, use handle_move instead
 
@@ -410,7 +410,7 @@ class Card:
 
     def on_discard(self, kernel, gamestate, player):
         """
-        Ease-of-use handler, called when this card is discarded (defined as moved into
+        Ease-of-use handler, called when ONLY THIS card is discarded (defined as moved into
         a discard area)
         If you wish to be able to stop this card from being moved, use handle_move instead
         !! IMPORTANT: cards can be discarded from *any* area, don't assume it was last in
@@ -438,15 +438,15 @@ class CardFlag(Enum):
 class Area:
     def __init__(self, disallowed=[]):
         self.owners = []  # players who can play from or are affected by this area
-        self.viewers = self.owners  # players who can see the contents of this area
+        self.viewers = self.owners[:]  # players who can see the contents of this area
         self.contents = []  # the cards in this area
         self.id = random_id(disallowed)
         self.flags = set()  # extra data associated with this area
 
     def __eq__(self, other):
-        if not isinstance(other, Player):
+        if not isinstance(other, Area):
             return NotImplemented
-        return all(getattr(self, x) == getattr(other, x) for x in ('owners', 'viewers', 'contents', 'flags'))
+        return all(getattr(self, x) == getattr(other, x) for x in ('owners', 'viewers', 'contents', 'flags', 'id'))
 
 
 class AreaFlag(Enum):  # area types

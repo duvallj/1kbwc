@@ -352,7 +352,7 @@ class Kernel:
         :param player: the player whose score is calculated
         :return: the score
         """
-        player = self__mutablize_obj(player)
+        player = self.__mutablize_obj(player)
 
         score = 0
         for area in self.__game.all_areas.values():
@@ -439,10 +439,10 @@ class Kernel:
             area.viewers.append(self.__game.players[viewer.username])
         for content in new_area.contents:
             area.contents.append(self.__mutablize_obj(content))
-        if area.id in [p.username for p in self.__game.players] or \
-                area.id in [a.id for a in self.__game.all_areas]:  # Add a digit to duplicate ids
+        if area.id in [p.username for p in self.__game.players.values()] or \
+                area.id in [a.id for a in self.__game.all_areas.values()]:  # Add a digit to duplicate ids
             n = 1
-            disallowed = [p.username for p in self.__game.players] + [a.id for a in self.__game.all_areas];
+            disallowed = [p.username for p in self.__game.players.values()] + [a.id for a in self.__game.all_areas.values()];
             while f"{area.id}{n}" in disallowed:  # No I didn't test this lol it compiles
                 n += 1
             area.id = f"{area.id}{n}"
