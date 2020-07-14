@@ -343,7 +343,22 @@ class Kernel:
         :param player: the player whose score is calculated
         :return: the score
         """
-        raise NotImplementedError("PLZ IMPLEMENT")
+        player = self__mutablize_obj(player)
+
+        score = 0
+        for area in self.__game.all_areas.values():
+            if AreaFlag.PLAY_AREA in area.flags and player in area.owners:
+                score += self.score_area(area)
+
+        for card in self.__game.all_cards:
+            score_delta = self.__run_card_handler(card, 'handle_score_player', player, score, self.__game)
+            if score_delta is not None:
+                score += score_delta
+
+        self.__run_all_hooks('on_score_player', player, score, self.__game)
+
+        return score
+
 
     def get_mutable_card(self, requestor, requested_card):
         """
