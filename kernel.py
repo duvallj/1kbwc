@@ -279,7 +279,9 @@ class Kernel:
         if player == self.__game.current_player:
             print(f"{player.username} Drawn: {self.__game.cards_drawn_this_turn} Played: {self.__game.cards_played_this_turn}")
             if self.__game.cards_drawn_this_turn + \
-                    self.__game.cards_played_this_turn >= 2:
+                    self.__game.cards_played_this_turn >= \
+                    self.__game.max_cards_played_this_turn + \
+                    self.__game.max_cards_drawn_this_turn:
                 return True
         else:
             print("is not current player")
@@ -487,24 +489,56 @@ class Kernel:
     def change_play_limit(self, requestor, new_limit):
         """
         Change the number of cards that can be played THIS TURN
+        Only affects default move card handler, cards can still allow more movements
         First polls call the cards
         
         :param requestor: the card that requested this action
         :param new_limit: the new number of play actions this turn
         :return: whether this operation was allowed
         """
-        raise NotImplementedError("PLZ IMPLEMENT")
+        requestor = self__mutablize_obj(requestor)
+
+        is_allowed = None
+
+        for card in self.__game.all_cards:
+            is_allowed = self.__run_card_handler(card, 'handle_change_play_limit', requestor, new_limit, self.__game)
+            if is_allowed is not None:
+                break
+
+        if is_allowed is None:
+            is_allowed = True
+
+        if is_allowed:
+            self.__game.max_cards_played_this_turn = new_limit
+            self.__run_all_hooks('on_change_play_limit', new_limit, self.__game)
+        return is_allowed
     
     def change_draw_limit(self, requestor, new_limit):
         """
         Change the number of cards that can be drawn THIS TURN
+        Only affects default move card handler, cards can still allow more movements
         First polls call the cards
         
         :param requestor: the card that requested this action
         :param new_limit: the new number of draw actions allowed this turn
         :return: whether this operation was allowed
         """
-        raise NotImplementedError("PLZ IMPLEMENT")
+        requestor = self__mutablize_obj(requestor)
+
+        is_allowed = None
+
+        for card in self.__game.all_cards:
+            is_allowed = self.__run_card_handler(card, 'handle_change_draw_limit', requestor, new_limit, self.__game)
+            if is_allowed is not None:
+                break
+
+        if is_allowed is None:
+            is_allowed = True
+
+        if is_allowed:
+            self.__game.max_cards_drawn_this_turn = new_limit
+            self.__run_all_hooks('on_change_draw_limit', new_limit, self.__game)
+        return is_allowed
     
     def on_turn_start(self):
         """

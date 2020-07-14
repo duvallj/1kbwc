@@ -258,16 +258,54 @@ class Card:
     def on_add_card():
         pass
     #TODO
-    def handle_change_play_limit():
+    def handle_change_play_limit(self, kernel, requestor, new_limit, gamestate):
+        """
+        This handler is called when a card attempts to change the number of a cards
+        a player can play on their turn
+
+        :param kernel: the game's Kernel object
+        :param requestor: the card that requested this action
+        :param new_limit: the proposed new limit
+        :param gamestate: the entire current state of the game
+        :return: whether this action is allowed, or None if you don't care
+        """
         pass
     #TODO
-    def on_change_play_limit():
+    def on_change_play_limit(self, kernel, new_limit, gamestate):
+        """
+        Called after the play_limit is changed
+
+        :param kernel: the game's Kernel object
+        :param requestor: the card that requested this action
+        :param new_limit: the new limit applied
+        :param gamestate: the entire current state of the game
+        :return:
+        """
         pass
     #TODO
-    def handle_change_draw_limit():
+    def handle_change_draw_limit(self, kernel, requestor, new_limit, gamestate):
+        """
+        This handler is called when a card attempts to change the number of a cards
+        a player can draw on their turn
+
+        :param kernel: the game's Kernel object
+        :param requestor: the card that requested this action
+        :param new_limit: the proposed new limit
+        :param gamestate: the entire current state of the game
+        :return: whether this action is allowed, or None if you don't care
+        """
         pass
     #TODO
-    def on_change_draw_limit():
+    def on_change_draw_limit(self, kernel, new_limit, gamestate):
+        """
+        Called after the draw_limit is changed
+
+        :param kernel: the game's Kernel object
+        :param requestor: the card that requested this action
+        :param new_limit: the new limit applied
+        :param gamestate: the entire current state of the game
+        :return:
+        """
         pass
 
     def on_end_game(self, kernel, gamestate):
