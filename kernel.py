@@ -159,6 +159,19 @@ class Kernel:
 
 
         if can_move:
+
+            # execute action
+            index = from_area.contents.index(moving_card)
+            from_area.contents = from_area.contents[:index] + from_area.contents[index + 1:]
+            to_area.contents = [moving_card] + to_area.contents
+            moving_card._owners = to_area.owners
+            moving_card._area = to_area
+
+            self.__update_card_in_game(moving_card)
+            self.__run_all_hooks('on_move', player, moving_card, from_area, to_area, self.__game)
+
+            # update data
+
             # Current player is playing
             if AreaFlag.HAND_AREA in from_area.flags and \
                     AreaFlag.PLAY_AREA in to_area.flags and \
@@ -185,14 +198,6 @@ class Kernel:
                     AreaFlag.DISCARD_AREA not in from_area.flags:
                 self.__run_card_handler(moving_card, 'on_discard', self.__game)
             
-            index = from_area.contents.index(moving_card)
-            from_area.contents = from_area.contents[:index] + from_area.contents[index + 1:]
-            to_area.contents = [moving_card] + to_area.contents
-            moving_card._owners = to_area.owners
-            moving_card._area = to_area
-
-            self.__update_card_in_game(moving_card)
-            self.__run_all_hooks('on_move', player, moving_card, from_area, to_area, self.__game)
 
         return can_move
 
