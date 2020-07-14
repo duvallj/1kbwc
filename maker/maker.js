@@ -13,6 +13,7 @@ let valueInput = document.getElementById("value");
 let pathInput = document.getElementById("path");
 let imageInput = document.getElementById("image");
 let flagBoxes = document.getElementsByName("flags");
+let tagInput = document.getElementById("tags");
 
 let cardImage = document.getElementById("cardImage");
 
@@ -21,6 +22,7 @@ let title = "Example Card";
 let value = 0;
 let imagename = "example_card";
 let flags = "set()";
+let tags = "set()";
 let handlers = "";
 
 let url;
@@ -59,6 +61,23 @@ function update(){
 		flags = "set()"
 	}
 	
+	let tagMatches = tagInput.value.match(/[^\s"']+|"([^"]*)"|'([^']*)'/g);
+	let tagsSet = [];
+	if(tagMatches){
+		for(let i = 0; i < tagMatches.length; ++i){
+			if(tagMatches[i].charAt(0) === '"'){
+				tagsSet.push(tagMatches[i]);
+			}else{
+				tagsSet.push('"' + tagMatches[i] + '"');
+			}
+		}
+	}
+	if(tagsSet.length > 0){
+		tags = "{" + tagsSet.join(", ") + "}";
+	}else{
+		tags = "set()"
+	}
+	
 	let py = get_formatted();
 	preview.innerHTML = py;
 	hljs.highlightBlock(preview);
@@ -84,6 +103,7 @@ function reset(){
 	for(let i = 0; i < flagBoxes.length; ++i){
 		flagBoxes[i].checked = false;
 	}
+	tagInput.value = "";
 	
 	update();
 }
@@ -104,5 +124,6 @@ class ${filename}(Card):
         self.name = '${title}'
         self.image = '${imagename}'
         self.flags = ${flags}
+        self.tags = ${tags}
 ${handlers}`;
 }

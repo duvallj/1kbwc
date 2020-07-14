@@ -9,6 +9,7 @@ class Card:
         self.name = ''  # name of card
         self.image = None  # image on card
         self.flags = set()  # identifiers for card (government system, play at any time, etc.)
+        self.tags = set()  # card identifiers for other cards to use (animal, vegetable, mineral)
         # !!! these properties should ONLY be edited by the Kernel
         # !!! this card should only reference them immutably, using the @properties below
         self._owners = []  # owners of the area this card is in

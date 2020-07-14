@@ -1,15 +1,20 @@
 import asyncio
 import argparse
 import json
+from http import HTTPStatus
+
 import websockets
+import os
 from websockets.exceptions import ConnectionClosedError
 from objects import AreaFlag
 from engine import Engine
 
 NOT_FOUND_CARD = "/placeholder-card.png"
 
+
 async def send_json(websocket, data):
     await websocket.send(json.dumps(data))
+
 
 async def send_card(websocket, card):
     card_image = card.image
@@ -26,14 +31,17 @@ async def send_card(websocket, card):
         "flags": flags_string
     })
 
+
 async def send_message(websocket, message):
     await send_json(websocket, {
         "type": "message",
         "data": message
     })
 
+
 def format_card(index, card):
     return f" <span class=\"index\">[{index}]</span> <span class=\"card-title\">{card.name}</span>"
+
 
 def format_area(engine, player, area):
     can_look, area_contents = engine.kernel.look_at(player, area)
@@ -48,7 +56,7 @@ def format_area(engine, player, area):
 
         for i in range(len(area_contents)):
             card = area_contents[i]
-            output += format_card(i+1, card) + "\n"
+            output += format_card(i + 1, card) + "\n"
 
         return output[:-1]
     else:
@@ -61,7 +69,7 @@ def markup_id(area):
         first = id[:id.index('.')]
         second = id[id.index('.'):]
         id = f'<span class="playerName">{first}</span>{second}'
-    
+
     if AreaFlag.PLAY_AREA in area.flags:
         classes += " playArea"
     if AreaFlag.DRAW_AREA in area.flags:
@@ -70,7 +78,7 @@ def markup_id(area):
         classes += " handArea"
     if AreaFlag.DISCARD_AREA in area.flags:
         classes += " discardArea"
-    
+
     return f'<span class="{classes}">{id}</span>'
 
 async def send_update(websocket, engine, player):
@@ -184,7 +192,7 @@ class RoomManager():
             can_end = room.engine.kernel.end_turn(room.engine.get_player(player_name))
             if not can_end:
                 await send_message(websocket, "You are not allowed to end your turn!")
-                return 
+                return
 
             room.turn_over.set()
             comment = data.get("comment", None)
@@ -202,12 +210,11 @@ class RoomManager():
 
             index = data["index"] - 1
             if index < 0 or index >= len(from_area.contents):
-                await send_message(websocket, f"Index {index+1} is out of range for area {data['src']}!")
+                await send_message(websocket, f"Index {index + 1} is out of range for area {data['src']}!")
                 return
-            
+
             card = from_area.contents[index]
             to_area = room.engine.get_area(data["dst"])
-            
             if to_area is None:
                 await send_message(websocket, f"Destination area '{data['dst']}' does not exist!")
                 return
@@ -233,9 +240,9 @@ class RoomManager():
                 return
 
             if index < 0 or index >= len(area_contents):
-                await send_message(websocket, f"Index {index+1} if out of bounds for area '{data['area']}'")
+                await send_message(websocket, f"Index {index + 1} if out of bounds for area '{data['area']}'")
                 return
-            
+
             card = area_contents[index]
 
             await send_card(websocket, card)
@@ -258,14 +265,14 @@ class RoomManager():
             await room.broadcast_update()
             current_player = room.engine.game.current_player.username
             await room.broadcast_message(f"Current player: {current_player}")
-            
+
             room.turn_over.clear()
             await room.turn_over.wait()
 
             room.engine.advance_turn()
 
         room.stopped.set()
-    
+
     def remove_from_room(self, room_name, player_name):
         print(f"Removing {player_name} from room '{room_name}'")
         room = self.rooms.get(room_name, None)
@@ -281,6 +288,7 @@ class RoomManager():
     * /start/<room_name>
         Starts a game in an already-created room
     """
+
     async def serve(self, websocket, path):
         print(path)
         if path.startswith("/make/"):
@@ -304,15 +312,49 @@ class RoomManager():
             asyncio.create_task(self.run_game(websocket, rest))
             await send_message(websocket, "Game should be starting now!")
 
+
+async def intercept_http(path, headers):
+    prefixes = ['/make', '/join', '/start']
+    if any(path.startswith(x) for x in prefixes):
+        return  # let the websocket handle it
+
+    if path == '/':
+        path = '/index.html'
+
+    suffix_to_type = {
+        '.html': 'text/html; charset=utf-8',
+        '.js': 'text/javascript',
+        '.css': 'text/css',
+        '.png': 'image/png',
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.json': 'application/json',
+        '.mp3': 'audio/mpeg',
+        '.opus': 'audio/opus',
+        '': 'text/plain',
+    }
+    # Otherwise, act as a static file server
+    path = os.path.join('static', *path.split('/'))
+    if not os.path.exists(path):
+        print('event=http_get path="{}" event_result=404_not_found'.format(path))
+        return HTTPStatus(404), b'', b'404 Not Found'
+    with open(path, 'rb') as f:
+        print('event=http_get path="{}" event_result=200_found'.format(path))
+        content_type = suffix_to_type.get(os.path.splitext(path)[1], 'text/plain')
+        return HTTPStatus(200), {'Ur-Bad': 'Yes', 'Content-Type': content_type}, f.read()
+
+
 def make_parser():
     parser = argparse.ArgumentParser(description="Start the 1kbwc server")
     parser.add_argument('--port', type=int, default=8081)
 
     return parser
 
+
 def make_server(port):
     manager = RoomManager()
-    return websockets.serve(manager.serve, "localhost", port)
+    return websockets.serve(manager.serve, "localhost", port, process_request=intercept_http)
+
 
 def main():
     args = make_parser().parse_args()
@@ -320,6 +362,7 @@ def main():
     print(f"Listening on port {args.port}")
     asyncio.get_event_loop().run_until_complete(server)
     asyncio.get_event_loop().run_forever()
+
 
 if __name__ == "__main__":
     main()
