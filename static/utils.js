@@ -1,7 +1,7 @@
 const SCHEME = window.location.protocol == "https:" ? "wss": "ws";
 const HOST = window.location.host;
-const PATH = SCHEME + "://" + HOST + "/";
-const IMAGE_BASE_URL = "../cards/images/";
+const PATH = SCHEME + "://" + HOST;
+const IMAGE_BASE_URL = "/cards/";
 
 const socket_path = document.getElementById("socketPath");
 socket_path.value = PATH;

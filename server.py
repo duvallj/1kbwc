@@ -290,7 +290,7 @@ class RoomManager():
     """
 
     async def serve(self, websocket, path):
-        print(path)
+        print(f"Websocket connected on {path}")
         if path.startswith("/make/"):
             rest = path[6:]
             await self.make_room(websocket, rest)
@@ -314,8 +314,8 @@ class RoomManager():
 
 
 async def intercept_http(path, headers):
-    prefixes = ['/make', '/join', '/start']
-    if any(path.startswith(x) for x in prefixes):
+    prefixes = ['make', 'join', 'start']
+    if any(path.lstrip('/').startswith(x) for x in prefixes):
         return  # let the websocket handle it
 
     if path == '/':
@@ -353,7 +353,7 @@ def make_parser():
 
 def make_server(port):
     manager = RoomManager()
-    return websockets.serve(manager.serve, "localhost", port, process_request=intercept_http)
+    return websockets.serve(manager.serve, "0.0.0.0", port, process_request=intercept_http)
 
 
 def main():
