@@ -177,7 +177,6 @@ class Card:
         """
         pass
 
-    #TODO
     def handle_score_player(self, kernel, player, default_score, gamestate):
         """
         This handler is called when the score of ANY Player is calculated.  Use it
@@ -192,7 +191,6 @@ class Card:
         """
         pass
 
-    #TODO
     def on_score_player(self, kernel, player, score, gamestate):
         """
         Called after a player's score is calculated
@@ -257,7 +255,7 @@ class Card:
     #TODO
     def on_add_card():
         pass
-    #TODO
+
     def handle_change_play_limit(self, kernel, requestor, new_limit, gamestate):
         """
         This handler is called when a card attempts to change the number of a cards
@@ -270,7 +268,7 @@ class Card:
         :return: whether this action is allowed, or None if you don't care
         """
         pass
-    #TODO
+
     def on_change_play_limit(self, kernel, new_limit, gamestate):
         """
         Called after the play_limit is changed
@@ -282,7 +280,7 @@ class Card:
         :return:
         """
         pass
-    #TODO
+
     def handle_change_draw_limit(self, kernel, requestor, new_limit, gamestate):
         """
         This handler is called when a card attempts to change the number of a cards
@@ -295,7 +293,7 @@ class Card:
         :return: whether this action is allowed, or None if you don't care
         """
         pass
-    #TODO
+
     def on_change_draw_limit(self, kernel, new_limit, gamestate):
         """
         Called after the draw_limit is changed
