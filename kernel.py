@@ -222,17 +222,24 @@ class Kernel:
             if CardFlag.PLAY_ANY_TIME in card.flags:
                 return True
             elif player == self.__game.current_player and \
-                    self.__game.cards_played_this_turn == 0 and \
-                    self.__game.cards_drawn_this_turn < 2:
+                    self.__game.cards_played_this_turn < \
+                    self.__game.max_cards_played_this_turn and \
+                    self.__game.cards_played_this_turn + \
+                    self.__game.cards_drawn_this_turn < \
+                    self.__game.max_cards_drawn_this_turn + \
+                    self.__game.max_cards_played_this_turn:
                 return True
 
         if AreaFlag.DRAW_AREA in from_area.flags and \
                 AreaFlag.HAND_AREA in to_area.flags and \
                 player in to_area.owners:
             if player == self.__game.current_player and \
-                    (self.__game.cards_drawn_this_turn == 0 or
-                     (self.__game.cards_drawn_this_turn == 1 and
-                      self.__game.cards_played_this_turn == 0)):
+                    (self.__game.cards_drawn_this_turn < \
+                    self.__game.max_cards_drawn_this_turn or \
+                    (self.__game.cards_drawn_this_turn < \
+                    self.__game.max_cards_drawn_this_turn + 1 and \
+                    self.__game.cards_played_this_turn < \
+                    self.__game.max_cards_played_this_turn )):
                 return True
 
         return False
@@ -417,6 +424,10 @@ class Kernel:
     def create_new_area(self, requestor, new_area):
         """
         Add a new area to the game, if poll allows
+
+        :param requestor: the card that initiated this action
+        :param new_area: the area to create
+        :return: the new area if allowed, or None
         """
         # TODO do a poll to see if the action should be cancelled
         area = Area()  #disallow list for ids: [p.username for p in self.__game.players] + [a.id for a in self.__game.all_areas]
@@ -461,6 +472,44 @@ class Kernel:
         """
         raise NotImplementedError("PLZ IMPLEMENT")
 
-    
+    def add_card(self, requestor, card_class, to_area):
+        """
+        Creates a new instance of card_class and adds it to to_area
+        First polls all the cards
 
+        :param requestor: the card that requested this action
+        :param card_class: the class to instantiate the new card from
+        :param to_area: the location to put the new card in
+        :return: the added card if allowed, otherwise None
+        """
+        raise NotImplementedError("PLZ IMPLEMENT")
+
+    def change_play_limit(self, requestor, new_limit):
+        """
+        Change the number of cards that can be played THIS TURN
+        First polls call the cards
+        
+        :param requestor: the card that requested this action
+        :param new_limit: the new number of play actions this turn
+        :return: whether this operation was allowed
+        """
+        raise NotImplementedError("PLZ IMPLEMENT")
+    
+    def change_draw_limit(self, requestor, new_limit):
+        """
+        Change the number of cards that can be drawn THIS TURN
+        First polls call the cards
+        
+        :param requestor: the card that requested this action
+        :param new_limit: the new number of draw actions allowed this turn
+        :return: whether this operation was allowed
+        """
+        raise NotImplementedError("PLZ IMPLEMENT")
+    
+    def on_turn_start(self):
+        """
+        Call all the on_turn_start handlers
+        """
+        for card in self.__game.all_cards:
+            self.__run_all_hooks('on_turn_start', self.__game.current_player, self.__game)
 

@@ -187,7 +187,7 @@ class Card:
         :param area: the Player whose score is being calculated
         :param default_score: what this Player's score would be without intervention
         :param gamestate: the entire state of the game
-        :return: the score, or None if you don't wish to modify it
+        :return: a DELTA, to be SUMMED with the score, or None if you don't wish to alter it
         """
         pass
 
@@ -250,12 +250,41 @@ class Card:
     #TODO
     def on_change_temporary_turnorder():
         pass
+    #TODO
+    def handle_add_card():
+        pass
+    #TODO
+    def on_add_card():
+        pass
+    #TODO
+    def handle_change_play_limit():
+        pass
+    #TODO
+    def on_change_play_limit():
+        pass
+    #TODO
+    def handle_change_draw_limit():
+        pass
+    #TODO
+    def on_change_draw_limit():
+        pass
 
     def on_end_game(self, kernel, gamestate):
         """
         Called immediately before the game ends
 
         :param kernel: the game's Kernel object
+        :param gamestate: the entire state of the game
+        :return:
+        """
+        pass
+
+    def on_turn_start(self, kernel, player, gamestate):
+        """
+        Called when a player's turn starts
+
+        :param kernel: the game's Kernel object
+        :param player: the player whose turn it is
         :param gamestate: the entire state of the game
         :return:
         """
@@ -368,5 +397,7 @@ class Game:
         self.turn_num = 0  # incremented each turn, mostly for use by cards w/ timers
         self.current_player = None
         self.turn_order_index = 0
+        self.max_cards_played_this_turn = 1
         self.cards_played_this_turn = 0
+        self.max_cards_drawn_this_turn = 1
         self.cards_drawn_this_turn = 0

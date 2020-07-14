@@ -86,14 +86,20 @@ class Engine:
 
     def advance_turn(self):
         self.game.turn_num += 1
+
+        self.game.max_cards_played_this_turn = 1
+        self.game.max_cards_drawn_this_turn = 1
         self.game.cards_played_this_turn = 0
         self.game.cards_drawn_this_turn = 0
+
         if len(self.game.turn_q) > 0:
             self.game.current_player = self.game.turn_q[0]
             self.game.turn_q = self.game.turn_q[1:]
         else:
             self.game.turn_order_index = (self.game.turn_order_index + 1) % len(self.game.turn_order)
             self.game.current_player = self.game.turn_order[self.game.turn_order_index]
+
+        self.kernel.on_turn_start()
 
     def is_game_over(self):
         return len(self.game.draw.contents) == 0
