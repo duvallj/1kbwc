@@ -431,7 +431,7 @@ class Kernel:
         :param new_area: the area to create
         :return: the new area if allowed, or None
         """
-        # TODO do a poll to see if the action should be cancelled
+        requestor = self.__mutablize_obj(requestor)
         area = Area()  #disallow list for ids: [p.username for p in self.__game.players] + [a.id for a in self.__game.all_areas]
         for owner in new_area.owners:
             area.owners.append(self.__game.players[owner.username])
@@ -449,7 +449,23 @@ class Kernel:
         area.id = self.__mutablize_obj(new_area.id)
         area.flags = self.__mutablize_obj(new_area.flags)
 
-        self.__game.all_areas[area.id] = area
+        is_allowed = None
+
+        for card in self.__game.all_cards:
+            is_allowed = self.__run_card_handler(card, 'handle_create_new_area',
+                                                 requestor, area, self.__game)
+            if is_allowed is not None:
+                break
+
+        if is_allowed is None:
+            # Default is to allow.
+            is_allowed = True
+
+        if is_allowed:
+            self.__game.all_areas[area.id] = area
+            self.__run_all_hooks('on_create_new_area', area, self.__game)
+            return area
+        return None
     
     def change_turnorder(self, requestor, new_order):
         """
@@ -457,10 +473,38 @@ class Kernel:
         Polls cards to see if action is allowed first
 
         :param requestor: the card that requested the change
-        :param new_order: the new order to be implemented
+        :param new_order: the new order to be implemented, any ordered iterable
         :return: if the change was allowed
         """
-        raise NotImplementedError("PLZ IMPLEMENT")
+
+        requestor = self.__mutablize_obj(requestor)
+        
+        is_allowed = None
+
+        for card in self.__game.all_cards:
+            is_allowed = self.__run_card_handler(card, 'handle_change_turnorder',
+                                                 requestor, new_order, self.__game)
+            if is_allowed is not None:
+                break
+
+        if is_allowed is None:
+            # Default is to allow.
+            is_allowed = True
+
+        if is_allowed:
+            order = []
+            for p in new_order:
+                p = self.__mutablize_obj(p)
+                if p not in self.__game.players.values() and p not in order:
+                    order.append(p)
+            if len(order) != len(self.__game.turn_order):
+                is_allowed = False
+            else:
+                self.__game.turn_order = order
+                self.__run_all_hooks('on_change_turnorder', order, self.__game)
+
+        return is_allowed
+
 
     def change_temporary_turnorder(self, requestor, new_order):
         """
@@ -472,7 +516,28 @@ class Kernel:
         :param new_order: the order to be appended to the temporary turn order queue
         :return: if the change was allowed
         """
-        raise NotImplementedError("PLZ IMPLEMENT")
+        requestor = self.__mutablize_obj(requestor)
+
+        is_allowed = None
+
+        for card in self.__game.all_cards:
+            is_allowed = self.__run_card_handler(card, 'handle_change_temporary_turnorder',
+                                                 requestor, new_order, self.__game)
+            if is_allowed is not None:
+                break
+
+        if is_allowed is None:
+            # Default is to allow.
+            is_allowed = True
+
+        if is_allowed:
+            for p in new_order:
+                player = self.__mutablize_obj(p)
+                self.__game.turn_q.append(player)
+            self.__run_all_hooks('on_change_temporary_turnorder', self.__game)
+
+        return is_allowed
+
 
     def add_card(self, requestor, card_class, to_area):
         """
@@ -484,7 +549,33 @@ class Kernel:
         :param to_area: the location to put the new card in
         :return: the added card if allowed, otherwise None
         """
-        raise NotImplementedError("PLZ IMPLEMENT")
+        requestor = self.__mutablize_obj(requestor)
+        to_area = self.__mutablize_obj(to_area)
+        card_class = self.__mutablize_obj(card_class)
+
+        is_allowed = None
+        
+        new_card = card_class()
+        new_card._owners = to_area.owners[:]
+        new_card._area = to_area
+
+        for card in self.__game.all_cards:
+            is_allowed = self.__run_card_handler(card, 'handle_add_card',
+                                                 requestor, new_card, to_area, self.__game)
+            if is_allowed is not None:
+                break
+
+        if is_allowed is None:
+            # Default is to allow.
+            is_allowed = True
+
+        if is_allowed:
+            to_area.contents.append(new_card)
+            self.__game.all_cards.append(new_card)
+            self.__run_all_hooks('on_add_card', new_card, self.__game)
+            return new_card
+        return None
+
 
     def change_play_limit(self, requestor, new_limit):
         """

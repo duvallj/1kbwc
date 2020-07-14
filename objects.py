@@ -231,29 +231,97 @@ class Card:
         """
         pass
 
-    #TODO
-    def handle_create_new_area():
+    def handle_create_new_area(self, kernel, requestor, new_area, gamestate):
+        """
+        This handler is called when any card requests a new Area be created
+
+        :param kernel: the game's Kernel object
+        :param requestor: the card that requested the area be added
+        :param new_area: the area being added
+        :param gamestate: the entire state of the game
+        :return: True to allow the action, False to deny it, or None if you don't care
+        """
         pass
-    #TODO
-    def on_create_new_area():
+
+    def on_create_new_area(self, kernel, new_area, gamestate):
+        """
+        Called after a successful create_new_area request
+
+        :param kernel: the game's Kernel object
+        :param new_area: the area that was added
+        :param gamestate: the entire state of the game
+        :return:
+        """
         pass
-    #TODO
-    def handle_change_turnorder():
+
+    def handle_change_turnorder(self, kernel, requestor, new_order, gamestate):
+        """
+        This handler is called when a card requests a change to the play order
+
+        :param kernel: the game's Kernel object
+        :param requestor: the card that requested this action
+        :param new_order: the proposed new turn order
+        :param gamestate: the entire state of the game
+        :return: True to allow the action, False to deny it, or None if you don't care
+        """
         pass
-    #TODO
-    def on_change_turnorder():
+
+    def on_change_turnorder(self, kernel, new_order, gamestate):
+        """
+        Called after a successful change_turnorder request
+
+        :param kernel: the game's Kernel object
+        :param new_order: the new turn order
+        :param gamestate: the entire state of the game
+        :return:
+        """
         pass
-    #TODO
-    def handle_change_temporary_turnorder():
+
+    def handle_change_temporary_turnorder(self, kernel, requestor, new_order, gamestate):
+        """
+        This handler is called when a card requests a change to the *temporary* play order
+
+        :param kernel: the game's Kernel object
+        :param requestor: the card that requested this action
+        :param new_order: the proposed new turn order
+        :param gamestate: the entire state of the game
+        :return: True to allow the action, False to deny it, or None if you don't care
+        """
         pass
-    #TODO
-    def on_change_temporary_turnorder():
+
+    def on_change_temporary_turnorder(self, kernel, gamestate):
+        """
+        Called after a successful change_temporary_turn_order action
+        You can access the new turn queue at `gamestate.turn_q`
+
+        :param kernel: the game's Kernel object
+        :param gamestate: the entire state of the game
+        :return:
+        """
         pass
-    #TODO
-    def handle_add_card():
+
+    def handle_add_card(self, kernel, requestor, new_card, area, gamestate):
+        """
+        This handler is called when a card attempts to add a new card to the game
+
+        :param kernel: this game's Kernel object
+        :param requestor: the card that requested this action
+        :param new_card: the card being added
+        :param area: the area the card will be added to
+        :param gamestate: the entire state of the game
+        :return: True to allow the action, False to deny it, or None if you don't care
+        """
         pass
-    #TODO
-    def on_add_card():
+
+    def on_add_card(self, kernel, new_card, gamestate):
+        """
+        Called after a successful add_card request
+
+        :param kernel: this game's Kernel object
+        :param new_card: the card that was added
+        :param gamestate: the entire state of the game
+        :return:
+        """
         pass
 
     def handle_change_play_limit(self, kernel, requestor, new_limit, gamestate):
