@@ -478,12 +478,17 @@ class Kernel:
         """
 
         requestor = self.__mutablize_obj(requestor)
+        order = []
+        for p in new_order:
+            p = self.__mutablize_obj(p)
+            if p not in self.__game.players.values() and p not in order:
+                order.append(p)
         
         is_allowed = None
 
         for card in self.__game.all_cards:
             is_allowed = self.__run_card_handler(card, 'handle_change_turnorder',
-                                                 requestor, new_order, self.__game)
+                                                 requestor, order, self.__game)
             if is_allowed is not None:
                 break
 
@@ -492,11 +497,6 @@ class Kernel:
             is_allowed = True
 
         if is_allowed:
-            order = []
-            for p in new_order:
-                p = self.__mutablize_obj(p)
-                if p not in self.__game.players.values() and p not in order:
-                    order.append(p)
             if len(order) != len(self.__game.turn_order):
                 is_allowed = False
             else:
@@ -519,10 +519,14 @@ class Kernel:
         requestor = self.__mutablize_obj(requestor)
 
         is_allowed = None
+        order = []
+        for p in new_order:
+            player = self.__mutablize_obj(p)
+            order.append(player)
 
         for card in self.__game.all_cards:
             is_allowed = self.__run_card_handler(card, 'handle_change_temporary_turnorder',
-                                                 requestor, new_order, self.__game)
+                                                 requestor, order, self.__game)
             if is_allowed is not None:
                 break
 
@@ -531,9 +535,8 @@ class Kernel:
             is_allowed = True
 
         if is_allowed:
-            for p in new_order:
-                player = self.__mutablize_obj(p)
-                self.__game.turn_q.append(player)
+            for p in order:
+                self.__game.turn_q.append(p)
             self.__run_all_hooks('on_change_temporary_turnorder', self.__game)
 
         return is_allowed
@@ -587,7 +590,7 @@ class Kernel:
         :param new_limit: the new number of play actions this turn
         :return: whether this operation was allowed
         """
-        requestor = self__mutablize_obj(requestor)
+        requestor = self.__mutablize_obj(requestor)
 
         is_allowed = None
 
