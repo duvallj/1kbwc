@@ -44,10 +44,18 @@ input {
 }
 
 #previewContainer {
+	max-width: 40vw;
 }
 
 #copyArea {
 	position: absolute;
 	left: -9999px;
 	height: 0px;
+}
+
+.spacer {
+	margin-top: 3px;
+	height: 1pt;
+	background-color: #ccc;
+	margin-bottom: 3px;
 }

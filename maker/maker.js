@@ -14,6 +14,7 @@ let pathInput = document.getElementById("path");
 let imageInput = document.getElementById("image");
 let flagBoxes = document.getElementsByName("flags");
 let tagInput = document.getElementById("tags");
+let tagBoxes = document.getElementsByName("tagChecks");
 
 let cardImage = document.getElementById("cardImage");
 
@@ -70,6 +71,11 @@ function update(){
 			}else{
 				tagsSet.push('"' + tagMatches[i] + '"');
 			}
+		}
+	}
+	for(let i = 0; i < tagBoxes.length; ++i){
+		if(tagBoxes[i].checked){
+			tagsSet.push('"' + tagBoxes[i].value + '"');
 		}
 	}
 	if(tagsSet.length > 0){
