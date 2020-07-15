@@ -10,6 +10,8 @@ class Bail_Out(Card):
 
     def handle_move(self, kernel, player, card, from_area, to_area, gamestate):
         print("BO got handle_move!")
+        print(f'{self.owners, player}')
+        print(f'{self.owners[0] == player}')
         if player in self.owners:
             print(" move is from this card's owner...")
             if from_area == player.hand:
