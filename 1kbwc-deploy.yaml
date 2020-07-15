@@ -44,9 +44,9 @@ metadata:
   namespace: default
   name: bwc-deploy
 rules:
-- apiGroups: [""] # "" indicates the core API group
-  resources: ["pods"]
-  verbs: ["get", "list", "delete"]
+- apiGroups: ["apps", "extensions"] # "" indicates the core API group
+  resources: ["deployments"]
+  verbs: ["get", "patch", "list", "watch"]
 
 ---
 # Bind the 'jenkins' user to the bwc-deploy role
