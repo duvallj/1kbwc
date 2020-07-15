@@ -196,7 +196,7 @@ class Card:
         Called after a player's score is calculated
 
         :param kernel: the game's Kernel object
-        :param area: the Player whose score was calculated
+        :param player: the Player whose score was calculated
         :param score: the calculated score
         :param gamestate: the entire state of the game
         :return:
