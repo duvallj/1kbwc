@@ -18,7 +18,7 @@ class Engine:
         self.game.current_player = self.game.turn_order[self.game.turn_order_index]
 
     def setup_areas(self):
-        card_deck = cardreader.make_deck(len(self.game.players) * 10)  # MAGIC NUMBER, AAAAA
+        card_deck = cardreader.make_deck(len(self.game.players) * 20)  # MAGIC NUMBER, AAAAA
         self.game.all_cards = card_deck[:]
 
         # discard

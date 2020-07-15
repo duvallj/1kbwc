@@ -67,6 +67,7 @@ class Kernel:
                     try:
                         handler(self, *immutable_args)
                     except:
+                        traceback.print_exc()
                         pass
 
 
@@ -215,21 +216,18 @@ class Kernel:
         if AreaFlag.HAND_AREA in from_area.flags and \
                 AreaFlag.PLAY_AREA in to_area.flags and \
                 player in from_area.owners:
-            print("checking if player's move is valid")
-            print(f'{card.flags}')
             if CardFlag.ONLY_PLAY_TO_SELF in card.flags and \
                     to_area != player.area:
-                print("cancelled playing only to self not to self")
                 return False
             if CardFlag.NO_PLAY_TO_SELF in card.flags and \
                     to_area == player.area:
-                print("cancelled playing not to self to self")
+                return False
+            if CardFlag.ONLY_PLAY_TO_CENTER in card.flags and \
+                    to_area != self.__game.center:
                 return False
             if CardFlag.NO_PLAY_TO_CENTER in card.flags and \
                     to_area == self.__game.center:
-                print("cancelled playing not to center to center")
                 return False
-            print("did not cancel play event")
             if CardFlag.PLAY_ANY_TIME in card.flags:
                 return True
             elif player == self.__game.current_player and \

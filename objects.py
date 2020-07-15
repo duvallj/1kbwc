@@ -442,6 +442,10 @@ class CardFlag(Enum):
     """
     This flag marks a card that cannot be played to the area of the player playing it
     """
+    PLAY_ONLY_TO_CENTER = "Can only be played to the center"
+    """
+    this flag marks a card that can only be played to the center
+    """
     NO_PLAY_TO_CENTER = "Cannot be played to the center"
     """
     This flag marks a card that cannot be played into the center area
@@ -465,7 +469,7 @@ class AreaFlag(Enum):  # area types
     PLAY_AREA = 'PLAY AREA'
     """
     This flag marks the area as a Play Area, which means that by default, cards in 
-    this area will have their callbacks executed.  Also, any moves from a HAND_AREA
+    this area will have their callbacks executed.  Also, any moves from a non PLAY_AREA
     to a PLAY_AREA count as a "Play".
     """
     DRAW_AREA = 'DRAW AREA'
@@ -476,7 +480,7 @@ class AreaFlag(Enum):  # area types
     HAND_AREA = 'HAND AREA'
     """
     This flag marks the area as a Draw Area.  Any moves from a DRAW_AREA to HAND_AREA 
-    count as a "draw", and any moves from a HAND_AREA to PLAY_AREA count as a "play".
+    count as a "draw."
     """
     DISCARD_AREA = 'DISCARD AREA'
     """
