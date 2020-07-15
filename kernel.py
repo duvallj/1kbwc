@@ -626,7 +626,7 @@ class Kernel:
         :param new_limit: the new number of draw actions allowed this turn
         :return: whether this operation was allowed
         """
-        requestor = self__mutablize_obj(requestor)
+        requestor = self.__mutablize_obj(requestor)
 
         is_allowed = None
 
