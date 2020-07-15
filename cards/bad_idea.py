@@ -5,7 +5,7 @@ class Bad_Idea(Card):
     def init(self):
         self.val = -800
         self.name = 'Bad Idea'
-        self.image = 'Bad_Idea.png'a
+        self.image = 'Bad_Idea.png'
         self.game_over = False
         self.flags = {CardFlag.ALWAYS_GET_EVENTS}
 
