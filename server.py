@@ -199,7 +199,8 @@ class RoomManager():
                 return
 
             room.turn_over.set()
-            comment = data.get("comment", None)
+            comment = data.get("comment", None).replace("&", '&amp;').replace("<", '&lt;').replace(">", '&gt;').replace("\"", '&quot;').replace("\'", '&#39;').replace("/", '&#x2F;');
+            
             if comment:
                 await room.broadcast_message(f"{format_player(player_name)} ended their turn \"{comment}\"")
             else:
