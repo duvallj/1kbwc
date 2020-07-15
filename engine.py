@@ -75,8 +75,10 @@ class Engine:
 
         # D E B U G M O D E
         if 'DEBUG' in listdir('.'):
+            extra_cards = cardreader.make_deck()
+            self.game.all_cards += extra_cards
             player = list(self.game.players.values())[0]
-            player.hand.contents = self.game.all_cards[:]
+            player.hand.contents += extra_cards
             for card in player.hand.contents:
                 card._area = hand
                 card._owner = player
