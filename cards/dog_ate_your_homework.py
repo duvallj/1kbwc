@@ -10,7 +10,7 @@ class Dog_Ate_Your_Homework(Card):
 
     def on_play(self, kernel, gamestate, player):
         if (len(self.area.contents) > 1): # If the area is empty, or only includes this card, break
-            dupl = self.area.contents[:]
+            dupl = list(self.area.contents)
             dupl.remove(self)
             rand_card = random.choice(dupl)
             kernel.move_card(player, rand_card, self.area, gamestate.discard)
