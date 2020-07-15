@@ -442,7 +442,7 @@ class CardFlag(Enum):
     """
     This flag marks a card that cannot be played to the area of the player playing it
     """
-    PLAY_ONLY_TO_CENTER = "Can only be played to the center"
+    ONLY_PLAY_TO_CENTER = "Can only be played to the center"
     """
     this flag marks a card that can only be played to the center
     """
