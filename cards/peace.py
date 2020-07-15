@@ -11,7 +11,7 @@ class peace(Card):
         self.active = True
 
     def handle_move(self, kernel, player, card, from_area, to_area, gamestate):
-        if active:
+        if self.active:
             if AreaFlag.PLAY_AREA not in from_area.flags and AreaFlag.PLAY_AREA in to_area.flags:  # play
                 if card.val < 0:
                     return False
