@@ -22,14 +22,18 @@
 				<input id="enableClass" type="checkbox" onclick="classUpdate();">
 				<label for="enableClass">Use unique class name</label>
 			</div>
+			<div class="spacer"></div><div class="spacer"></div>
 			<label for="title">Title:</label>
 			<input id="title" type="text" placeholder="Example Card" oninput="update();">
+			<div class="spacer"></div><div class="spacer"></div>
 			<label for="value">Value:</label>
 			<input id="value" type="number" step="any" placeholder="Value" value=0 oninput="update();">
-			<label for="path">Path:</label>
-			<input id="path" type="text" placeholder="C:/Users/Me/Documents/GitHub/1kbwc/maker/" oninput="update();">
+			<div class="spacer"></div><div class="spacer"></div>
 			<label for="image">Image:</label>
 			<input id="image" type="file" accept="image" oninput="update();">
+			<label for="path">Path:</label>
+			<input id="path" type="text" placeholder="C:/Users/Me/Documents/GitHub/1kbwc/maker/" oninput="update();">
+			<div class="spacer"></div><div class="spacer"></div>
 			<label>Flags:</label>
 			<div class="checkbox">
 				<input name="flags" class="flags" type="checkbox" value="PLAY_ANY_TIME" id="PLAY_ANY_TIME" oninput="update();">
@@ -40,8 +44,44 @@
 				<input name="flags" class="flags" type="checkbox" value="ALWAYS_GET_EVENTS" id="ALWAYS_GET_EVENTS" oninput="update();">
 				<label for="ALWAYS_GET_EVENTS">Always get events</label>
 			</div>
+			<div></div>
+			<div class="checkbox">
+				<input name="flags" class="flags" type="checkbox" value="NO_PLAY_TO_CENTER" id="NO_PLAY_TO_CENTER" oninput="update();">
+				<label for="NO_PLAY_TO_CENTER">Cannot be played to center</label>
+			</div>
+			<div></div>
+			<div class="checkbox">
+				<input name="flags" class="flags" type="checkbox" value="NO_PLAY_TO_SELF" id="NO_PLAY_TO_SELF" oninput="update();">
+				<label for="NO_PLAY_TO_SELF">Cannot be played to self</label>
+			</div>
+			<div></div>
+			<div class="checkbox">
+				<input name="flags" class="flags" type="checkbox" value="ONLY_PLAY_TO_SELF" id="ONLY_PLAY_TO_SELF" oninput="update();">
+				<label for="ONLY_PLAY_TO_SELF">Play only to self</label>
+			</div>
+			<div class="spacer"></div><div class="spacer"></div>
 			<label for="tags">Tags:</label>
-			<input id="tags" type="text" placeholder='Animal Cat "Road Sign"' oninput="update();">
+			<input id="tags" type="text" placeholder='Metallurgy "Road Sign"' oninput="update();">
+			<div></div>
+			<div class="checkbox">
+				<input name="tagChecks" class="tagChecks" type="checkbox" value="Animal" id="Tag_Animal" oninput="update();">
+				<label for="Tag_Animal">Animal</label>
+			</div>
+			<div></div>
+			<div class="checkbox">
+				<input name="tagChecks" class="tagChecks" type="checkbox" value="Cat" id="Tag_Cat" oninput="update();">
+				<label for="Tag_Cat">Cat</label>
+			</div>
+			<div></div>
+			<div class="checkbox">
+				<input name="tagChecks" class="tagChecks" type="checkbox" value="Technology" id="Tag_Technology" oninput="update();">
+				<label for="Tag_Technology">Technology</label>
+			</div>
+			<div></div>
+			<div class="checkbox">
+				<input name="tagChecks" class="tagChecks" type="checkbox" value="Food" id="Tag_Food" oninput="update();">
+				<label for="Tag_Food">Food</label>
+			</div>
 		</div>
 		<div id="imageContainer">
 			<img id="cardImage" src="FairAndBalanced.png" />

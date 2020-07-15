@@ -141,7 +141,7 @@ function parse(v){
 		case "inspect":
 		case "i":
 			if(args.length === 2){
-				if(args[0] === hand){
+				if(args[0] === "hand"){
 					args[0] = playerName + ".hand";
 				}
 				return inspect(r, args);
