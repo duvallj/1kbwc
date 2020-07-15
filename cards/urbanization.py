@@ -6,7 +6,7 @@ class urbanization(Card):
         self.val = 0
         self.name = 'Urbanization'
         self.image = 'Urbanization.png'
-        self.flags = {CardFlag.PLAY_ONLY_TO_CENTER}
+        self.flags = {CardFlag.ONLY_PLAY_TO_CENTER}
         self.tags = set()
 
     def handle_score_player(self, kernel, player, default_score, gamestate):
