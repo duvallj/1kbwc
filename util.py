@@ -15,7 +15,7 @@ def immutablize(target):
     class MetaFactory(type):
         def __new__(mcls, name, bases, attrs):
             # These are the attributes from Proxy() that we want to have override the parent class.
-            whitelist = ['__getattribute__', '__setattr__', '__getitem__', '__setitem__', '__repr__', '__str__', '__init__']
+            whitelist = ['__new__', '__getattribute__', '__setattr__', '__getitem__', '__setitem__', '__repr__', '__str__', '__init__']
             for attr,val in inspect.getmembers(type(target)):
                 if attr not in whitelist:
                     if not hasattr(val, '__call__'):
@@ -34,6 +34,7 @@ def immutablize(target):
                                     return getattr(type(target), attr_name)(self._backing_obj, *args, **kwargs)
                                 else:
                                     # print(f"SUPER TRANSPARENT PROXYING {self} {attr_name}")
+                                    # print(f'{args}')
                                     return getattr(type(target), attr_name)(self, *args, **kwargs)
                             return mproxy
                         attrs[attr] = proxy_wrapper(attr)
