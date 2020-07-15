@@ -34,11 +34,8 @@ class Kernel:
         :param *args: all remaining args will be passed to the handler
         :return: the return value from the handler call
         """
-        #print(f"attempting handler {handler_str} for {card}")
         if AreaFlag.PLAY_AREA in card._area.flags or CardFlag.ALWAYS_GET_EVENTS in card.flags:
-            print("actually running it")
             handler = getattr(card, handler_str, None)
-            print(f"got handler {handler}")
             result = None
             if handler is not None:
                 immutable_args = [immutablize(arg) for arg in args]
@@ -218,7 +215,6 @@ class Kernel:
         if AreaFlag.HAND_AREA in from_area.flags and \
                 AreaFlag.PLAY_AREA in to_area.flags and \
                 player in from_area.owners:
-            print(f"{card} {card.flags}")
             if CardFlag.PLAY_ANY_TIME in card.flags:
                 return True
             elif player == self.__game.current_player and \
