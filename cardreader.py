@@ -17,7 +17,7 @@ def make_deck(size=0):
     deck = []
     for card_class in classes:
         deck.append(card_class())
-    random.shuffle(deck)
+    random.shuffle(deck) #nice
     if size == 0:
         return deck
     while len(deck) < size:
