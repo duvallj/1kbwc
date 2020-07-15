@@ -1,6 +1,7 @@
 import cardreader
 from objects import *
 from kernel import Kernel
+from os import listdir
 
 
 class Engine:
@@ -71,6 +72,14 @@ class Engine:
         draw.flags = {AreaFlag.DRAW_AREA}
         self.game.draw = draw
         self.game.all_areas[draw.id] = draw
+
+        # D E B U G M O D E
+        if 'DEBUG' in listdir('.'):
+            player = list(self.game.players.values())[0]
+            player.hand.contents = self.game.all_cards[:]
+            for card in player.hand.contents:
+                card._area = hand
+                card._owner = player
 
     def add_player(self, username):
         if self.game is None:
