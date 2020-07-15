@@ -166,3 +166,6 @@ img{
 .card-title{
 	font-style: oblique;
 }
+.card-click {
+    cursor: pointer;
+}
