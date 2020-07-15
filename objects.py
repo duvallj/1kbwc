@@ -18,9 +18,9 @@ class Card:
         self.init()
 
     def __eq__(self, other):
-        if not isinstance(other, Player):
+        if not isinstance(other, Card):
             return NotImplemented
-        return all(getattr(self, x) == getattr(other, x) for x in ('owners', 'viewers', 'contents', 'flags'))
+        return all(getattr(self, x) == getattr(other, x) for x in ('val', 'name', 'image', 'flags', 'tags', '_owners', '_player', '_area'))
 
     def init(self):
         """
