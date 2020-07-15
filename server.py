@@ -40,7 +40,7 @@ async def send_message(websocket, message):
 
 
 def format_card(index, card):
-    return f" <span class=\"index\">[{index}]</span> <span class=\"card-title\">{card.name}</span>"
+    return f" <span class='card-click' onclick='send_on_websocket(JSON.stringify(parse(\"inspect {card.area.id} {index}\").data));'><span class=\"index\">[{index}]</span> <span class=\"card-title\">{card.name}</span></span>"
 
 def format_player(player_name):
     return f"<span class=\"playerName\">{player_name}</span>"
