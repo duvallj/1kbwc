@@ -45,13 +45,15 @@ def format_card(index, card):
 def format_player(player_name):
     return f"<span class=\"playerName\">{player_name}</span>"
 
+def format_score(score):
+    return f"<span class=\"tag score {'negative-score' if score < 0 else 'non-negative-score'}\">({score} points)</span>"
+
 def format_area(engine, player, area):
     can_look, area_contents = engine.kernel.look_at(player, area)
     if can_look:
         output = f"{format_area_id(area)} "
-        if AreaFlag.PLAY_AREA in area.flags:
-            score = engine.kernel.score_area(area)
-            output += f"<span class=\"tag score {'negative-score' if score < 0 else 'non-negative-score'}\">({score} points)</span>"
+        if AreaFlag.PLAY_AREA in area.flags: 
+            output += format_score(engine.kernel.score_area(area))
         else:
             output += "<span class=\"tag visible\">(visible)</span>"
         output += "\n"
@@ -95,8 +97,8 @@ async def send_update(websocket, engine, player):
         else:
             hand_field += format_area(engine, player, area) + "\n\n"
 
-    hand_field = hand_field[:-2]
-    play_field = play_field[:-2]
+    hand_field = hand_field.strip()
+    play_field = play_field.strip()
 
     await send_json(websocket, {
         "type": "update",
@@ -104,6 +106,31 @@ async def send_update(websocket, engine, player):
         "play": play_field
     })
 
+async def send_final_update(websocket, engine, player):
+    hand_field = ""
+    play_field = ""
+
+    for player in engine.game.players.values():
+        score = engine.kernel.score_player(player)
+        play_field += f"{format_player(player)}: {format_score(score)}\n"
+
+    play_field += "\n"
+    
+    # Do the rest of the update like normal
+    for area in engine.game.all_areas.values():
+        if AreaFlag.PLAY_AREA in area.flags:
+            play_field += format_area(engine, player, area) + "\n\n"
+        else:
+            hand_field += format_area(engine, player, area) + "\n\n"
+    
+    hand_field = hand_field.strip()
+    play_field = play_field.strip()
+
+    await send_json(websocket, {
+        "type": "update",
+        "hand": hand_field,
+        "play": play_field
+    })
 
 class Room():
     def __init__(self, name):
@@ -116,7 +143,7 @@ class Room():
 
     async def add_player(self, websocket, player_name):
         if player_name in self.clients:
-            await send_message(websocket, f"Error: '{format_player(player_name)}' is already a player in this room '{room_name}!")
+            await send_message(websocket, f"Error: '{format_player(player_name)}' is already a player in this room '{self.name}!")
             return False
 
         if self.started.set():
@@ -141,11 +168,14 @@ class Room():
                 # take care of removing clients
                 pass
 
-    async def broadcast_update(self):
+    async def broadcast_update(self, final=False):
         for player_name, client in self.clients.items():
             player = self.engine.get_player(player_name)
             try:
-                await send_update(client, self.engine, player)
+                if final:
+                    await send_final_update(client, self.engine, player)
+                else:
+                    await send_update(client, self.engine, player)
             except ConnectionClosedError:
                 # Same as in broadcast_message
                 pass
@@ -285,6 +315,8 @@ class RoomManager():
             room.engine.advance_turn()
 
         room.stopped.set()
+        room.engine.kernel.end_game()
+        await room.broadcast_update(final=True)
 
     def remove_from_room(self, room_name, player_name):
         print(f"Removing {player_name} from room '{room_name}'")
