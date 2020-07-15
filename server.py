@@ -42,11 +42,13 @@ async def send_message(websocket, message):
 def format_card(index, card):
     return f" <span class=\"index\">[{index}]</span> <span class=\"card-title\">{card.name}</span>"
 
+def format_player(player_name):
+    return f"<span class=\"playerName\">{player_name}</span>"
 
 def format_area(engine, player, area):
     can_look, area_contents = engine.kernel.look_at(player, area)
     if can_look:
-        output = f"{markup_id(area)} "
+        output = f"{format_area_id(area)} "
         if AreaFlag.PLAY_AREA in area.flags:
             score = engine.kernel.score_area(area)
             output += f"<span class=\"tag score {'negative-score' if score < 0 else 'non-negative-score'}\">({score} points)</span>"
@@ -60,15 +62,17 @@ def format_area(engine, player, area):
 
         return output[:-1]
     else:
-        return f"{markup_id(area)} <span class=\"tag card-count\">({area_contents} cards)</span>"
+        return f"{format_area_id(area)} <span class=\"tag card-count\">({area_contents} cards)</span>"
 
-def markup_id(area):
+def format_area_id(area):
     classes = "area"
-    id = area.id
-    if '.' in id:
-        first = id[:id.index('.')]
-        second = id[id.index('.'):]
-        id = f'<span class="playerName">{first}</span>{second}'
+    area_id = area.id
+
+    if '.' in area_id:
+        dot_loc = area_id.index('.')
+        first = area_id[:dot_loc]
+        second = area_id[dot_loc:]
+        area_id = f'{format_player(first)}{second}'
 
     if AreaFlag.PLAY_AREA in area.flags:
         classes += " playArea"
@@ -79,7 +83,7 @@ def markup_id(area):
     if AreaFlag.DISCARD_AREA in area.flags:
         classes += " discardArea"
 
-    return f'<span class="{classes}">{id}</span>'
+    return f'<span class="{classes}">{area_id}</span>'
 
 async def send_update(websocket, engine, player):
     hand_field = ""
@@ -112,11 +116,11 @@ class Room():
 
     async def add_player(self, websocket, player_name):
         if player_name in self.clients:
-            await send_message(websocket, f"Error: '{player_name}' is already a player in this room '{room_name}!")
+            await send_message(websocket, f"Error: '{format_player(player_name)}' is already a player in this room '{room_name}!")
             return False
 
         if self.started.set():
-            await send_message(websocket, f"Error: room '{room_name}' has already started!")
+            await send_message(websocket, f"Error: room '{self.name}' has already started!")
             return False
 
         self.clients[player_name] = websocket
@@ -141,7 +145,6 @@ class Room():
         for player_name, client in self.clients.items():
             player = self.engine.get_player(player_name)
             try:
-                print(f"broadcast_update to {player_name}")
                 await send_update(client, self.engine, player)
             except ConnectionClosedError:
                 # Same as in broadcast_message
@@ -174,6 +177,7 @@ class RoomManager():
             return
 
         await send_message(websocket, f"Joining room '{room_name}'...")
+        await room.broadcast_message(f"{format_player(player_name)} has joined the room!")
         await room.started.wait()
 
         # TODO: write loop that takes care of receiving commands from this
@@ -197,26 +201,30 @@ class RoomManager():
             room.turn_over.set()
             comment = data.get("comment", None)
             if comment:
-                await room.broadcast_message(f"Player {player_name} ended their turn \"{comment}\"")
+                await room.broadcast_message(f"{format_player(player_name)} ended their turn \"{comment}\"")
             else:
-                await room.broadcast_message(f"Player {player_name} ended their turn")
+                await room.broadcast_message(f"{format_player(player_name)} ended their turn")
 
         elif cmd == "move":
+            from_area_id = data["src"]
+            to_area_id = data["dst"]
+            index = data["index"] - 1
+
             player = room.engine.get_player(player_name)
-            from_area = room.engine.get_area(data["src"])
+            from_area = room.engine.get_area(from_area_id)
             if from_area is None:
-                await send_message(websocket, f"Source area '{data['src']}' does not exist!")
+                await send_message(websocket, f"Source area '{from_area_id}' does not exist!")
                 return
 
             index = data["index"] - 1
             if index < 0 or index >= len(from_area.contents):
-                await send_message(websocket, f"Index {index + 1} is out of range for area {data['src']}!")
+                await send_message(websocket, f"Index {index + 1} is out of range for area {format_area_id(from_area)}!")
                 return
 
             card = from_area.contents[index]
-            to_area = room.engine.get_area(data["dst"])
+            to_area = room.engine.get_area(to_area_id)
             if to_area is None:
-                await send_message(websocket, f"Destination area '{data['dst']}' does not exist!")
+                await send_message(websocket, f"Destination area '{to_area_id}' does not exist!")
                 return
 
             can_move = room.engine.kernel.move_card(player, card, from_area, to_area)
@@ -225,27 +233,31 @@ class RoomManager():
             else:
                 # The kernel moves the card if it succeeds, no need to do anything else
                 await room.broadcast_update()
+                await room.broadcast_message(f"{format_player(player_name)} moved card {index + 1} from {format_area_id(from_area)} to {format_area_id(to_area)}")
 
         elif cmd == "inspect":
             player = room.engine.get_player(player_name)
+            area_id = data["area"]
             index = data["index"] - 1
-            area = room.engine.get_area(data["area"])
+
+            area = room.engine.get_area(area_id)
             if area is None:
-                await send_message(websocket, f"Area '{data['area']}' does not exist!")
+                await send_message(websocket, f"Area '{area_id}' does not exist!")
                 return
 
             can_look, area_contents = room.engine.kernel.look_at(player, area)
             if not can_look:
-                await send_message(websocket, f"You are not allowed to look at area '{data['area']}'")
+                await send_message(websocket, f"You are not allowed to look at {format_area_id(area)}")
                 return
 
             if index < 0 or index >= len(area_contents):
-                await send_message(websocket, f"Index {index + 1} if out of bounds for area '{data['area']}'")
+                await send_message(websocket, f"Index {index + 1} if out of bounds for {format_area_id(area)}")
                 return
 
             card = area_contents[index]
 
             await send_card(websocket, card)
+            await room.broadcast_message(f"{format_player(player_name)} looked at card {index + 1} in {format_area_id(area)}")
         else:
             await send_message(websocket, f"The command '{cmd}' is not supported on this server")
 
