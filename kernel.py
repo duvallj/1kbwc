@@ -292,6 +292,10 @@ class Kernel:
                     self.__game.max_cards_played_this_turn + \
                     self.__game.max_cards_drawn_this_turn:
                 return True
+            if self.__game.cards_drawn_this_turn >= \
+                    self.__game.max_cards_drawn_this_turn + 1 and \
+                    len(player.hand.contents) == 0:
+                return True
         else:
             print("is not current player")
 
