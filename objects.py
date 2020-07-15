@@ -434,6 +434,18 @@ class CardFlag(Enum):
     """
     This flag marks a card that *always* has its' handlers called, even if it isn't in play
     """
+    ONLY_PLAY_TO_SELF = 'Can only be played to the player'
+    """
+    This flag marks a card that can only be played into the play area of the player playing it
+    """
+    NO_PLAY_TO_SELF = "Cannot be played to the player"
+    """
+    This flag marks a card that cannot be played to the area of the player playing it
+    """
+    NO_PLAY_TO_CENTER = "Cannot be played to the center"
+    """
+    This flag marks a card that cannot be played into the center area
+    """
 
 class Area:
     def __init__(self, disallowed=[]):

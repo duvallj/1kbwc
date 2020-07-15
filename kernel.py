@@ -228,6 +228,15 @@ class Kernel:
                     self.__game.cards_drawn_this_turn < \
                     self.__game.max_cards_drawn_this_turn + \
                     self.__game.max_cards_played_this_turn:
+                if CardFlag.ONLY_PLAY_TO_SELF in card.flags and \
+                        to_area != player.area:
+                    return False
+                if CardFlag.NO_PLAY_TO_SELF in card.flags and \
+                        to_area == player.area:
+                    return False
+                if CardFlag.NO_PLAY_TO_CENTER in card.flags and \
+                        to_area == self.__game.center:
+                    return False
                 return True
 
         if AreaFlag.DRAW_AREA in from_area.flags and \
