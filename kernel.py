@@ -76,7 +76,6 @@ class Kernel:
                         traceback.print_exc()
                         pass
 
-
     def __mutablize_obj(self, obj):
         return getattr(obj, "_backing_obj", obj)
 
@@ -161,7 +160,6 @@ class Kernel:
         if can_move is None:
             can_move = self.__default_move_handler(player, moving_card, from_area, to_area)
 
-
         if can_move:
 
             # execute action
@@ -183,7 +181,7 @@ class Kernel:
                     player == self.__game.current_player and \
                     CardFlag.PLAY_ANY_TIME not in moving_card.flags:
                 self.__game.cards_played_this_turn += 1
-            
+
             # PLAY action
             if AreaFlag.PLAY_AREA not in from_area.flags and \
                     AreaFlag.PLAY_AREA in to_area.flags:
@@ -201,7 +199,6 @@ class Kernel:
             if AreaFlag.DISCARD_AREA in to_area.flags and \
                     AreaFlag.DISCARD_AREA not in from_area.flags:
                 self.__run_card_handler(moving_card, 'on_discard', self.__game, player)
-            
 
         return can_move
 
@@ -250,11 +247,11 @@ class Kernel:
                 player in to_area.owners:
             if player == self.__game.current_player and \
                     (self.__game.cards_drawn_this_turn < \
-                    self.__game.max_cards_drawn_this_turn or \
-                    (self.__game.cards_drawn_this_turn < \
-                    self.__game.max_cards_drawn_this_turn + 1 and \
-                    self.__game.cards_played_this_turn < \
-                    self.__game.max_cards_played_this_turn )):
+                     self.__game.max_cards_drawn_this_turn or \
+                     (self.__game.cards_drawn_this_turn < \
+                      self.__game.max_cards_drawn_this_turn + 1 and \
+                      self.__game.cards_played_this_turn < \
+                      self.__game.max_cards_played_this_turn)):
                 return True
 
         return False
@@ -334,7 +331,6 @@ class Kernel:
         self.__run_all_hooks('on_score_area', score_area, score, self.__game)
         return score
 
-
     def score_card(self, score_card: Card):
         """
         Gets the score of a card.
@@ -386,7 +382,6 @@ class Kernel:
         self.__run_all_hooks('on_score_player', player, score, self.__game)
 
         return score
-
 
     def get_mutable_card(self, requestor: Card, requested_card: Card):
         """
@@ -464,7 +459,7 @@ class Kernel:
         :return: the new area if allowed, or None
         """
         requestor = self.__mutablize_obj(requestor)
-        area = Area()  #disallow list for ids: [p.username for p in self.__game.players] + [a.id for a in self.__game.all_areas]
+        area = Area()  # disallow list for ids: [p.username for p in self.__game.players] + [a.id for a in self.__game.all_areas]
         for owner in new_area.owners:
             area.owners.append(self.__game.players[owner.username])
         for viewer in new_area.viewers:
@@ -498,7 +493,7 @@ class Kernel:
             self.__run_all_hooks('on_create_new_area', area, self.__game)
             return area
         return None
-    
+
     def change_turnorder(self, requestor: Card, new_order: List[Player]):
         """
         Changes the order play rotates
@@ -515,7 +510,7 @@ class Kernel:
             p = self.__mutablize_obj(p)
             if p not in self.__game.players.values() and p not in order:
                 order.append(p)
-        
+
         is_allowed = None
 
         for card in self.__game.all_cards:
@@ -536,7 +531,6 @@ class Kernel:
                 self.__run_all_hooks('on_change_turnorder', order, self.__game)
 
         return is_allowed
-
 
     def change_temporary_turnorder(self, requestor: Card, new_order: List[Player]):
         """
@@ -573,7 +567,6 @@ class Kernel:
 
         return is_allowed
 
-
     def add_card(self, requestor: Card, card_class: Callable[[], Card], to_area: Area):
         """
         Creates a new instance of card_class and adds it to to_area
@@ -589,7 +582,7 @@ class Kernel:
         card_class = self.__mutablize_obj(card_class)
 
         is_allowed = None
-        
+
         new_card = card_class()
         new_card._owners = to_area.owners[:]
         new_card._area = to_area
@@ -610,7 +603,6 @@ class Kernel:
             self.__run_all_hooks('on_add_card', new_card, self.__game)
             return new_card
         return None
-
 
     def change_play_limit(self, requestor: Card, new_limit: int):
         """
@@ -638,7 +630,7 @@ class Kernel:
             self.__game.max_cards_played_this_turn = new_limit
             self.__run_all_hooks('on_change_play_limit', new_limit, self.__game)
         return is_allowed
-    
+
     def change_draw_limit(self, requestor: Card, new_limit: int):
         """
         Change the number of cards that can be drawn THIS TURN
@@ -665,11 +657,10 @@ class Kernel:
             self.__game.max_cards_drawn_this_turn = new_limit
             self.__run_all_hooks('on_change_draw_limit', new_limit, self.__game)
         return is_allowed
-    
+
     def on_turn_start(self):
         """
         Call all the on_turn_start handlers
         """
         for card in self.__game.all_cards:
             self.__run_all_hooks('on_turn_start', self.__game.current_player, self.__game)
-
