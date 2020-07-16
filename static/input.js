@@ -1,4 +1,4 @@
-let choices = [];  // Options for the choice state, empty indicates non-choice state
+let choices = ["a", "b", "c"];  // Options for the choice state, empty indicates non-choice state
 let playerName = "nonexistent";
 
 let commandHistory = [];
@@ -10,7 +10,17 @@ function on_submit(){
 	let v = input.value;
 	console.log(v);
 	if(v){
-		let r = parse(v);
+		let r = {
+			data: "",
+			send: false,
+			output: "none",
+			clear: true
+		};
+		if(choices.length === 0){
+			r = parse(r, tokenize(v));
+		}else{  // Choice mode
+			r = choiceParse(r, tokenize(v));
+		}
 		if(r.output === "input"){
 			add_to_output(">>> " + v);
 		}
@@ -64,14 +74,7 @@ const HELPSTRINGS = {
 }
 const NOTENOUGHARGS = "Not enough arguments: ";
 
-function parse(v){
-	let r = {
-		data: "",
-		send: false,
-		output: "none",
-		clear: true
-	};
-	
+function tokenize(v){
 	let matches = v.match(/[^\s"']+|"([^"]*)"|'([^']*)'/g);
 	let tokens = [];
 	for(let i = 0; i < matches.length; ++i){
@@ -87,6 +90,10 @@ function parse(v){
 			tokens.push(matches[i]);
 		}
 	}
+	return tokens;
+}
+
+function parse(r, tokens){
 	if(tokens.length < 1){
 		r.output = "fail";
 		return r;
@@ -131,6 +138,58 @@ function parse(v){
 			return r;
 	}
 	console.log("what.");
+}
+
+function choiceParse(r, tokens){
+	if(tokens.length < 1){
+		r.output = "fail";
+		return r;
+	}
+	
+	let command = tokens[0];
+	let num = parseInt(command);
+	
+	if(!isNaN(num)){  // Choiche
+		if(num < 1 || num > choices.length){
+			r.output = "data";
+			r.data = "Index " + num.toString() + " is out of range.";
+			return r;
+		}
+		// validdd
+		r.send = true;
+		r.output = "input";
+		r.data = {
+			"cmd": "choice",
+			"which": num,
+			"caller": playerName
+		}
+		choices = [];
+		return r;
+	}
+	
+	switch(command){
+		case "inspect":
+		case "i":
+			return readInspect(r, args);
+			break;
+		case "again":
+		case "a":
+			r.output = "data";
+			r.data = formatChoices(choices);
+			return r;
+		default:
+			r.output = "fail";
+			return r;
+	}
+	console.log("what,");
+}
+
+function formatChoices(c){
+	s = "Options:";
+	for(let i = 0; i < c.length; ++i){
+		s += `\n<span class="index"> [${i+1}]</span> <span class="choiceOption">${c[i]}</span>`;
+	}
+	return s;
 }
 
 /// Parse and send a help command.
