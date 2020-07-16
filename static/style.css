@@ -113,8 +113,8 @@ button {
 }
 
 img{
-	height: 250px;
-	width: 150px;
+	width: 100%;
+	min-width: 135px;
 }
 
 .area{

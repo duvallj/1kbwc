@@ -1,12 +1,13 @@
 import asyncio
 import argparse
-import json
 from http import HTTPStatus
-
-import websockets
+import json
 import os
+from typing import Callable, List
+import websockets
 from websockets.exceptions import ConnectionClosedError
-from objects import AreaFlag
+
+from objects import AreaFlag, Player
 from engine import Engine
 
 NOT_FOUND_CARD = "/placeholder-card.png"
@@ -38,6 +39,11 @@ async def send_message(websocket, message):
         "data": message
     })
 
+async def send_choices(websocket, choices):
+    await send_json(websocket, {
+        "type": "choices",
+        "choices": choices
+    })
 
 def format_card(index, card):
     return f" <span class='card-click' onclick='send_on_websocket(JSON.stringify(parse(\"inspect {card.area.id} {index}\").data));'><span class=\"index\">[{index}]</span> <span class=\"card-title\">{card.name}</span></span>"
@@ -136,10 +142,16 @@ class Room():
     def __init__(self, name):
         self.name = name
         self.engine = Engine()
+        self.clients = dict()
+        
         self.started = asyncio.Event()
         self.stopped = asyncio.Event()
-        self.clients = dict()
+        
         self.turn_over = asyncio.Event()
+        
+        self.active_choices = dict()
+        self.last_choice = dict()
+        self.choice_active = asyncio.Condition()
 
     async def add_player(self, websocket, player_name):
         if player_name in self.clients:
@@ -185,6 +197,32 @@ class Room():
             self.engine.remove_player(player_name)
             del self.clients[player_name]
 
+    async def kernel_send_message(self, players: List[Player], message: str):
+        for player in players:
+            client = self.clients.get(player.username, None)
+            if client is not None:
+                try:
+                    await send_message(client, message)
+                except ConnectionClosedError:
+                    pass
+            else:
+                print(f"Player {player.username} was in list to receive message, but they're no longer connected!")
+    
+    async def kernel_get_player_input(self, player: Player, choices: List[str], callback: Callable[[str], None]):
+        client = self.clients.get(player.username, None)
+        if client is None:
+            print(f"Player {player.username} was supposed to choose something, but they're no longer connected!")
+
+        async with self.choice_condition:
+            self.active_choices[player.username] = choices
+            # Use fancy asyncio magic to make sure that we only continue
+            # once our player has made a choice
+            await self.choice_condition.wait_for(lambda: player.username in self.last_choice)
+            chosen_index = self.last_choice[player.username]
+            del self.last_choice[player.username]
+            del self.active_choices[player.username]
+
+        callback(choices[chosen_index])
 
 class RoomManager():
     def __init__(self):
@@ -193,7 +231,7 @@ class RoomManager():
     async def make_room(self, websocket, room_name):
         print(f"make_room {room_name}")
         self.rooms[room_name] = Room(room_name)
-        self.rooms[room_name].engine.reset()
+        self.rooms[room_name].engine.reset(room.kernel_send_message, room.kernel_get_player_input)
         await send_message(websocket, f"Made room {room_name}")
 
     async def join_room(self, websocket, room_name, player_name):
@@ -289,6 +327,22 @@ class RoomManager():
 
             await send_card(websocket, card)
             await room.broadcast_message(f"{format_player(player_name)} looked at card {index + 1} in {format_area_id(area)}")
+        elif cmd == "choose":
+            index = data["which"] - 1
+            
+            if player_name not in room.active_choices:
+                await send_message(websocket, "You don't have any active choices")
+                return
+
+            choices = room.active_choices[player_name]
+            if index < 0 or index >= len(choices):
+                await send_message(websocket, f"Index {index + 1} is not a valid choice! Please choose again")
+                await send_choices(websocket, choices)
+                return
+
+            async with room.choice_condition:
+                room.last_choice[player_name] = index
+                room.choice_condition.notify_all()
         else:
             await send_message(websocket, f"The command '{cmd}' is not supported on this server")
 
