@@ -1,3 +1,5 @@
+from typing import Dict, Optional, List
+
 from util import immutablize, random_id
 from enum import Enum
 
@@ -451,8 +453,11 @@ class CardFlag(Enum):
     This flag marks a card that cannot be played into the center area
     """
 
+
 class Area:
-    def __init__(self, disallowed=[]):
+    def __init__(self, disallowed=None):
+        if disallowed is None:
+            disallowed = []
         self.owners = []  # players who can play from or are affected by this area
         self.viewers = self.owners[:]  # players who can see the contents of this area
         self.contents = []  # the cards in this area
@@ -504,21 +509,21 @@ class Player:
 
 class Game:
     def __init__(self):
-        self.players = {}  # all the players
+        self.players: Dict[str, Player] = {}  # all the players
 
-        self.center = None  # reference to the center
-        self.draw = None  # reference to the draw pile
-        self.discard = None  # reference to the discard pile
-        self.all_areas = {}  # references to *every* area in the game
-        self.all_cards = []  # references to each card in the game; as cards are played they are moved towards the front
+        self.center: Optional[Area] = None  # reference to the center
+        self.draw: Optional[Area] = None  # reference to the draw pile
+        self.discard: Optional[Area] = None  # reference to the discard pile
+        self.all_areas: Dict[str, Area] = {}  # references to *every* area in the game
+        self.all_cards: List[Card] = []  # references to each card in the game; as cards are played they are moved towards the front
 
         self.turn_order = self.players.values()  # normal turn rotation
-        self.turn_q = []  # turn rotation override
+        self.turn_q: List[Player] = []  # turn rotation override
 
-        self.turn_num = 0  # incremented each turn, mostly for use by cards w/ timers
-        self.current_player = None
-        self.turn_order_index = 0
-        self.max_cards_played_this_turn = 1
-        self.cards_played_this_turn = 0
-        self.max_cards_drawn_this_turn = 1
-        self.cards_drawn_this_turn = 0
+        self.turn_num: int = 0  # incremented each turn, mostly for use by cards w/ timers
+        self.current_player: Optional[Player] = None
+        self.turn_order_index: int = 0
+        self.max_cards_played_this_turn: int = 1
+        self.cards_played_this_turn: int = 0
+        self.max_cards_drawn_this_turn: int = 1
+        self.cards_drawn_this_turn: int = 0

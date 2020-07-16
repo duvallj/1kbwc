@@ -39,26 +39,31 @@ async def send_message(websocket, message):
         "data": message
     })
 
+
 async def send_choices(websocket, choices):
     await send_json(websocket, {
         "type": "choices",
         "choices": choices
     })
 
+
 def format_card(index, card):
     return f" <span class='card-click' onclick='send_on_websocket(JSON.stringify(parse(\"inspect {card.area.id} {index}\").data));'><span class=\"index\">[{index}]</span> <span class=\"card-title\">{card.name}</span></span>"
+
 
 def format_player(player_name):
     return f"<span class=\"playerName\">{player_name}</span>"
 
+
 def format_score(score):
     return f"<span class=\"tag score {'negative-score' if score < 0 else 'non-negative-score'}\">({score} points)</span>"
+
 
 def format_area(engine, player, area):
     can_look, area_contents = engine.kernel.look_at(player, area)
     if can_look:
         output = f"{format_area_id(area)} "
-        if AreaFlag.PLAY_AREA in area.flags: 
+        if AreaFlag.PLAY_AREA in area.flags:
             output += format_score(engine.kernel.score_area(area))
         else:
             output += "<span class=\"tag visible\">(visible)</span>"
@@ -71,6 +76,7 @@ def format_area(engine, player, area):
         return output[:-1]
     else:
         return f"{format_area_id(area)} <span class=\"tag card-count\">({area_contents} cards)</span>"
+
 
 def format_area_id(area):
     classes = "area"
@@ -93,6 +99,7 @@ def format_area_id(area):
 
     return f'<span class="{classes}">{area_id}</span>'
 
+
 async def send_update(websocket, engine, player):
     hand_field = ""
     play_field = ""
@@ -112,6 +119,7 @@ async def send_update(websocket, engine, player):
         "play": play_field
     })
 
+
 async def send_final_update(websocket, engine, player):
     hand_field = ""
     play_field = ""
@@ -121,14 +129,14 @@ async def send_final_update(websocket, engine, player):
         play_field += f"{format_player(player)}: {format_score(score)}\n"
 
     play_field += "\n"
-    
+
     # Do the rest of the update like normal
     for area in engine.game.all_areas.values():
         if AreaFlag.PLAY_AREA in area.flags:
             play_field += format_area(engine, player, area) + "\n\n"
         else:
             hand_field += format_area(engine, player, area) + "\n\n"
-    
+
     hand_field = hand_field.strip()
     play_field = play_field.strip()
 
@@ -138,17 +146,18 @@ async def send_final_update(websocket, engine, player):
         "play": play_field
     })
 
+
 class Room():
     def __init__(self, name):
         self.name = name
         self.engine = Engine()
         self.clients = dict()
-        
+
         self.started = asyncio.Event()
         self.stopped = asyncio.Event()
-        
+
         self.turn_over = asyncio.Event()
-        
+
         self.active_choices = dict()
         self.last_choice = dict()
         self.choice_condition = asyncio.Condition()
@@ -207,7 +216,7 @@ class Room():
                     pass
             else:
                 print(f"Player {player.username} was in list to receive message, but they're no longer connected!")
-    
+
     async def kernel_get_player_input(self, player: Player, choices: List[str], callback: Callable[[str], None]):
         client = self.clients.get(player.username, None)
         if client is None:
@@ -224,6 +233,7 @@ class Room():
             del self.active_choices[player.username]
 
         callback(choices[chosen_index])
+
 
 class RoomManager():
     def __init__(self):
@@ -270,7 +280,7 @@ class RoomManager():
 
             room.turn_over.set()
             comment = data.get("comment", None).replace("&", '&amp;').replace("<", '&lt;').replace(">", '&gt;').replace("\"", '&quot;').replace("\'", '&#39;').replace("/", '&#x2F;');
-            
+
             if comment:
                 await room.broadcast_message(f"{format_player(player_name)} ended their turn \"{comment}\"")
             else:
@@ -331,7 +341,7 @@ class RoomManager():
             await room.broadcast_message(f"{format_player(player_name)} looked at card {index + 1} in {format_area_id(area)}")
         elif cmd == "choose":
             index = data["which"] - 1
-            
+
             if player_name not in room.active_choices:
                 await send_message(websocket, "You don't have any active choices")
                 return

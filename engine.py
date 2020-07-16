@@ -80,7 +80,7 @@ class Engine:
             player = list(self.game.players.values())[0]
             player.hand.contents += extra_cards
             for card in player.hand.contents:
-                card._area = hand
+                card._area = player.hand
                 card._owner = player
 
     def add_player(self, username):

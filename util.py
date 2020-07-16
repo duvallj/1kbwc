@@ -1,5 +1,6 @@
 import inspect
 from random import choice
+from typing import List
 
 
 def immutablize(target):
@@ -81,7 +82,7 @@ def immutablize(target):
     return Proxy(target)
 
 
-def random_id(disallowed=None):
+def random_id(disallowed: List[str] = None) -> str:
     if disallowed is None:
         disallowed = []
     with open('words.txt', 'r') as f:

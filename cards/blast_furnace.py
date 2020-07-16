@@ -8,7 +8,7 @@ class Blast_Furnace(Card):
         self.image = 'Blast_Furnace.png'
         self.flags = set()
         self.active = 5
-        self.tags = {'Metallurgy'}
+        self.tags = {'Metallurgy', 'Technology'}
 
     def on_move(self, kernel, player, card, from_area, to_area, gamestate):
         if to_area == self.area and self.active == -1:
