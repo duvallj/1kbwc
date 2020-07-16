@@ -9,9 +9,9 @@ class Engine:
         self.game = None
         self.kernel = None
 
-    def reset(self):
+    def reset(self, send_message, get_player_input):
         self.game = Game()
-        self.kernel = Kernel(self.game)
+        self.kernel = Kernel(self.game, send_message, get_player_input)
 
     def setup_game(self):
         self.setup_areas()

@@ -1,14 +1,20 @@
+import asyncio
 import traceback
-from typing import List, Optional, Tuple, Union
+from typing import Callable, List, Optional, Tuple, Union
 from objects import *
 from util import immutablize
 
 
 class Kernel:
-    def __init__(self, game):
+    def __init__(self, game: Game, send_message_callback=None, get_player_input_callback=None):
+        # Not sure how to annotate types correctly, but
+        # await send_message_callback(List[Player], str)
+        # await get_player_input_callback(Player, List[str], Callable[[str], None])
         self.__game = game
+        self.__send_message_async = send_message_callback
+        self.__get_player_input_async = get_player_input_callback
 
-    def __update_card_in_game(self, card):
+    def __update_card_in_game(self, card: Card):
         """
         When a card is played, it gets bumped to the highest callback priority,
         this attempts to move said card in the game's all_cards list.  Cards
@@ -23,7 +29,7 @@ class Kernel:
 
         self.__game.all_cards = [card] + self.__game.all_cards[:index] + self.__game.all_cards[index + 1:]
 
-    def __run_card_handler(self, card, handler_str, *args):
+    def __run_card_handler(self, card: Card, handler_str: str, *args):
         """
         Run a Card's handler function.  This will automatically immutablize everything
         in *args to make sure that the card can't modify anything it shouldn't.
@@ -49,7 +55,7 @@ class Kernel:
         else:
             return None
 
-    def __run_all_hooks(self, hook_str, *args):
+    def __run_all_hooks(self, hook_str: str, *args):
         """
         Run the function on every card
         For hooks that run after a successful action
@@ -74,7 +80,7 @@ class Kernel:
     def __mutablize_obj(self, obj):
         return getattr(obj, "_backing_obj", obj)
 
-    def look_at(self, player, play_area) -> Tuple[bool, Union[int, List[Card]]]:
+    def look_at(self, player: Player, play_area: Area) -> Tuple[bool, Union[int, List[Card]]]:
         """
         Callback for revealing an area to a player
         Polls the cards to see if the operation is allowed
@@ -102,7 +108,7 @@ class Kernel:
         else:
             return False, len(play_area.contents)
 
-    def __default_look_handler(self, player, play_area) -> bool:
+    def __default_look_handler(self, player: Player, play_area: Area) -> bool:
         """
         Default test if looking at an area is allowed
         """
@@ -121,7 +127,7 @@ class Kernel:
         return True
 
     # TODO ordering in areas - from top of draw pile or to top of discard pile????
-    def move_card(self, player, moving_card, from_area, to_area) -> bool:
+    def move_card(self, player: Player, moving_card: Card, from_area: Area, to_area: Area) -> bool:
         """
         Callback for moving a card between play areas
         polls the cards to see if the operation is allowed
@@ -209,7 +215,7 @@ class Kernel:
     * Returns false ==> card in from_area and card not in to_area
     """
 
-    def __default_move_handler(self, player, card, from_area, to_area) -> bool:
+    def __default_move_handler(self, player: Player, card: Card, from_area: Area, to_area: Area) -> bool:
         """
         Checks if a move is allowed based on the current player's turn
         """
@@ -254,7 +260,7 @@ class Kernel:
         return False
 
     # TODO Check if the game is over (drawpile is empty) in here?
-    def end_turn(self, player) -> bool:
+    def end_turn(self, player: Player) -> bool:
         """
         Advances to the next turn
         polls the cards to see if the operation is allowed
@@ -281,7 +287,7 @@ class Kernel:
 
         return can_end_turn
 
-    def __default_end_turn_handler(self, player) -> bool:
+    def __default_end_turn_handler(self, player: Player) -> bool:
         """
         Checks if the current player has either drawn & played, or drawn twice
         """
@@ -301,7 +307,7 @@ class Kernel:
 
         return False
 
-    def score_area(self, score_area):
+    def score_area(self, score_area: Area):
         """
         Gets the score of an area
         polls the cards to see if a custom scoring operation is needed
@@ -382,13 +388,13 @@ class Kernel:
         return score
 
 
-    def get_mutable_card(self, requestor, requested_card):
+    def get_mutable_card(self, requestor: Card, requested_card: Card):
         """
         Returns a mutable copy of a card
         polls the cards to see if the requestor is allowed to edit the requested card
         if no cards return a True or False, calls __default_score_card_handler
 
-        :paramplayer: the player behind the card request
+        :param requestor: the card doing the card request
         :param requested_card: the card the requestor wants a mutable version of
         :return: if allowed, a mutable reference the card, otherwise None
         """
@@ -422,21 +428,34 @@ class Kernel:
         for card in self.__game.all_cards:
             self.__run_card_handler(card, 'on_end_game', self.__game)
 
-    def send_message(self, players, message):
+    def send_message(self, players: List[Player], message: str) -> bool:
         """
-        Send `message` to each player in `players`
-        """
-        raise NotImplementedError("PLZ IMPLEMENT")
+        Send something to a group of selected players!
 
-    def get_player_input(self, player, choices):
+        :param player: the player who will be saying the message
+        :param message: the message to be broadcast to everyone
+        :return: whether or not the message was sent
+        """
+        if self.__send_message_async is not None:
+            asyncio.create_task(self.__send_message_async(players, message))
+        else:
+            print("Warning: kernel can't send_message!")
+
+    def get_player_input(self, player: Player, choices: List[str], callback: Callable[[str], None]):
         """
         Prompt a player with the choices,
         Pause execution until the player makes a choice,
         And return which choice they chose
+        :param player: the player to send the choice to
+        :param choices: the list of choices the player can choose from
+        :param callback: a function that will be called when the player makes their choice
         """
-        raise NotImplementedError("PLZ IMPLEMENT")
+        if self.__get_player_input_async is not None:
+            asyncio.create_task(self.__get_player_input_async(player, choices, callback))
+        else:
+            print("Warning: kernel can't get_player_input!")
 
-    def create_new_area(self, requestor, new_area):
+    def create_new_area(self, requestor: Card, new_area: Area):
         """
         Add a new area to the game, if poll allows
 
@@ -480,7 +499,7 @@ class Kernel:
             return area
         return None
     
-    def change_turnorder(self, requestor, new_order):
+    def change_turnorder(self, requestor: Card, new_order: List[Player]):
         """
         Changes the order play rotates
         Polls cards to see if action is allowed first
@@ -519,7 +538,7 @@ class Kernel:
         return is_allowed
 
 
-    def change_temporary_turnorder(self, requestor, new_order):
+    def change_temporary_turnorder(self, requestor: Card, new_order: List[Player]):
         """
         Appends something to the temporary turn order queue
         Use for, say, allowing a player to take one extra turn after the current one
@@ -555,7 +574,7 @@ class Kernel:
         return is_allowed
 
 
-    def add_card(self, requestor, card_class, to_area):
+    def add_card(self, requestor: Card, card_class: Callable[[], Card], to_area: Area):
         """
         Creates a new instance of card_class and adds it to to_area
         First polls all the cards
@@ -593,7 +612,7 @@ class Kernel:
         return None
 
 
-    def change_play_limit(self, requestor, new_limit):
+    def change_play_limit(self, requestor: Card, new_limit: int):
         """
         Change the number of cards that can be played THIS TURN
         Only affects default move card handler, cards can still allow more movements
@@ -620,7 +639,7 @@ class Kernel:
             self.__run_all_hooks('on_change_play_limit', new_limit, self.__game)
         return is_allowed
     
-    def change_draw_limit(self, requestor, new_limit):
+    def change_draw_limit(self, requestor: Card, new_limit: int):
         """
         Change the number of cards that can be drawn THIS TURN
         Only affects default move card handler, cards can still allow more movements
