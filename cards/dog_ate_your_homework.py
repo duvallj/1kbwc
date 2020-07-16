@@ -6,7 +6,6 @@ class Dog_Ate_Your_Homework(Card):
         self.val = 0
         self.name = 'Dog Ate Your Homework'
         self.image = 'A_Dog_Ate_Your_Homework.png'
-        self.active = False
         self.flags = set()
 
     def on_play(self, kernel, gamestate, player):
@@ -14,13 +13,5 @@ class Dog_Ate_Your_Homework(Card):
             dupl = list(self.area.contents)
             dupl.remove(self)
             rand_card = random.choice(dupl)
-            self.active = True
-            kernel.move_card(player, rand_card, self.area, gamestate.discard)
-            self.active = False
-
-    def handle_move(self, kernel, player, card, from_area, to_area, gamestate):
-        if self.active:
-            self.active = False
-            return True
-
+            kernel.move_card(self, rand_card, self.area, gamestate.discard)
 

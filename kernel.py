@@ -126,7 +126,7 @@ class Kernel:
         return True
 
     # TODO ordering in areas - from top of draw pile or to top of discard pile????
-    def move_card(self, player: Player, moving_card: Card, from_area: Area, to_area: Area) -> bool:
+    def move_card(self, requestor: Union[Player, Card], moving_card: Card, from_area: Area, to_area: Area) -> bool:
         """
         Callback for moving a card between play areas
         polls the cards to see if the operation is allowed
@@ -140,10 +140,18 @@ class Kernel:
         :return: whether the action was performed
         """
 
-        player = self.__mutablize_obj(player)
+        requestor = self.__mutablize_obj(requestor)
+        if type(requestor) == Player:
+            player = requestor
+            card_initiated = False
+        else:
+            player = self.__mutablize_obj(requestor._player)
+            card_initiated = True
         moving_card = self.__mutablize_obj(moving_card)
         from_area = self.__mutablize_obj(from_area)
         to_area = self.__mutablize_obj(to_area)
+        
+        default_handled = False
 
         if moving_card not in from_area.contents:
             return False
@@ -158,7 +166,8 @@ class Kernel:
                 break
 
         if can_move is None:
-            can_move = self.__default_move_handler(player, moving_card, from_area, to_area)
+            can_move = self.__default_move_handler(requestor, moving_card, from_area, to_area)
+            default_handled = True
 
         if can_move:
 
@@ -179,7 +188,8 @@ class Kernel:
                     AreaFlag.PLAY_AREA in to_area.flags and \
                     player in from_area.owners and \
                     player == self.__game.current_player and \
-                    CardFlag.PLAY_ANY_TIME not in moving_card.flags:
+                    CardFlag.PLAY_ANY_TIME not in moving_card.flags and \
+                    default_handled and not card_initiated:
                 self.__game.cards_played_this_turn += 1
 
             # PLAY action
@@ -187,12 +197,14 @@ class Kernel:
                     AreaFlag.PLAY_AREA in to_area.flags:
                 self.__run_card_handler(moving_card, 'on_play', self.__game, player)
                 moving_card._player = player
+                self.__run_all_hooks('on_play_move', player, moving_card, from_area, to_area, self.__game)
 
             # DRAW action
             if AreaFlag.DRAW_AREA in from_area.flags and \
                     AreaFlag.HAND_AREA in to_area.flags and \
                     player in to_area.owners and \
-                    player == self.__game.current_player:
+                    player == self.__game.current_player and \
+                    default_handled and not card_initiated:
                 self.__game.cards_drawn_this_turn += 1
 
             # DISCARD action
@@ -212,10 +224,22 @@ class Kernel:
     * Returns false ==> card in from_area and card not in to_area
     """
 
-    def __default_move_handler(self, player: Player, card: Card, from_area: Area, to_area: Area) -> bool:
+    def __default_move_handler(self, requestor: Union[Player, Card], card: Card, from_area: Area, to_area: Area) -> bool:
         """
         Checks if a move is allowed based on the current player's turn
         """
+        # card's moves are allowed by default
+        if type(requestor) != Player:
+            if CardFlag.NO_PLAY_TO_CENTER in card.flags and to_area == self.__game.center:
+                return False
+            if CardFlag.ONLY_PLAY_TO_CENTER in card.flags and \
+                    AreaFlag.PLAY_AREA in to_area.flags and \
+                    to_area != self.__game.center:
+                return False
+            return True
+        player = requestor
+        
+        # player's moves are thoroughly examined
         if AreaFlag.HAND_AREA in from_area.flags and \
                 AreaFlag.PLAY_AREA in to_area.flags and \
                 player in from_area.owners:
