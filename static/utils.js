@@ -121,6 +121,13 @@ function on_message(content){
 					console.log("Inspect lacked url, title, value, or flags: " + content);
 				}
 				break;
+			case "choices":
+				if(has_all(m, ["choices"])){
+					choices = m.choices;
+					add_to_output("<<< Options:" + formatChoices(choices));
+				}else{
+					console.log("Choices lacked choices: " + content);
+				}
 			default:
 				console.log("Weird request: " + content);
 		}

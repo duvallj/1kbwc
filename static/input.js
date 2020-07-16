@@ -1,4 +1,4 @@
-let choices = ["a", "b", "c"];  // Options for the choice state, empty indicates non-choice state
+let choices = [];  // Options for the choice state, empty indicates non-choice state
 let playerName = "nonexistent";
 
 let commandHistory = [];
