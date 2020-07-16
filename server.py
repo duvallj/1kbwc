@@ -345,6 +345,8 @@ class RoomManager():
             async with room.choice_condition:
                 room.last_choice[player_name] = index
                 room.choice_condition.notify_all()
+                
+                #await room.broadcast_update()  # TODO: Make this work right. Goal is to push an update after callback is called.
         else:
             await send_message(websocket, f"The command '{cmd}' is not supported on this server")
 

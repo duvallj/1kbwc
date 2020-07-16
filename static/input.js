@@ -159,7 +159,7 @@ function choiceParse(r, tokens){
 		r.send = true;
 		r.output = "input";
 		r.data = {
-			"cmd": "choice",
+			"cmd": "choose",
 			"which": num,
 			"caller": playerName
 		}
