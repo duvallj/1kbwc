@@ -662,5 +662,4 @@ class Kernel:
         """
         Call all the on_turn_start handlers
         """
-        for card in self.__game.all_cards:
-            self.__run_all_hooks('on_turn_start', self.__game.current_player, self.__game)
+        self.__run_all_hooks('on_turn_start', self.__game.current_player, self.__game)
