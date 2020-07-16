@@ -215,6 +215,7 @@ class Room():
 
         async with self.choice_condition:
             self.active_choices[player.username] = choices
+            await send_choices(client, choices)
             # Use fancy asyncio magic to make sure that we only continue
             # once our player has made a choice
             await self.choice_condition.wait_for(lambda: player.username in self.last_choice)
@@ -230,7 +231,8 @@ class RoomManager():
 
     async def make_room(self, websocket, room_name):
         print(f"make_room {room_name}")
-        self.rooms[room_name] = Room(room_name)
+        room = Room(room_name)
+        self.rooms[room_name] = room
         self.rooms[room_name].engine.reset(room.kernel_send_message, room.kernel_get_player_input)
         await send_message(websocket, f"Made room {room_name}")
 
