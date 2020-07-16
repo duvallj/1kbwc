@@ -101,38 +101,15 @@ function parse(v){
 	switch(command.toLowerCase()){
 		case "help":
 		case "h":
-			return help(r, args)
+			return help(r, args);
 			break;
 		case "draw":
 		case "d":
-			if(args.length === 0){
-				args = ["drawpile", 1, playerName + ".hand"];
-				return move(r, args);
-			}
-			r.output = "fail";
-			return r;
+			return draw(r, args);
 			break;
 		case "play":
 		case "p":
-			if(args.length === 2){
-				args.unshift(playerName + ".hand");
-				if(args[2].indexOf('.') === -1){  // Might be a player name
-					if(document.getElementById("play-state").innerHTML.indexOf("<span class=\"playerName\">" + args[2] + "</span>") !== -1){
-						// There exists a player with the name in args[2]
-						args[2] += ".play";
-						console.log("modified play target to " + args[2]);
-					}
-				}
-				return move(r, args);
-			}
-			if(args.length < 2){
-				r.data = NOTENOUGHARGS + HELPSTRINGS.play.usage;
-				r.output = "data";
-				r.clear = false;
-				return r;
-			}
-			r.output = "fail";
-			return r;
+			return play(r, args);
 			break;
 		case "end":
 		case "e":
@@ -140,48 +117,14 @@ function parse(v){
 			break;
 		case "inspect":
 		case "i":
-			if(args.length === 2){
-				if(args[0] === "hand"){
-					args[0] = playerName + ".hand";
-				}
-				return inspect(r, args);
-			}
-			if(args.length < 2){
-				r.data = NOTENOUGHARGS + HELPSTRINGS.inspect.usage;
-				r.output = "data";
-				r.clear = false;
-				return r;
-			}
-			r.output = "fail";
-			return r;
+			return readInspect(r, args);
 			break;
 		case "discard":
-			if(args.length === 2){
-				args.push("discard");
-				return move(r, args);
-			}
-			if(args.length < 2){
-				r.data = NOTENOUGHARGS + HELPSTRINGS.discard.usage;
-				r.output = "data";
-				r.clear = false;
-				return r;
-			}
-			r.output = "fail";
-			return r;
+			return discard(r, args);
 			break;
 		case "move":
 		case "m":
-			if(args.length === 3){
-				return move(r, args);
-			}
-			if(args.length < 3){
-				r.data = NOTENOUGHARGS + HELPSTRINGS.move.usage;
-				r.output = "data";
-				r.clear = false;
-				return r;
-			}
-			r.output = "fail";
-			return r;
+			return readMove(r, args);
 			break;
 		default:
 			r.output = "fail";
@@ -190,6 +133,7 @@ function parse(v){
 	console.log("what.");
 }
 
+/// Parse and send a help command.
 function help(r, args){
 	if(args.length === 0){
 		r.data = "Commands available:"
@@ -198,7 +142,7 @@ function help(r, args){
 			r.data += "\n - " + HELPSTRINGS[cmds[i]].usage;
 		}
 		r.output = "data";
-	}else{
+	}else{  // fixme: do something else if no commands are valid.
 		let first = true;
 		for(let i = 0; i < args.length; ++i){
 			if(HELPSTRINGS[args[i]]){
@@ -215,6 +159,40 @@ function help(r, args){
 	return r;
 }
 
+/// Parse and send a draw command.
+function draw(r, args){
+	if(args.length === 0){
+		args = ["drawpile", 1, playerName + ".hand"];
+		return move(r, args);
+	}
+	r.output = "fail";
+	return r;
+}
+
+/// Parse and send a play command.
+function play(r, args){
+	if(args.length === 2){
+		args.unshift(playerName + ".hand");
+		if(args[2].indexOf('.') === -1){  // Might be a player name
+			if(document.getElementById("play-state").innerHTML.indexOf("<span class=\"playerName\">" + args[2] + "</span>") !== -1){
+				// There exists a player with the name in args[2]
+				args[2] += ".play";
+				console.log("modified play target to " + args[2]);
+			}
+		}
+		return move(r, args);
+	}
+	if(args.length < 2){
+		r.data = NOTENOUGHARGS + HELPSTRINGS.play.usage;
+		r.output = "data";
+		r.clear = false;
+		return r;
+	}
+	r.output = "fail";
+	return r;
+}
+
+/// Parse and send an end turn request.
 function end(r, args){
 	r.send = true;
 	r.output = "input";
@@ -229,6 +207,24 @@ function end(r, args){
 	return r;
 }
 
+function readInspect(r, args){
+	if(args.length === 2){
+		if(args[0] === "hand"){
+			args[0] = playerName + ".hand";
+		}
+		return inspect(r, args);
+	}
+	if(args.length < 2){
+		r.data = NOTENOUGHARGS + HELPSTRINGS.inspect.usage;
+		r.output = "data";
+		r.clear = false;
+		return r;
+	}
+	r.output = "fail";
+	return r;
+}
+
+/// Parse and send an inspect command.
 function inspect(r, args){
 	let area = args[0];
 	let index = parseInt(args[1], 10);
@@ -250,6 +246,36 @@ function inspect(r, args){
 	return r;
 }
 
+function discard(r, args){
+	if(args.length === 2){
+		args.push("discard");
+		return move(r, args);
+	}
+	if(args.length < 2){
+		r.data = NOTENOUGHARGS + HELPSTRINGS.discard.usage;
+		r.output = "data";
+		r.clear = false;
+		return r;
+	}
+	r.output = "fail";
+	return r;
+}
+
+function readMove(r, args){
+	if(args.length === 3){
+		return move(r, args);
+	}
+	if(args.length < 3){
+		r.data = NOTENOUGHARGS + HELPSTRINGS.move.usage;
+		r.output = "data";
+		r.clear = false;
+		return r;
+	}
+	r.output = "fail";
+	return r;
+}
+
+/// Parse and send a move.
 function move(r, args){
 	let src = args[0];
 	let index = parseInt(args[1], 10);
@@ -273,6 +299,7 @@ function move(r, args){
 	return r;
 }
 
+/// Set the buffer to the proper value in the history, since something just changed.
 function historyUpdate(){
 	input.value = historyIndex >= 0 ? commandHistory[historyIndex] : historyBuffer;
 }
