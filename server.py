@@ -151,7 +151,7 @@ class Room():
         
         self.active_choices = dict()
         self.last_choice = dict()
-        self.choice_active = asyncio.Condition()
+        self.choice_condition = asyncio.Condition()
 
     async def add_player(self, websocket, player_name):
         if player_name in self.clients:
