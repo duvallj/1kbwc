@@ -22,12 +22,12 @@ def immutablize(target):
                 if attr not in whitelist:
                     if not hasattr(val, '__call__'):
                         # Normal, non-callable attributes can just be proxied as-is.
-                        print(f'Normal-proxying attr {attr}')
+                        # print(f'Normal-proxying attr {attr}')
                         attrs[attr] = val
                     else:
                         # Callables require a bit more work - in the case of builtins, they _require_ that
                         # the actual backing object be passed as the first argument (? maybe not?  But that seems to fix the errors so idk)
-                        print(f"Call-proxying attr {attr}")
+                        # print(f"Call-proxying attr {attr}")
 
                         def proxy_wrapper(attr_name):
                             # We need the outer proxy_wrapper to make sure the value of attr_name gets preserved in the closure.
