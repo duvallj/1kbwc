@@ -48,7 +48,7 @@ async def send_choices(websocket, choices):
 
 
 def format_card(index, card):
-    return f" <span class='card-click' onclick='send_on_websocket(JSON.stringify(parse(\"inspect {card.area.id} {index}\").data));'><span class=\"index\">[{index}]</span> <span class=\"card-title\">{card.name}</span></span>"
+    return f" <span class='card-click' onclick='send_on_websocket(JSON.stringify(inspect({{}}, [\"{card.area.id}\", \"{index}\"]).data));'><span class=\"index\">[{index}]</span> <span class=\"card-title\">{card.name}</span></span>"
 
 
 def format_player(player_name):
