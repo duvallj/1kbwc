@@ -12,12 +12,13 @@ def read_cards():
     card_classes = [card_class for card_class in card_classes if Card in card_class.__bases__]
     return card_classes
 
-def make_deck(size=0):
+def make_deck(size=0, shuffle=True):
     classes = read_cards()
     deck = []
     for card_class in classes:
         deck.append(card_class())
-    random.shuffle(deck) #nice
+    if shuffle:
+        random.shuffle(deck) #nice
     if size == 0:
         return deck
     while len(deck) < size:

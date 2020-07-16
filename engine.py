@@ -75,7 +75,7 @@ class Engine:
 
         # D E B U G M O D E
         if 'DEBUG' in listdir('.'):
-            extra_cards = cardreader.make_deck()
+            extra_cards = cardreader.make_deck(shuffle=False)
             self.game.all_cards += extra_cards
             player = list(self.game.players.values())[0]
             player.hand.contents += extra_cards
