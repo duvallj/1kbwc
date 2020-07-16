@@ -1,6 +1,6 @@
 from objects import Card, Area
 
-class UnitTest(Card):
+class UnitTest(): # add Card back if you want it to do
     def init(self):
         self.val = 200
         self.name = 'Unit Test'

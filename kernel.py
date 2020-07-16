@@ -194,7 +194,7 @@ class Kernel:
             # DISCARD action
             if AreaFlag.DISCARD_AREA in to_area.flags and \
                     AreaFlag.DISCARD_AREA not in from_area.flags:
-                self.__run_card_handler(moving_card, 'on_discard', self.__game)
+                self.__run_card_handler(moving_card, 'on_discard', self.__game, player)
             
 
         return can_move
