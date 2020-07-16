@@ -10,3 +10,4 @@ __pycache__/
 .pycharm_helpers
 
 .vagrant
+DEBUG

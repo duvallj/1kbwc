@@ -408,7 +408,7 @@ class Card:
         """
         pass
 
-    def on_discard(self, kernel, gamestate, player):
+    def on_discard(self, kernel, gamestate, discarder):
         """
         Ease-of-use handler, called when ONLY THIS card is discarded (defined as moved into
         a discard area)
@@ -418,7 +418,7 @@ class Card:
 
         :param kernel: the game's Kernel object
         :param gamestate: the entire state of the game
-        :param player: the player responsible for discarding this card, NOT self.player
+        :param discarder: the player responsible for discarding this card, NOT self.player
         :return:
         """
         pass
