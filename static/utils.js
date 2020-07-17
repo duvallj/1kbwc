@@ -124,7 +124,7 @@ function on_message(content){
 			case "choices":
 				if(has_all(m, ["choices"])){
 					choices = m.choices;
-					add_to_output("<<< Options:" + formatChoices(choices));
+					add_to_output("<<< " + formatChoices(choices));
 				}else{
 					console.log("Choices lacked choices: " + content);
 				}

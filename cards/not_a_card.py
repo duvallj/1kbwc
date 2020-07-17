@@ -16,5 +16,7 @@ class NotACard(Card):
                 kernel.get_player_input(other_player, ["yes", "no"], self.is_a_card)
 
     def is_a_card(self, value):
+        all_players = [gamestate.players[name] for name in gamestate.players]
         if value == "yes":
             self.val = 1000
+            kernel.send_message(all_players, "...but it is a card, after all.")

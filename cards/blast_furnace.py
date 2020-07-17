@@ -13,5 +13,6 @@ class Blast_Furnace(Card):
     def on_move(self, kernel, player, card, from_area, to_area, gamestate):
         if card != self and to_area == self.area and not self.active:
             self.active = True
-            kernel.move_card(self, gamestate.draw.contents[0], gamestate.draw, self.area)
+            if kernel.move_card(self, gamestate.draw.contents[0], gamestate.draw, self.area):
+                kernel.send_message([player], "Blast Furnacing engaged!")
             self.active = False

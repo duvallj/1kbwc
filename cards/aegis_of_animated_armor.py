@@ -12,4 +12,5 @@ class aegis_of_animated_armor(Card):
     def handle_move(self, kernel, player, card, from_area, to_area, gamestate):
         if to_area == self.area and AreaFlag.HAND_AREA in from_area.flags and player not in self.owners:
             if abs(card.val) <= abs(self.val):
+                kernel.send_message([player], f"{card.name} is not a worthy challenger!")
                 return False
