@@ -42,18 +42,18 @@ button {
 	width: 70%;
 }
 
-#console-input{
+.console-input{
 	display: flex;
 	justify-content: space-between;
 	padding-top: 4px;
 	padding-bottom: 4px;
 }
 
-#console-input-wrapper {
+.console-input-wrapper {
 	width: 70%;
 }
 
-#console-submit-wrapper {
+.console-submit-wrapper {
 	width: 30%;
 }
 
@@ -74,10 +74,12 @@ button {
 
 #hand-state {
     grid-area: hand;
+    overflow-y: auto;
 }
 
 #play-state {
 	grid-area: play;
+	overflow-y: auto;
 }
 
 .settings {
