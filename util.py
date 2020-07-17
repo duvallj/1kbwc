@@ -13,6 +13,8 @@ def immutablize(target):
     """
     if target is None:
         return None
+    if type(type(target)).__name__ == 'MetaFactory': #  it's already immutable
+        return target
 
     class MetaFactory(type):
         def __new__(mcs, name, bases, attrs):
