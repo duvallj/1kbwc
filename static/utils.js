@@ -174,9 +174,11 @@ function add_to_output(s){
 }
 
 function dragstart_handler(ev) {
-	ev.dataTransfer.setData("text/card_area", ev.target.id);
-	//ev.dataTransfer.setData("text/card_index", index);
-	//send_on_websocket(JSON.stringify(inspect({}, [card.area.id, index]).data));
+    const area_id = ev.target.dataset.area_id;
+    const index = ev.target.dataset.card_index;
+	ev.dataTransfer.setData("text/card_area", area_id);
+	ev.dataTransfer.setData("text/card_index", index);
+	//do_submit(inspect({}, [card.area.id, index]), "auto inspect");
 }
 
 function dragover_handler(ev) {
@@ -184,12 +186,9 @@ function dragover_handler(ev) {
 	ev.dataTransfer.dropEffect = "move";
 }
 
-function drop_handler(ev) {
+function drop_handler(moved_to_id, ev) {
 	ev.preventDefault();
-	//const card_area_id = ev.dataTransfer.getData("text/card_area_id");
-	//const card_index = ev.dataTransfer.getData("text/card_index");
-	var text = ev.dataTransfer.getData("text/card_area");
-	var res = text.split("-");
-	const moved_to_id = ev.target.id;
-	send_on_websocket(JSON.stringify(move({}, [res[0], res[1], moved_to_id]).data));
+	let area_id = ev.dataTransfer.getData("text/card_area");
+	let index = ev.dataTransfer.getData("text/card_index");
+	do_submit(move({}, [area_id, index, moved_to_id]), "auto move");
 }
