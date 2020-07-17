@@ -145,6 +145,27 @@ const functions = {
         '''
         pass
 `,
+	"on_play_move": `
+	
+    def on_play_move(self, kernel, player, card, from_area, to_area, gamestate):
+        '''
+        Called after a card successfully enters play; ease-of-use wrapper called in addition
+        to on_move
+        * a move is considered a play if a card moves form an area NOT tagged with
+        CardFlag.PLAY_AREA to one flagged with CardFlag.PLAY_AREA
+
+        :param kernel: the game's Kernel object
+        :param player: the player behind the move action
+        :param card: the card that was moved
+        :param from_area: the area the card was moved from
+        :param to_area: the area the card was moved to
+        :param from_area: the area the card was moved from
+        :param gamestate: the entire state of the game
+        :return:
+
+        '''
+        pass
+`,
 	"handle_end_turn": `
     def handle_end_turn(self, kernel, player, gamestate):
         '''

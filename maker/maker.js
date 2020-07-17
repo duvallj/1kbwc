@@ -3,25 +3,41 @@ window.onload = function(){
 	tagBoxes = document.getElementsByName("tagChecks");
 	addFunctionElements();
 	dropdown = document.getElementById("functions");
+	
+	downloadButton = document.getElementById("downloadButton");
+	preview = document.getElementById("preview");
+	copyArea = document.getElementById("copyArea");
+
+	classInput = document.getElementById("class");
+	classCheck = document.getElementById("enableClass");
+	titleInput = document.getElementById("title");
+	valueInput = document.getElementById("value");
+	pathInput = document.getElementById("path");
+	imageInput = document.getElementById("image");
+	flagBoxes = document.getElementsByName("flags");
+	tagInput = document.getElementById("tags");
+	
+	cardImage = document.getElementById("cardImage")
+
 	update();
 }
 
-let downloadButton = document.getElementById("downloadButton");
-let preview = document.getElementById("preview");
-let copyArea = document.getElementById("copyArea");
+let downloadButton;
+let preview;
+let copyArea;
 
-let classInput = document.getElementById("class");
-let classCheck = document.getElementById("enableClass");
-let titleInput = document.getElementById("title");
-let valueInput = document.getElementById("value");
-let pathInput = document.getElementById("path");
-let imageInput = document.getElementById("image");
-let flagBoxes = document.getElementsByName("flags");
-let tagInput = document.getElementById("tags");
+let classInput;
+let classCheck;
+let titleInput;
+let valueInput;
+let pathInput;
+let imageInput;
+let flagBoxes;
+let tagInput;
 let tagBoxes;
 let dropdown;
 
-let cardImage = document.getElementById("cardImage");
+let cardImage;
 
 let filename = "example_card";
 let title = "Example Card";
