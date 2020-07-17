@@ -53,6 +53,17 @@ input {
 	height: 0px;
 }
 
+#leftButton {
+	width: 49%;
+	padding: 0;
+}
+
+#rightButton {
+	width: 49%;
+	padding: 0;
+	float: right;
+}
+
 .spacer {
 	margin-top: 3px;
 	height: 1pt;

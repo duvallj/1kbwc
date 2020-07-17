@@ -1,4 +1,8 @@
 window.onload = function(){
+	addTagElements();
+	tagBoxes = document.getElementsByName("tagChecks");
+	addFunctionElements();
+	dropdown = document.getElementById("functions");
 	update();
 }
 
@@ -14,7 +18,8 @@ let pathInput = document.getElementById("path");
 let imageInput = document.getElementById("image");
 let flagBoxes = document.getElementsByName("flags");
 let tagInput = document.getElementById("tags");
-let tagBoxes = document.getElementsByName("tagChecks");
+let tagBoxes;
+let dropdown;
 
 let cardImage = document.getElementById("cardImage");
 
@@ -24,7 +29,7 @@ let value = 0;
 let imagename = "example_card";
 let flags = "set()";
 let tags = "set()";
-let handlers = "";
+let methods = "";
 
 let url;
 
@@ -101,6 +106,16 @@ function classUpdate(){
 	update();
 }
 
+function addFunction(){
+	methods += dropdown.value;
+	update();
+}
+
+function clearFunctions(){
+	methods = "";
+	update();
+}
+
 function reset(){
 	classInput.value = "";
 	titleInput.value = "";
@@ -121,7 +136,7 @@ function copy(){
 }
 
 function get_formatted(){
-	return `from objects import Card, CardFlag
+	return `from objects import Card${flags === "set()" ? "" : ", CardFlag"}
 
 
 class ${filename}(Card):
@@ -131,5 +146,5 @@ class ${filename}(Card):
         self.image = '${imagename}'
         self.flags = ${flags}
         self.tags = ${tags}
-${handlers}`;
+${methods}`;
 }
