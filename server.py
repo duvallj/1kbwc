@@ -48,7 +48,9 @@ async def send_choices(websocket, choices):
 
 
 def format_card(index, card):
-    return f" <span class='card-click' onclick='send_on_websocket(JSON.stringify(inspect({{}}, [\"{card.area.id}\", \"{index}\"]).data));'><span class=\"index\">[{index}]</span> <span class=\"card-title\">{card.name}</span></span>"
+    return f""" <span id='{card.area.id}-{index}' class='card-click' draggable='true' ondragstart='dragstart_handler(event)'\
+onclick='send_on_websocket(JSON.stringify(inspect({{}}, [\"{card.area.id}\", \"{index}\"]).data));'>\
+<span class=\"index\">[{index}]</span> <span class=\"card-title\">{card.name}</span></span>"""
 
 
 def format_player(player_name):
@@ -97,7 +99,7 @@ def format_area_id(area):
     if AreaFlag.DISCARD_AREA in area.flags:
         classes += " discardArea"
 
-    return f'<span class="{classes}">{area_id}</span>'
+    return f'<span id="{area.id}" class="{classes}" ondrop="drop_handler(event)" ondragover="dragover_handler(event)">{area_id}</span>'
 
 
 async def send_update(websocket, engine, player):
