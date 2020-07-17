@@ -1,4 +1,4 @@
-const majorTags = ["Animal", "Cat", "Food", "Technology"];
+const majorTags = ["Animal", "Cat", "Food", "School", "Technology"];
 
 function addTagElements(){
 	for(let i = 0; i < majorTags.length; ++i){
