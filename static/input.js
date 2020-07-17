@@ -21,25 +21,29 @@ function on_submit(){
 		}else{  // Choice mode
 			r = choiceParse(r, tokenize(v));
 		}
-		if(r.output === "input"){
-			add_to_output(">>> " + v);
-		}
-		if(r.output === "fail"){
-			add_to_output("%%% Failed to parse: " + v);
-		}
-		if(r.output === "data"){
-			add_to_output("%%% " + r.data);
-		}
-		if(r.send){
-			send_on_websocket(JSON.stringify(r.data));
-		}
-		if(r.clear){
-			input.value = "";
-			commandHistory.unshift(v);
-			historyIndex = -1;
-			historyBuffer = "";
-		}
+		do_submit(r, v);
 	}
+}
+
+function do_submit(r, v) {
+    if(r.output === "input"){
+        add_to_output(">>> " + v);
+    }
+    if(r.output === "fail"){
+        add_to_output("%%% Failed to parse: " + v);
+    }
+    if(r.output === "data"){
+        add_to_output("%%% " + r.data);
+    }
+    if(r.send){
+        send_on_websocket(JSON.stringify(r.data));
+    }
+    if(r.clear){
+        input.value = "";
+        commandHistory.unshift(v);
+        historyIndex = -1;
+        historyBuffer = "";
+    }
 }
 
 const HELPSTRINGS = {

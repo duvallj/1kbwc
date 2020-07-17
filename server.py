@@ -4,6 +4,7 @@ from http import HTTPStatus
 import json
 import os
 from typing import Callable, List
+from numbers import Number
 import websockets
 from websockets.exceptions import ConnectionClosedError
 
@@ -48,8 +49,8 @@ async def send_choices(websocket, choices):
 
 
 def format_card(index, card):
-    return f""" <span id='{card.area.id}-{index}' class='card-click' draggable='true' ondragstart='dragstart_handler(event)'\
-onclick='send_on_websocket(JSON.stringify(inspect({{}}, [\"{card.area.id}\", \"{index}\"]).data));'>\
+    return f""" <span data-area_id="{card.area.id}" data-card_index="{index}" class='card-click' draggable='true' ondragstart='dragstart_handler(event)'\
+onclick='do_submit(inspect({{}}, [\"{card.area.id}\", \"{index}\"]), \"auto inspect\");'>\
 <span class=\"index\">[{index}]</span> <span class=\"card-title\">{card.name}</span></span>"""
 
 
@@ -75,9 +76,10 @@ def format_area(engine, player, area):
             card = area_contents[i]
             output += format_card(i + 1, card) + "\n"
 
-        return output[:-1]
+        output = output[:-1]
     else:
-        return f"{format_area_id(area)} <span class=\"tag card-count\">({area_contents} cards)</span>"
+        output = f"{format_area_id(area)} <span class=\"tag card-count\">({area_contents} cards)</span>"
+    return f"<span ondrop='drop_handler(\"{area.id}\", event)' ondragover='dragover_handler(event)'>{output}</span>"
 
 
 def format_area_id(area):
@@ -99,7 +101,7 @@ def format_area_id(area):
     if AreaFlag.DISCARD_AREA in area.flags:
         classes += " discardArea"
 
-    return f'<span id="{area.id}" class="{classes}" ondrop="drop_handler(event)" ondragover="dragover_handler(event)">{area_id}</span>'
+    return f'<span data-area_id="{area.id}" class="{classes}">{area_id}</span>'
 
 
 async def send_update(websocket, engine, player):
@@ -235,6 +237,7 @@ class Room():
             del self.active_choices[player.username]
 
         callback(choices[chosen_index])
+        await self.broadcast_update()
 
 
 class RoomManager():
@@ -291,7 +294,10 @@ class RoomManager():
         elif cmd == "move":
             from_area_id = data["src"]
             to_area_id = data["dst"]
-            index = data["index"] - 1
+            index = data["index"]
+            if not isinstance(index, Number):
+                index = int(index)
+            index = index - 1
 
             player = room.engine.get_player(player_name)
             from_area = room.engine.get_area(from_area_id)
@@ -299,7 +305,6 @@ class RoomManager():
                 await send_message(websocket, f"Source area '{from_area_id}' does not exist!")
                 return
 
-            index = data["index"] - 1
             if index < 0 or index >= len(from_area.contents):
                 await send_message(websocket, f"Index {index + 1} is out of range for area {format_area_id(from_area)}!")
                 return
@@ -321,7 +326,10 @@ class RoomManager():
         elif cmd == "inspect":
             player = room.engine.get_player(player_name)
             area_id = data["area"]
-            index = data["index"] - 1
+            index = data["index"]
+            if not isinstance(index, Number):
+                index = int(index)
+            index = index - 1
 
             area = room.engine.get_area(area_id)
             if area is None:
@@ -342,7 +350,10 @@ class RoomManager():
             await send_card(websocket, card)
             await room.broadcast_message(f"{format_player(player_name)} looked at card {index + 1} in {format_area_id(area)}")
         elif cmd == "choose":
-            index = data["which"] - 1
+            index = data["which"]
+            if not isinstance(index, Number):
+                index = int(index)
+            index = index - 1
 
             if player_name not in room.active_choices:
                 await send_message(websocket, "You don't have any active choices")
@@ -357,8 +368,6 @@ class RoomManager():
             async with room.choice_condition:
                 room.last_choice[player_name] = index
                 room.choice_condition.notify_all()
-                
-                #await room.broadcast_update()  # TODO: Make this work right. Goal is to push an update after callback is called.
         else:
             await send_message(websocket, f"The command '{cmd}' is not supported on this server")
 
