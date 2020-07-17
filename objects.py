@@ -3,6 +3,8 @@ from typing import Dict, Optional, List
 from util import immutablize, random_id
 from enum import Enum
 
+from random import getrandbits
+
 
 # (editable) data tied to the card itself, and not the game
 class Card:
@@ -17,12 +19,13 @@ class Card:
         self._owners = []  # owners of the area this card is in
         self._player = None  # person who moved this card into play
         self._area = None  # area this card resides in (hand, play, deck, etc.)
+        self._uuid = getrandbits(32)  # unique identifier to distinguish from copies
         self.init()
 
     def __eq__(self, other):
         if not isinstance(other, Card):
             return NotImplemented
-        return all(getattr(self, x) == getattr(other, x) for x in ('val', 'name', 'image', 'flags', 'tags', '_owners', '_player', '_area'))
+        return all(getattr(self, x) == getattr(other, x) for x in ('val', 'name', 'image', 'flags', 'tags', '_owners', '_player', '_area', '_uuid'))
 
     def init(self):
         """
@@ -48,6 +51,10 @@ class Card:
     @property
     def area(self):
         return immutablize(self._area)
+
+    @property
+    def uuid(self):
+        return immutablize(self._uuid)
 
     def handle_look(self, kernel, player, area, gamestate):
         """
