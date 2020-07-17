@@ -432,7 +432,8 @@ class Card:
     def on_discard(self, kernel, gamestate, discarder):
         """
         Ease-of-use handler, called when ONLY THIS card is discarded (defined as moved into
-        a discard area)
+        a discard area) this method is run before the card is moved to the discard pile,
+        so you can access the fields as if it were in play
         If you wish to be able to stop this card from being moved, use handle_move instead
         !! IMPORTANT: cards can be discarded from *any* area, don't assume it was last in
         a play area!

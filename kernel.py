@@ -174,6 +174,13 @@ class Kernel:
             default_handled = True
 
         if can_move:
+            
+            # DISCARD action
+            # we call this before the card is moved to the discard pile
+            # because once it's discarded it's technically out of play
+            if AreaFlag.DISCARD_AREA in to_area.flags and \
+                    AreaFlag.DISCARD_AREA not in from_area.flags:
+                self.__run_card_handler(moving_card, 'on_discard', self.__game, player)
 
             # execute action
             index = from_area.contents.index(moving_card)
@@ -210,11 +217,6 @@ class Kernel:
                     player == self.__game.current_player and \
                     default_handled and not card_initiated:
                 self.__game.cards_drawn_this_turn += 1
-
-            # DISCARD action
-            if AreaFlag.DISCARD_AREA in to_area.flags and \
-                    AreaFlag.DISCARD_AREA not in from_area.flags:
-                self.__run_card_handler(moving_card, 'on_discard', self.__game, player)
 
         return can_move
 

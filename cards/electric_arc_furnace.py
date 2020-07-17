@@ -13,6 +13,7 @@ class electric_arc_furnace(Card):
         self.active = False
 
     def on_play(self, kernel, gamestate, player):
+        kernel.send_message(self.owners, "[Electric Arc Furnace] Discard two cards from this area, and play one to replace them")
         self.discarded = {}
         self.played = {}
         for player in self.owners:
@@ -38,10 +39,10 @@ class electric_arc_furnace(Card):
     def handle_end_turn(self, kernel, player, gamestate):
         if self.active:
             for player in self.played:
-                if self.played[player] < 1:
+                if self.played[player] < 1 and len(gamestate.players[player].hand.contents) > 0:
                     return False
             for player in self.discarded:
-                if self.discarded[player] < 2:
+                if self.discarded[player] < 2 and len(self.area.contents) > 0:
                     return False
             self.active = False
 
