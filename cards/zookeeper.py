@@ -15,6 +15,9 @@ class zookeeper(Card):
                 self.val += 100
 
     def on_move(self, kernel, player, card, from_area, to_area, gamestate):
+        if card == self:
+            self.val = 0
+            return self.on_play(kernel, gamestate, player)
         if "Animal" in card.tags:
             if from_area == self.area:  # Loss of animal
                 self.val -= 100
