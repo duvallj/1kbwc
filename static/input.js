@@ -170,7 +170,7 @@ function choiceParse(r, tokens){
 	switch(command){
 		case "inspect":
 		case "i":
-			return readInspect(r, args);
+			return readInspect(r, tokens.slice(1));
 			break;
 		case "again":
 		case "a":
