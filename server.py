@@ -160,7 +160,7 @@ class Room():
             client = self.clients.get(player.username, None)
             if client is not None:
                 try:
-                    await send_message(client, message)
+                    await send_message(client, f"<span class='card-message'>{message}</span>")
                 except ConnectionClosedError:
                     pass
             else:

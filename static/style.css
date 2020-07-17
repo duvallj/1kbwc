@@ -26,6 +26,8 @@ html, body {
     grid-template-columns: 1fr;
     grid-template-rows: 1fr auto;
     grid-row-gap: 6pt;
+	font-family: Consolas,monaco,monospace; 
+	font-size: 0.9em;
 }
 
 .box {
@@ -170,4 +172,10 @@ img{
 }
 .card-click {
     cursor: pointer;
+}
+
+.card-message {
+	color: #c51;
+	font-family: Futura,Trebuchet MS,Arial,sans-serif;
+	font-size: 1em;
 }
