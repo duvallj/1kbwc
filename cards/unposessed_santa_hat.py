@@ -10,5 +10,4 @@ class unposessed_santa_hat(Card):
         self.tags = set()
 
     def on_play(self, kernel, gamestate, player):
-        if kernel.change_draw_limit(self, gamestate.max_cards_drawn_this_turn + 1):
-            kernel.move_card(player, gamestate.draw.contents[0], gamestate.draw, player.hand)
+        kernel.move_card(self, gamestate.draw.contents[0], gamestate.draw, player.hand)
