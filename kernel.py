@@ -141,12 +141,16 @@ class Kernel:
         """
 
         requestor = self.__mutablize_obj(requestor)
-        if type(requestor) == Player:
+        if isinstance(requestor, Player):
             player = requestor
             card_initiated = False
-        else:
+        elif isinstance(requestor, Card):
             player = self.__mutablize_obj(requestor._player)
             card_initiated = True
+        else:
+            print(f"Unknown move_card requestor {requestor}! Failing \"gracefully\"")
+            return False
+
         moving_card = self.__mutablize_obj(moving_card)
         from_area = self.__mutablize_obj(from_area)
         to_area = self.__mutablize_obj(to_area)
@@ -229,14 +233,16 @@ class Kernel:
         Checks if a move is allowed based on the current player's turn
         """
         # card's moves are allowed by default
-        if type(requestor) != Player:
-            if CardFlag.NO_PLAY_TO_CENTER in card.flags and to_area == self.__game.center:
+        if isinstance(requestor, Card):
+            if CardFlag.NO_PLAY_TO_CENTER in card.flags and \
+               to_area == self.__game.center:
                 return False
             if CardFlag.ONLY_PLAY_TO_CENTER in card.flags and \
-                    AreaFlag.PLAY_AREA in to_area.flags and \
-                    to_area != self.__game.center:
+               AreaFlag.PLAY_AREA in to_area.flags and \
+               to_area != self.__game.center:
                 return False
             return True
+
         player = requestor
         
         # player's moves are thoroughly examined
