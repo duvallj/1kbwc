@@ -321,7 +321,6 @@ class Kernel:
         Checks if the current player has either drawn & played, or drawn twice
         """
         if player == self.__game.current_player:
-            print(f"{player.username} Drawn: {self.__game.cards_drawn_this_turn} Played: {self.__game.cards_played_this_turn}")
             if self.__game.cards_drawn_this_turn + \
                     self.__game.cards_played_this_turn >= \
                     self.__game.max_cards_played_this_turn + \
