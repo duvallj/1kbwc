@@ -13,10 +13,12 @@ class NotACard(Card):
 
         for other_player in all_players:
             if other_player != player:
-                kernel.get_player_input(other_player, ["yes", "no"], self.is_a_card)
+                kernel.get_player_input(other_player, ["yes", "no"], self.is_a_card(gamestate))
 
-    def is_a_card(self, value):
-        all_players = [gamestate.players[name] for name in gamestate.players]
-        if value == "yes":
-            self.val = 1000
-            kernel.send_message(all_players, "...but it is a card, after all.")
+    def is_a_card(self, gamestate):
+        def do(value):
+            all_players = [gamestate.players[name] for name in gamestate.players]
+            if value == "yes":
+                self.val = 1000
+                kernel.send_message(all_players, "...but it is a card, after all.")
+        return do
