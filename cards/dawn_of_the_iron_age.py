@@ -6,6 +6,7 @@ class Dawn_Of_The_Iron_Age(Card):
         self.val = 200
         self.name = 'Dawn Of The Iron Age'
         self.image = 'Dawn_Of_The_Iron_Age.png'
+        self.flags = set()
         self.tags = {'Metallurgy', 'Technology'}
         self.gameover = False
 

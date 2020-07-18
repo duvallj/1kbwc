@@ -6,8 +6,8 @@ class NoahsLeftEye(Card):
         self.val = -100
         self.name = 'Noah\'s Left Eye'
         self.image = 'NoahsLeftEye.jpg'
-        self.tags = {"Lined"}
         self.flags = set()
+        self.tags = {"Lined"}
 
     def on_play(self, kernel, gamestate, player):
         pass

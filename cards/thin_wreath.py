@@ -7,3 +7,4 @@ class thin_wreath(Card):
         self.name = 'Thin Wreath'
         self.image = 'ThinWreath.png'
         self.flags = set()
+        self.tags = set()

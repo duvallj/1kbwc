@@ -7,3 +7,4 @@ class patriotism(Card):
         self.name = 'Patriotism'
         self.image = 'Patriotism.png'
         self.flags = set()
+        self.tags = set()

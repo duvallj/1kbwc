@@ -6,3 +6,4 @@ class FourMillionPoints(Card):
         self.name = '4 Million Points'
         self.image = '4_Million_Points.png'
         self.flags = set()
+        self.tags = set()

@@ -6,8 +6,8 @@ class NoahsRightLeg(Card):
         self.val = 150
         self.name = 'Noah\'s Right Leg'
         self.image = 'NoahsRightLeg.jpg'
-        self.tags = {"Lined"}
         self.flags = set()
+        self.tags = {"Lined"}
 
     def on_play(self, kernel, gamestate, player):
         pass

@@ -6,3 +6,4 @@ class StaplesBlankIndexCards(Card):
         self.val = 500
         self.image = "Staples_Blank_Index_Cards.png"
         self.flags = set()
+        self.tags = set()

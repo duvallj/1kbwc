@@ -6,3 +6,4 @@ class red_cube(Card):
         self.name = 'Red Cube'
         self.image = 'red_cube.png'
         self.flags = set()
+        self.tags = set()

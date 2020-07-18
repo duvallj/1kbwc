@@ -7,8 +7,8 @@ class NoahsHair(Card):
         self.val = 200
         self.name = 'Noah\'s Hair'
         self.image = 'NoahsHair.jpg'
-        self.tags = {"Lined"}
         self.flags = set()
+        self.tags = {"Lined"}
         self.active = False
 
     def on_play_move(self, kernel, player, moving_card, from_area, to_area, game):

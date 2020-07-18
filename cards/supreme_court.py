@@ -8,6 +8,7 @@ class SupremeCourt(object): # not a card
         self.name = 'Supreme Court'
         self.image = "Supreme_Court.png"
         self.flags = set()
+        self.tags = {"NYI"}
 
     def on_end_game(self, kernel: Kernel, gamestate: Game):
         raise NotImplementedError("URBAD")

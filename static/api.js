@@ -20,13 +20,15 @@ function startRoom() {
 }
 
 function joinRoom() {
-    const call_path = JOIN_ROOM_PATH + roomName_input.value + '/' + playerName_input.value;
-    // Xtreme hacks, referencing something in a global scope that hasn't been defined yet
-    playerName = playerName_input.value;
-	add_to_output("### Trying to join room " + roomName_input.value + " as player " + playerName_input.value);
-	if(socket_connected){
-		disconnect();
+	if(playerName_input.value && roomName_input.value){
+		const call_path = JOIN_ROOM_PATH + roomName_input.value + '/' + playerName_input.value;
+		// Xtreme hacks, referencing something in a global scope that hasn't been defined yet
+		playerName = playerName_input.value;
+		add_to_output("### Trying to join room " + roomName_input.value + " as player " + playerName_input.value);
+		if(socket_connected){
+			disconnect();
+		}
+		socket = new WebSocket(socket_path.value + call_path);
+		init_socket(socket);
 	}
-	socket = new WebSocket(socket_path.value + call_path);
-	init_socket(socket);
 }

@@ -7,6 +7,7 @@ class Conical_Pendulum(Card):
         self.name = 'Conical Pendulum'
         self.image = 'Conical_Pendulum.png'
         self.flags = {CardFlag.NO_PLAY_TO_CENTER}
+        self.tags = set()
         self.turn_starts = 0
 
     def on_turn_start(self, kernel, player, gamestate):

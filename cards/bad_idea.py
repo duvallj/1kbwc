@@ -8,6 +8,7 @@ class Bad_Idea(Card):
         self.image = 'Bad_Idea.png'
         self.game_over = False
         self.flags = {CardFlag.ALWAYS_GET_EVENTS, CardFlag.ONLY_PLAY_TO_SELF}
+        self.tags = set()
 
     def on_end_game(self, *args):
         self.game_over = True

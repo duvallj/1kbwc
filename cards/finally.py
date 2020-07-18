@@ -24,4 +24,3 @@ class _finally_(Card):
                     if len(self.old_owners) == 0:
                         self.active = False
                     return True
-

@@ -7,4 +7,4 @@ class functional_signage_map(Card):
         self.name = 'Functional Signage Map'
         self.image = 'FunctionalSignageMap.png'
         self.flags = set()
-        self.tags = {"Technology"}
+        self.tags = {"Technology", "School"}

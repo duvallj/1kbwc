@@ -25,13 +25,15 @@ async def send_card(websocket, card):
         card_image = NOT_FOUND_CARD
 
     flags_string = ", ".join([f.value for f in card.flags])
+    tags_string = ", ".join(card.tags)
 
     await send_json(websocket, {
         "type": "inspect",
         "url": card_image,
         "title": card.name,
         "value": card.val,
-        "flags": flags_string
+        "flags": flags_string,
+        "tags": tags_string
     })
 
 

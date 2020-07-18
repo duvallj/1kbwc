@@ -6,6 +6,7 @@ class Cryptocurrency(Card):
         self.name = 'Cryptocurrency'
         self.image = 'Cryptocurrency.png'
         self.flags = set()
+        self.tags = {"Technology"}
 
     def on_play(self, kernel, gamestate, player):
         print(f"cryptocurrency played at {gamestate.turn_num}")

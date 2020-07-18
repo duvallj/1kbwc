@@ -6,3 +6,4 @@ class Recursion(Card):
         self.name = 'Recursion'
         self.image = 'Recursion.png'
         self.flags = set()
+        self.tags = {"Technology"}

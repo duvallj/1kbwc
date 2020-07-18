@@ -7,6 +7,7 @@ class Bail_Out(Card):
         self.name = 'Bail-Out'
         self.image = 'Bail-Out.png'
         self.flags = set()
+        self.tags = set()
 
     def handle_move(self, kernel, player, card, from_area, to_area, gamestate):
         if player in self.owners:

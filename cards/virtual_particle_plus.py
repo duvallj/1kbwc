@@ -7,6 +7,7 @@ class virtual_particle_plus(Card):
         self.name = 'Virtual Particle +'
         self.image = 'virtual_particle_plus.png'
         self.flags = {CardFlag.PLAY_ANY_TIME}
+        self.tags = set()
 
     def on_play(self, kernel, gamestate, player):
         pass

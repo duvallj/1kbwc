@@ -7,6 +7,7 @@ class Composite_Gang(Card):
         self.name = 'Composite Gang'
         self.image = 'Composite_Gang.png'
         self.flags = set()
+        self.tags = {"School"}
 
     def handle_score_player(self, kernel, player, default_score, gamestate):
         if player in self.owners:

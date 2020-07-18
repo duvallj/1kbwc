@@ -7,3 +7,4 @@ class waffle(Card):
         self.name = 'Waffle'
         self.image = 'Waffle.png'
         self.flags = set()
+        self.tags = {"Food"}

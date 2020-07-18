@@ -6,7 +6,9 @@ class Differential_Equations(Card):
         self.val = 200
         self.name = 'Differential Equations'
         self.image = 'Differential_Equations.png'
-        self.actie = False
+        self.active = False
+        self.flags = set()
+        self.tags = {"School"}
 
     def on_play(self, kernel, gamestate, player):
         if len(player.area.contents) > 0:

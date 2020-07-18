@@ -8,4 +8,3 @@ class expo_marker(Card):
         self.image = 'Expo_Marker.png'
         self.flags = set()
         self.tags = set()
-

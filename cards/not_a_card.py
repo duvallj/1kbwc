@@ -6,6 +6,7 @@ class NotACard(Card):
         self.name = "CARD"
         self.image = "NotACard.png"
         self.flags = set()
+        self.tags = set()
 
     def on_play(self, kernel, gamestate, player):
         all_players = [gamestate.players[name] for name in gamestate.players]

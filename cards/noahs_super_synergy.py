@@ -6,8 +6,8 @@ class NoahsSuperSynergy(Card):
         self.val = 200
         self.name = 'Noah\'s Super Synergy'
         self.image = 'NoahsSuperSynergy.jpg'
-        self.tags = {"Lined"}
         self.flags = set()
+        self.tags = {"Lined"}
 
     def on_play(self, kernel, gamestate, player):
         pass

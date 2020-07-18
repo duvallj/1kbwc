@@ -6,3 +6,4 @@ class AirlessVacuumOfSpace(Card):
         self.name = 'Airless Vacuum of Space'
         self.image = 'Airless_Vacuum_of_Space.png'
         self.flags = set()
+        self.tags = set()

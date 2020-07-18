@@ -17,5 +17,5 @@ class angry_cat(Card):
 
     def on_play(self, kernel, gamestate, player):
         if kernel.move_card(self, self.target, self.target.area, gamestate.discard):
-            kernel.send_message(self.target.owners, f"{self.name}: *angry cat noises*")
+            kernel.send_message(self.target.owners, f"[{self.name}] *angry cat noises*")
 

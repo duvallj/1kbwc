@@ -6,3 +6,4 @@ class Calculus(Card):
         self.name = 'Calculus'
         self.image = 'Calculus.png'
         self.flags = set()
+        self.tags = {"School"}

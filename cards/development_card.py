@@ -7,6 +7,7 @@ class Development_Card(Card):
         self.name = 'Development Card'
         self.image = 'Development_Card.png'
         self.flags = set()
+        self.tags = set()
 
     def on_play(self, kernel, gamestate, player):
         kernel.change_play_limit(self, gamestate.max_cards_played_this_turn + 1)

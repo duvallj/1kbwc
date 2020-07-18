@@ -9,6 +9,7 @@ class Crowdsourcing(Card):
         self.active = False
         self.done_players = []
         self.flags = set()
+        self.tags = set()
 
     def on_play(self, kernel, gamestate, player):
         self.active = True

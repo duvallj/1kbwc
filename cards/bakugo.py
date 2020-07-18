@@ -7,6 +7,7 @@ class Bakugo(Card):
         self.name = 'Bakugo'
         self.image = 'Bakugo.jpg'
         self.flags = set()
+        self.tags = set()
 
     def on_play(self, kernel, gamestate, player):
         # explode hand and play area into the discard pile

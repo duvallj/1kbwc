@@ -7,6 +7,7 @@ class Dog_Ate_Your_Homework(Card):
         self.name = 'Dog Ate Your Homework'
         self.image = 'A_Dog_Ate_Your_Homework.png'
         self.flags = set()
+        self.tags = {"Animal"}
 
     def on_play(self, kernel, gamestate, player):
         if (len(self.area.contents) > 1): # If the area is empty, or only includes this card, break
@@ -14,4 +15,3 @@ class Dog_Ate_Your_Homework(Card):
             dupl.remove(self)
             rand_card = random.choice(dupl)
             kernel.move_card(self, rand_card, self.area, gamestate.discard)
-

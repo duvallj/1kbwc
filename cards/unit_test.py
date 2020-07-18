@@ -6,6 +6,7 @@ class UnitTest(): # add Card back if you want it to do
         self.name = 'Unit Test'
         self.image = 'UnitTest.jpg'
         self.flags = set()
+        self.tags = set()
         self.r = 0
         self.d = set()
 

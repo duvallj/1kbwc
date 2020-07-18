@@ -10,9 +10,9 @@ class aahrt(Card):
         self.tags = set()
 
     def on_play(self, kernel, gamestate, player):
-        kernel.send_message([self.owners[0]], "[AAHRT] Yell a statement!")
+        kernel.send_message([self.owners[0]], f"[{self.name}] Yell a statement!")
         asked_player = choice(list(gamestate.players.values()))
-        kernel.send_message([asked_player], f"[AAHRT] Did {self.owners[0].username} find meaning in artwork?")
+        kernel.send_message([asked_player], f"[{self.name}] Did {self.owners[0].username} find meaning in artwork?")
         kernel.get_player_input(asked_player, ["Nooooo!", "Yaaaaasssss!"], self.change_score)
 
     def change_score(self, answer):

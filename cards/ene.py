@@ -8,6 +8,7 @@ class Ene(Card):
         self.name = 'Ene'
         self.image = 'Ene.jpg'
         self.flags = set()
+        self.tags = set()
         self.active_player = None
         self.target_player = None
 

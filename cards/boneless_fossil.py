@@ -6,3 +6,5 @@ class Boneless_Fossil(Card):
         self.val = 100
         self.name = 'Boneless Fossil'
         self.image = 'Boneless_Fossil.png'
+        self.flags = set()
+        self.tags = set()

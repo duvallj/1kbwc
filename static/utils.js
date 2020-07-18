@@ -112,11 +112,12 @@ function on_message(content){
 				}
 				break;
 			case "inspect":  // TODO: This can't be right...
-				if(has_all(m, ["url", "title", "value", "flags"])){
+				if(has_all(m, ["url", "title", "value", "flags", "tags"])){
 					document.getElementById("inspect-image").src = IMAGE_BASE_URL + m.url;
 					document.getElementById("inspect-title").innerHTML = m.title;
 					document.getElementById("inspect-value").innerHTML = m.value;
 					document.getElementById("inspect-flags").innerHTML = m.flags;
+					document.getElementById("inspect-tags").innerHTML = m.tags;
 				}else{
 					console.log("Inspect lacked url, title, value, or flags: " + content);
 				}
