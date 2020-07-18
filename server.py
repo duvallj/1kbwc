@@ -293,7 +293,7 @@ class RoomManager():
             card = area_contents[index]
 
             await send_card(websocket, card)
-            await room.broadcast_message(f"{format_player(player_name)} looked at card {index + 1} in {format_area_id(area)}")
+            #await room.broadcast_message(f"{format_player(player_name)} looked at card {index + 1} in {format_area_id(area)}")
         elif cmd == "choose":
             index = data["which"]
             if not isinstance(index, Number):
