@@ -74,7 +74,11 @@ const HELPSTRINGS = {
 	"move": {
 		"usage": "move src index dst",
 		"details": "Move the card in `src` at `index` to `dst`."
-	}
+	},
+	"say": {
+	  "usage": "say [message]",
+	  "details": "Say something in chat for everyone to see! :3"
+  }
 }
 const NOTENOUGHARGS = "Not enough arguments: ";
 
@@ -137,6 +141,10 @@ function parse(r, tokens){
 		case "m":
 			return readMove(r, args);
 			break;
+		case "say":
+		case "s":
+		  return doSay(r, args);
+		  break;
 		default:
 			r.output = "fail";
 			return r;
@@ -359,6 +367,20 @@ function move(r, args){
 		"index": index,
 		"dst": dst
 	};
+	return r;
+}
+
+/// Parse and send a message
+function doSay(r, args) {
+	r.send = true;
+	r.output = "input";
+	r.data = {
+		"cmd": "say",
+		"caller": playerName,
+	};
+	if(args.length > 0){
+		r.data.msg = args.join(" ");
+	}
 	return r;
 }
 

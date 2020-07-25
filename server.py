@@ -3,7 +3,7 @@ import argparse
 from http import HTTPStatus
 import json
 import os
-from typing import Callable, List
+from typing import Callable, List, Optional, Tuple
 from numbers import Number
 import websockets
 from websockets.exceptions import ConnectionClosedError
@@ -11,13 +11,13 @@ from websockets.exceptions import ConnectionClosedError
 from objects import Player
 from engine import Engine
 from server_rendering import *
+from util import is_valid_player_name, random_id
 
 NOT_FOUND_CARD = "/placeholder-card.png"
 
 
 async def send_json(websocket, data):
     await websocket.send(json.dumps(data))
-
 
 async def send_card(websocket, card):
     card_image = card.image
@@ -118,7 +118,7 @@ class Room():
             await send_message(websocket, f"Error: '{format_player(player_name)}' is already a player in this room '{self.name}!")
             return False
 
-        if self.started.set():
+        if self.started.is_set():
             await send_message(websocket, f"Error: room '{self.name}' has already started!")
             return False
 
@@ -169,6 +169,8 @@ class Room():
                 print(f"Player {player.username} was in list to receive message, but they're no longer connected!")
 
     async def kernel_get_player_input(self, player: Player, choices: List[str], callback: Callable[[str], None]):
+        # make a copy just in case
+        choices = choices[:]
         client = self.clients.get(player.username, None)
         if client is None:
             print(f"Player {player.username} was supposed to choose something, but they're no longer connected!")
@@ -186,6 +188,17 @@ class Room():
         callback(choices[chosen_index])
         await self.broadcast_update()
 
+"""
+Returns: None is data is missing any of fields, Some(tuple) containng the 
+extracted data otherwise
+"""
+def get_fields(data: dict, fields: Tuple[str, ...]) -> Optional[Tuple[str, ...]]:
+    output = tuple(map(lambda field: data.get(field, None), fields))
+    
+    if any(value is None for value in output):
+        return None
+    else:
+        return output
 
 class RoomManager():
     def __init__(self):
@@ -193,6 +206,10 @@ class RoomManager():
 
     async def make_room(self, websocket, room_name):
         print(f"make_room {room_name}")
+        if room_name in self.rooms:
+            await send_message(websocket, f"Room '{room_name}' already exists!")
+            return
+
         room = Room(room_name)
         self.rooms[room_name] = room
         self.rooms[room_name].engine.reset(room.kernel_send_message, room.kernel_get_player_input)
@@ -205,21 +222,46 @@ class RoomManager():
             await send_message(websocket, f"Error: room '{room_name}' does not exist!")
             return
 
+        if not is_valid_player_name(player_name):
+            await send_message(websocket, f"Player name '{player_name}' is invalid! Only numbers and lowercase letters allowed, no whitespace!")
+            return
+
         if not await room.add_player(websocket, player_name):
             return
 
         await send_message(websocket, f"Joining room '{room_name}'...")
         await room.broadcast_message(f"{format_player(player_name)} has joined the room!")
+        # Refresh the screen for everyone
+        await room.broadcast_update()
+
         await room.started.wait()
 
-        # TODO: write loop that takes care of receiving commands from this
-        # websocket
-        while not room.stopped.is_set():
-            response = await websocket.recv()
-            response = json.loads(response)
-            cmd = response.get("cmd", None)
+        game_over = asyncio.create_task(room.stopped.wait())
+        get_command = asyncio.create_task(websocket.recv())
+        while True:
+            # Wait on both tasks concurrently, return whichever one completes
+            # first
+            done, pending = await asyncio.wait(
+                {
+                    game_over,
+                    get_command,
+                },
+                return_when=asyncio.FIRST_COMPLETED
+            )
 
-            await self.handle_command(websocket, room, player_name, cmd, response)
+            if game_over in done:
+                break
+            elif get_command in done:
+                response = get_command.result()
+                response = json.loads(response)
+                cmd = response.get("cmd", None)
+
+                # Probably need to refresh the task before yielding execution
+                # to other coroutines, so doing that just in case
+                get_command = asyncio.create_task(websocket.recv())
+                await self.handle_command(websocket, room, player_name, cmd, response)
+            else:
+                print("Congratulations, you reached the unreachable branch! Asyncio went funky")
 
         await send_message(websocket, "Game is over, you may leave now")
 
@@ -231,17 +273,24 @@ class RoomManager():
                 return
 
             room.turn_over.set()
-            comment = data.get("comment", None).replace("&", '&amp;').replace("<", '&lt;').replace(">", '&gt;').replace("\"", '&quot;').replace("\'", '&#39;').replace("/", '&#x2F;');
+            comment = data.get("comment", None)
 
-            if comment:
+            if comment is None:
                 await room.broadcast_message(f"{format_player(player_name)} ended their turn \"{comment}\"")
-            else:
+            elif isinstance(comment, str):
+                comment = comment.replace("&", '&amp;').replace("<", '&lt;').replace(">", '&gt;').replace("\"", '&quot;').replace("\'", '&#39;').replace("/", '&#x2F;')
                 await room.broadcast_message(f"{format_player(player_name)} ended their turn")
 
         elif cmd == "move":
-            from_area_id = data["src"]
-            to_area_id = data["dst"]
-            index = data["index"]
+            res = get_fields(data, ("src", "dst", "index"))
+            if res is None:
+                error = f"Malformed move message from client: {data}"
+                print(error)
+                await send_message(websocket, error)
+                return
+                
+            from_area_id, to_area_id, index = res
+            
             if not isinstance(index, Number):
                 index = int(index)
             index = index - 1
@@ -272,8 +321,15 @@ class RoomManager():
 
         elif cmd == "inspect":
             player = room.engine.get_player(player_name)
-            area_id = data["area"]
-            index = data["index"]
+            res = get_fields(data, ("area", "index"))
+            if res is None:
+                error = f"Malformed inspect message from client: {data}"
+                print(error)
+                await send_message(websocket, error)
+                return
+
+            area_id, index = res
+
             if not isinstance(index, Number):
                 index = int(index)
             index = index - 1
@@ -297,7 +353,13 @@ class RoomManager():
             await send_card(websocket, card)
             #await room.broadcast_message(f"{format_player(player_name)} looked at card {index + 1} in {format_area_id(area)}")
         elif cmd == "choose":
-            index = data["which"]
+            index = data.get("which", None)
+            if index is None:
+                error = f"Malformed choose message from client: {data}"
+                print(error)
+                await send_message(websocket, error)
+                return
+                
             if not isinstance(index, Number):
                 index = int(index)
             index = index - 1
@@ -315,21 +377,38 @@ class RoomManager():
             async with room.choice_condition:
                 room.last_choice[player_name] = index
                 room.choice_condition.notify_all()
+        elif cmd == "say":
+            message = data.get("msg", None)
+            if message is None:
+                message = random_id()
+
+            message = f"{format_player(player_name)}: " + message
+            # Send messages through the kernel in case cards block/edit them
+            # or something in the future
+            room.engine.kernel.send_message(list(room.engine.game.players.values()), message)
         else:
             await send_message(websocket, f"The command '{cmd}' is not supported on this server")
 
     async def run_game(self, websocket, room_name):
         print(f"run_game {room_name}")
+        # Note: due to the way websocketOnce works, we only get one message to
+        # send back on **THIS** `websocket` object. `room` methods still work
         room = self.rooms.get(room_name, None)
         if room is None:
             await send_message(websocket, f"Error: room '{room_name}' does not exist!")
             return
+        
+        if room.started.is_set():
+            await send_message(websocket, f"Error: room '{room_name}' is already in progress!")
+            return
+
+        await send_message(websocket, "Game should be starting now!")
 
         room.started.set()
         await room.broadcast_message(f"Starting game '{room_name}'...")
 
         room.engine.setup_game()
-        # TODO: write the game loop better
+        
         while not room.engine.is_game_over():
             await room.broadcast_update()
             current_player = room.engine.game.current_player.username
@@ -340,9 +419,11 @@ class RoomManager():
 
             room.engine.advance_turn()
 
-        room.stopped.set()
         room.engine.kernel.end_game()
         await room.broadcast_update(final=True)
+        # Wait to actually stop room until final update is send to everyone
+        # is guaranteed to receive it
+        room.stopped.set()
 
     def remove_from_room(self, room_name, player_name):
         print(f"Removing {player_name} from room '{room_name}'")
@@ -381,7 +462,6 @@ class RoomManager():
             rest = path[7:]
             # Doesn't hold up this socket, schedules run automatically
             asyncio.create_task(self.run_game(websocket, rest))
-            await send_message(websocket, "Game should be starting now!")
 
 
 async def intercept_http(path, headers):
