@@ -83,15 +83,14 @@ function update(){
 		flags = "set()"
 	}
 	
-	let tagMatches = tagInput.value.match(/[^\s"']+|"([^"]*)"|'([^']*)'/g);
+	let tagMatches = tagInput.value.match(/[^\s"]+|"([^"]*)"/g);
 	let tagsSet = [];
 	if(tagMatches){
 		for(let i = 0; i < tagMatches.length; ++i){
 			if(tagMatches[i].charAt(0) === '"'){
-				tagsSet.push(tagMatches[i]);
-			}else{
-				tagsSet.push('"' + tagMatches[i] + '"');
+				tagMatches[i] = tagMatches[i].slice(1, -1);
 			}
+			tagsSet.push('"' + sanitize(tagMatches[i]) + '"');
 		}
 	}
 	for(let i = 0; i < tagBoxes.length; ++i){
@@ -158,9 +157,13 @@ function get_formatted(){
 class ${filename}(Card):
     def init(self):
         self.val = ${value}
-        self.name = '${title}'
+        self.name = '${sanitize(title)}'
         self.image = '${imagename}'
         self.flags = ${flags}
         self.tags = ${tags}
 ${methods}`;
+}
+
+function sanitize(s){
+	return s.replace(/(?=['"\\])/g, '\\')
 }
