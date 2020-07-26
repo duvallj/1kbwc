@@ -38,11 +38,12 @@ def immutablize(target):
                             def mproxy(self, *args, **kwargs):
                                 if isinstance(type(self), MetaFactory):
                                     # print(f"PROXYING {attr_name}")
-                                    return getattr(type(target), attr_name)(self._backing_obj, *args, **kwargs)
+                                    return immutablize(
+                                        getattr(type(target), attr_name)(self._backing_obj, *args, **kwargs))
                                 else:
                                     # print(f"SUPER TRANSPARENT PROXYING {self} {attr_name}")
                                     # print(f'{args}')
-                                    return getattr(type(target), attr_name)(self, *args, **kwargs)
+                                    return immutablize(getattr(type(target), attr_name)(self, *args, **kwargs))
 
                             return mproxy
 
@@ -55,34 +56,38 @@ def immutablize(target):
             # print(f'mcls {attr}')
             return super().__getattribute__(attr)
 
-    class Proxy(metaclass=MetaFactory):
-        def __init__(self, obj):
-            # print("YEET PROXY INIT")
-            object.__setattr__(self, "_backing_obj", obj)
+    try:
+        class Proxy(metaclass=MetaFactory):
+            def __init__(self, obj):
+                # print("YEET PROXY INIT")
+                object.__setattr__(self, "_backing_obj", obj)
 
-        def __getattr__(self, attr):
-            # print(f"cls {attr}")
-            backing = object.__getattribute__(self, "_backing_obj")
-            if attr == "_backing_obj":
-                return backing
-            return immutablize(getattr(backing, attr))
+            def __getattr__(self, attr):
+                # print(f"cls {attr}")
+                backing = object.__getattribute__(self, "_backing_obj")
+                if attr == "_backing_obj":
+                    return backing
+                return immutablize(getattr(backing, attr))
 
-        def __setattr__(self, attr, val):
-            raise AttributeError("Error: Card attempted to change gamestate without kernel call!")
+            def __setattr__(self, attr, val):
+                raise AttributeError("Error: Card attempted to change gamestate without kernel call!")
 
-        def __getitem__(self, attr):
-            return immutablize(self._backing_obj[attr])
+            def __getitem__(self, attr):
+                return immutablize(self._backing_obj[attr])
 
-        def __setitem__(self, attr, val):
-            raise AttributeError("Error: Card attempted to manipulate state without kernel call!")
+            def __setitem__(self, attr, val):
+                raise AttributeError("Error: Card attempted to manipulate state without kernel call!")
 
-        def __repr__(self):
-            return repr(self._backing_obj)
+            def __repr__(self):
+                return repr(self._backing_obj)
 
-        def __str__(self):
-            return str(self._backing_obj)
+            def __str__(self):
+                return str(self._backing_obj)
 
-    return Proxy(target)
+        return Proxy(target)
+    except TypeError:
+        # Failed to proxy, probably because the target was an unsubclassable base type
+        return target
 
 
 def random_id(disallowed: List[str] = None) -> str:
