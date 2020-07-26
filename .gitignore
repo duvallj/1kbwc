@@ -8,6 +8,10 @@ __pycache__/
 # ideaaaaa
 .idea
 .pycharm_helpers
+# Visual studioooo
+.vs
+# YouCompleteMe
+.ycm_extra_conf.py
 
 .vagrant
 DEBUG

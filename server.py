@@ -397,7 +397,7 @@ class RoomManager():
         if room is None:
             await send_message(websocket, f"Error: room '{room_name}' does not exist!")
             return
-        
+
         if room.started.is_set():
             await send_message(websocket, f"Error: room '{room_name}' is already in progress!")
             return
@@ -408,7 +408,7 @@ class RoomManager():
         await room.broadcast_message(f"Starting game '{room_name}'...")
 
         room.engine.setup_game()
-        
+
         while not room.engine.is_game_over():
             await room.broadcast_update()
             current_player = room.engine.game.current_player.username
