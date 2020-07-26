@@ -1,5 +1,6 @@
 from objects import Card
 
+
 class Cryptocurrency(Card):
     def init(self):
         self.val = 600

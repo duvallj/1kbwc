@@ -1,8 +1,8 @@
 from kernel import Kernel
-from objects import Card, Game
+from objects import Game
 
 
-class SupremeCourt(object): # not a card
+class SupremeCourt(object):  # not a card
     def init(self):
         self.val = 300
         self.name = 'Supreme Court'
@@ -15,5 +15,5 @@ class SupremeCourt(object): # not a card
         # URBAD
         scores = {name: kernel.score_player(p) for name, p in gamestate.players.values()}
         for p, score in scores.values():
-            #nearby = [p for p in]
+            # nearby = [p for p in]
             pass

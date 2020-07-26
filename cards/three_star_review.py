@@ -1,5 +1,6 @@
-from objects import Card
 from random import choice
+
+from objects import Card
 
 
 class Three_Star_Review(Card):

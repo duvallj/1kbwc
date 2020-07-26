@@ -1,8 +1,8 @@
 html, body {
     height: 100%;
     margin: 0;
-	font-family: Futura,Trebuchet MS,Arial,sans-serif;
-	background-color: #e2e2e2;
+    font-family: Futura, Trebuchet MS, Arial, sans-serif;
+    background-color: #e2e2e2;
 }
 
 .main {
@@ -26,52 +26,52 @@ html, body {
     grid-template-columns: 1fr;
     grid-template-rows: 1fr auto;
     grid-row-gap: 6pt;
-	font-family: Consolas,monaco,monospace; 
-	font-size: 0.9em;
+    font-family: Consolas, monaco, monospace;
+    font-size: 0.9em;
 }
 
 .box {
-	border: 1px solid black;
-	background-color: #fff;
+    border: 1px solid black;
+    background-color: #fff;
 }
 
 .center-text {
-	text-align: center;
+    text-align: center;
 }
 
 button {
-	background-color: #f2f2f2;
-	width: 70%;
+    background-color: #f2f2f2;
+    width: 70%;
 }
 
-.console-input{
-	display: flex;
-	justify-content: space-between;
-	padding-top: 4px;
-	padding-bottom: 4px;
+.console-input {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 4px;
+    padding-bottom: 4px;
 }
 
 .console-input-wrapper {
-	width: 70%;
+    width: 70%;
 }
 
 .console-submit-wrapper {
-	width: 30%;
+    width: 30%;
 }
 
 #submit {
-	width: 95%;
-	padding: 0px;
-	float: right;
+    width: 95%;
+    padding: 0px;
+    float: right;
 }
 
 #input {
-	width: 95%;
+    width: 95%;
 }
 
 .console-output {
     height: 100%;
-	overflow-y: auto;
+    overflow-y: auto;
 }
 
 #hand-state {
@@ -80,8 +80,8 @@ button {
 }
 
 #play-state {
-	grid-area: play;
-	overflow-y: auto;
+    grid-area: play;
+    overflow-y: auto;
 }
 
 .settings {
@@ -89,13 +89,13 @@ button {
 }
 
 .settings-label {
-	float: left;
-	width: 35%;
+    float: left;
+    width: 35%;
 }
 
 .settings-input {
-	float: right;
-	width: 60%;
+    float: right;
+    width: 60%;
 }
 
 .cardViewer {
@@ -103,150 +103,156 @@ button {
 }
 
 .card {
-	margin: auto;
+    margin: auto;
 }
 
 .prewrap {
-	white-space: pre-wrap;
+    white-space: pre-wrap;
 }
+
 .inspect-detail {
-	padding-left: 3px;
-	padding-right: 2px;
-	padding-top: 1px;
-	padding-bottom: 1px;
+    padding-left: 3px;
+    padding-right: 2px;
+    padding-top: 1px;
+    padding-bottom: 1px;
 }
 
-img{
-	width: 100%;
-	min-width: 135px;
+img {
+    width: 100%;
+    min-width: 135px;
 }
 
-.area{
+.area {
 }
 
-.handArea{
+.handArea {
 }
 
-.playerName{
-	color: #1133cc;
-	font-weight: bold;
+.playerName {
+    color: #1133cc;
+    font-weight: bold;
 }
 
-.playArea{
+.playArea {
 }
 
-.drawArea{
+.drawArea {
 }
 
-.discardArea{
+.discardArea {
 }
 
-.tag{
+.tag {
 }
 
-.visible{
-	color: #888;
+.visible {
+    color: #888;
 }
 
-.card-count{
-	color: #555;
+.card-count {
+    color: #555;
 }
 
-.score{
+.score {
 }
 
-.negative-score{
-	color: #a45;
+.negative-score {
+    color: #a45;
 }
 
-.non-negative-score{
-	color: #555;
+.non-negative-score {
+    color: #555;
 }
 
-.index{
-	color: #175;
+.index {
+    color: #175;
 }
 
-.card-title{
-	font-style: oblique;
+.card-title {
+    font-style: oblique;
 }
+
 .card-click {
     cursor: pointer;
 }
 
 .card-message {
-	color: #c51;
-	font-family: Futura,Trebuchet MS,Arial,sans-serif;
-	font-size: 1em;
+    color: #c51;
+    font-family: Futura, Trebuchet MS, Arial, sans-serif;
+    font-size: 1em;
 }
 
 
-
-
- /* Style the Image Used to Trigger the Modal */
+/* Style the Image Used to Trigger the Modal */
 #inspect-image {
-  border-radius: 5px;
-  cursor: pointer;
-  transition: 0.2s;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
-#inspect-image:hover {opacity: 0.7;}
+#inspect-image:hover {
+    opacity: 0.7;
+}
 
 /* The Modal (background) */
 .modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  padding-top: 50px; /* Location of the box */
-  left: 0;
-  top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 50px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0); /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.9); /* Black w/ opacity */
 }
 
 /* Modal Content (Image) */
 .modal-content {
-  margin: auto;
-  display: block;
-  height: 80%;
-  width: auto;
+    margin: auto;
+    display: block;
+    height: 80%;
+    width: auto;
 }
 
 /* Add Animation - Zoom in the Modal */
 .modal-content {
-  animation-name: zoom;
-  animation-duration: 0.3s;
+    animation-name: zoom;
+    animation-duration: 0.3s;
 }
 
 @keyframes zoom {
-  from {transform:scale(0)}
-  to {transform:scale(1)}
+    from {
+        transform: scale(0)
+    }
+    to {
+        transform: scale(1)
+    }
 }
 
 /* The Close Button */
 .close {
-  position: absolute;
-  top: 15px;
-  right: 35px;
-  color: #f1f1f1;
-  font-size: 40px;
-  font-weight: bold;
-  transition: 0.3s;
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
 }
 
 .close:hover,
 .close:focus {
-  color: #bbb;
-  text-decoration: none;
-  cursor: pointer;
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 /* 100% Image Width on Smaller Screens */
-@media only screen and (max-width: 700px){
-  .modal-content {
-    width: 100%;
-  }
+@media only screen and (max-width: 700px) {
+    .modal-content {
+        width: 100%;
+    }
 } 

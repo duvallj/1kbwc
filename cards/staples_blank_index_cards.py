@@ -1,5 +1,6 @@
 from objects import Card
 
+
 class StaplesBlankIndexCards(Card):
     def init(self):
         self.name = "Staples Blank Index Cards"

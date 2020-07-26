@@ -1,5 +1,6 @@
 from objects import Card
 
+
 class Recursion(Card):
     def init(self):
         self.val = 200

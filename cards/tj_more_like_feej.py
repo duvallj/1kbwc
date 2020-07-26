@@ -1,4 +1,4 @@
-from objects import Card, CardFlag
+from objects import Card
 
 
 class tj_more_like_feej(Card):

@@ -1,5 +1,5 @@
-from objects import Card, CardFlag
-import random
+from objects import Card
+
 
 class Bakugo(Card):
     def init(self):
@@ -25,8 +25,8 @@ class Bakugo(Card):
                 if len(gamestate.draw.contents) == 0:
                     break
 
-                if not kernel.move_card(self, gamestate.draw.contents[-1], 
-                        gamestate.draw, owner.hand):
+                if not kernel.move_card(self, gamestate.draw.contents[-1],
+                                        gamestate.draw, owner.hand):
                     break
 
         # You may play 1 extra card the turn you activate this

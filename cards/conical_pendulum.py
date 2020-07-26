@@ -15,4 +15,3 @@ class Conical_Pendulum(Card):
         players = list(gamestate.players.values())
         index = (players.index(self.area.owners[0]) + 1) % len(gamestate.players)
         to_area = players[index].area
-

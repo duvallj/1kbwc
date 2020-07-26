@@ -1,5 +1,5 @@
 from objects import Card, CardFlag
-import random
+
 
 class NoahsBalance(Card):
     def init(self):
@@ -19,7 +19,7 @@ class NoahsBalance(Card):
         winning_players = []
         for player_name, count in player_counts.items():
             if gamestate.players[player_name] in self.owners and \
-               count >= 7:
+                    count >= 7:
                 # Emulate "infinite" points
                 self.val = 1_000_000_000
                 winning_players.append(player_name)

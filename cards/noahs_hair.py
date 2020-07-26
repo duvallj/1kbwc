@@ -1,6 +1,8 @@
-from objects import Card, CardFlag
-from server_rendering import format_area_id
 import random
+
+from objects import Card
+from server_rendering import format_area_id
+
 
 class NoahsHair(Card):
     def init(self):
@@ -23,7 +25,7 @@ class NoahsHair(Card):
             if random_area == to_area:
                 # ended up in the correct area!
                 self.val = 400
-                kernel.send_message(list(game.players.values()), f"Noah's hair ended up in the correct area!") 
+                kernel.send_message(list(game.players.values()), f"Noah's hair ended up in the correct area!")
             else:
                 kernel.move_card(self, self, to_area, random_area)
-                kernel.send_message(list(game.players.values()), f"Noah's hair ended up in {format_area_id(random_area)}") 
+                kernel.send_message(list(game.players.values()), f"Noah's hair ended up in {format_area_id(random_area)}")

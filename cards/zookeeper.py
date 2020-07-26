@@ -1,4 +1,4 @@
-from objects import Card, CardFlag
+from objects import Card
 
 
 class zookeeper(Card):

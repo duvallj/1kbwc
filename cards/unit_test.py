@@ -1,6 +1,7 @@
-from objects import Card, Area
+from objects import Area
 
-class UnitTest(): # add Card back if you want it to do
+
+class UnitTest():  # add Card back if you want it to do
     def init(self):
         self.val = 200
         self.name = 'Unit Test'
@@ -107,15 +108,17 @@ class UnitTest(): # add Card back if you want it to do
             return False
         elif self.r == 2:
             return True
+
     def on_move(self, *args):
         self.exp(self.r, 2)
         self.d.add(2)
-    
+
     def handle_end_turn(self, *args):
         if self.r == 3:
             return False
         elif self.r == 4:
             return True
+
     def on_end_turn(self, *args):
         self.exp(self.r, 4)
         self.d.add(3)
@@ -125,6 +128,7 @@ class UnitTest(): # add Card back if you want it to do
             return None
         if self.r == 6:
             return 2
+
     def on_score_area(self, kernel, area, score, *args):
         if self.r == 5:
             self.exp(score, 200)
@@ -137,16 +141,18 @@ class UnitTest(): # add Card back if you want it to do
             return None
         if self.r == 8:
             return 2
+
     def on_score_card(self, *args):
         if self.r != 5 or self.r != 6:
             self.exp(3, 5)
         self.d.add(5)
-    
+
     def handle_score_player(self, *args):
         if self.r == 9:
             return None
         if self.r == 10:
             return -198
+
     def on_score_player(self, kernel, player, score, *args):
         if self.r == 9:
             self.exp(score, 200)
@@ -159,6 +165,7 @@ class UnitTest(): # add Card back if you want it to do
             return False
         if self.r == 12:
             return True
+
     def on_get_mutable_card(self, *args):
         self.exp(self.r, 12)
         self.d.add(7)
@@ -168,6 +175,7 @@ class UnitTest(): # add Card back if you want it to do
             return False
         if self.r == 14:
             return True
+
     def on_create_new_area(self, *args):
         self.exp(self.r, 14)
         self.d.add(8)
@@ -177,6 +185,7 @@ class UnitTest(): # add Card back if you want it to do
             return False
         if self.r == 16:
             return True
+
     def on_change_turnorder(self, *args):
         self.exp(self.r, 16)
         self.d.add(9)
@@ -186,6 +195,7 @@ class UnitTest(): # add Card back if you want it to do
             return False
         if self.r == 18:
             return True
+
     def on_change_temporary_turnorder(self, *args):
         self.exp(self.r, 18)
         self.d.add(10)
@@ -195,6 +205,7 @@ class UnitTest(): # add Card back if you want it to do
             return False
         if self.r == 20:
             return True
+
     def on_add_card(self, *args):
         self.exp(self.r, 20)
         self.d.add(11)
@@ -204,15 +215,17 @@ class UnitTest(): # add Card back if you want it to do
             return False
         if self.r == 22:
             return True
+
     def on_change_play_limit(self, *args):
         self.exp(self.r, 22)
         self.d.add(12)
-    
+
     def handle_change_draw_limit(self, *args):
         if self.r == 23:
             return False
         if self.r == 24:
             return True
+
     def on_change_draw_limit(self, *args):
         self.exp(self.r, 24)
         self.d.add(13)
@@ -228,4 +241,3 @@ class UnitTest(): # add Card back if you want it to do
     def exp(self, val1, val2):
         if val1 != val2:
             raise NotImplementedError("u r b a d; test failed at " + str(self.r))
-

@@ -1,4 +1,4 @@
-from objects import Card, CardFlag
+from objects import Card
 
 
 class electric_arc_furnace(Card):
@@ -45,4 +45,3 @@ class electric_arc_furnace(Card):
                 if self.discarded[player] < 2 and len(self.area.contents) > 0:
                     return False
             self.active = False
-

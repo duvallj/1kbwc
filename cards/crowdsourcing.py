@@ -13,7 +13,7 @@ class Crowdsourcing(Card):
 
     def on_play(self, kernel, gamestate, player):
         self.active = True
-        #kernel.change_play_limit(self, gamestate.max_cards_played_this_turn + 1)
+        # kernel.change_play_limit(self, gamestate.max_cards_played_this_turn + 1)
 
     def handle_move(self, kernel, player, card, from_area, to_area, gamestate):
         if self.active:

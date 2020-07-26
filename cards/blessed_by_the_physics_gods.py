@@ -19,4 +19,3 @@ class blessed_by_the_physics_gods(Card):
             self.val = 0
         if answer == "no":
             self.val = 400
-

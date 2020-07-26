@@ -1,5 +1,6 @@
 from objects import AreaFlag
 
+
 def format_card(index, card):
     return f""" <span data-area_id="{card.area.id}" data-card_index="{index}" class='card-click' draggable='true' ondragstart='dragstart_handler(event)'\
 onclick='do_submit(inspect({{}}, [\"{card.area.id}\", \"{index}\"]), \"auto inspect\");'>\
@@ -12,6 +13,7 @@ def format_player(player_name):
 
 def format_score(score):
     return f"<span class=\"tag score {'negative-score' if score < 0 else 'non-negative-score'}\">({score} points)</span>"
+
 
 def format_area_id(area):
     classes = "area"
@@ -33,6 +35,7 @@ def format_area_id(area):
         classes += " discardArea"
 
     return f'<span data-area_id="{area.id}" class="{classes}">{area_id}</span>'
+
 
 def format_area(engine, player, area):
     can_look, area_contents = engine.kernel.look_at(player, area)

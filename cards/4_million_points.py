@@ -1,5 +1,6 @@
 from objects import Card
 
+
 class FourMillionPoints(Card):
     def init(self):
         self.val = 6

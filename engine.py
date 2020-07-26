@@ -1,7 +1,8 @@
-import cardreader
-from objects import *
-from kernel import Kernel
 from os import listdir
+
+import cardreader
+from kernel import Kernel
+from objects import *
 
 
 class Engine:

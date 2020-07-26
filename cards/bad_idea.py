@@ -16,5 +16,3 @@ class Bad_Idea(Card):
     def handle_score_player(self, kernel, player, default_score, gamestate):
         if player in self.owners and self.game_over:
             return -800
-
-

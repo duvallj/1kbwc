@@ -12,7 +12,7 @@ class bad_reception(Card):
         self.active = False
 
     def on_play(self, kernel, gamestate, player):
-        self.turnsLeft = {};
+        self.turnsLeft = {}
         for p in self.owners:
             self.turnsLeft[p.username] = 2
         self.active = True

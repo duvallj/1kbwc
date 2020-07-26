@@ -1,72 +1,519 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" href="style.css"></style>
-    <title>1KBWC</title>
-</head>
-<body>
-    <div class="main">
-        <div class="console">
-            <div id="output" class="console-output box prewrap">Let's start!</div>
-            <div class="console-input">
-				<div class="console-input-wrapper">
-					<input id="input" placeholder="Type a command here..."></input>
-				</div>
-				<div class="console-submit-wrapper">
-					<button id="submit" onclick="on_submit();">Submit</button>
-				</div>
-            </div>
-        </div>
-        <div id="hand-state" class="box prewrap">Game view state stuff goes here HANDS
-        </div>
-		<div id="play-state" class="box prewrap">Game view state stuff goes here AREAS
-        </div>
-        <div class="settings">
-            <div class="settings-connected">
-                Connected? <span id="socketConnect">No</span>
-            </div>
-            <div class="socketPath">
-                <label for="socketPath" class="settings-label">URL:</label>
-                <input id="socketPath" class="socketPath-input settings-input" type="text" />
-            </div>
-            <div class="roomName">
-                <label for="roomName" class="settings-label">Room:</label>
-				<input id="roomName" class="roomName-input settings-input" type="text" placeholder="Enter room name..." value="TJHSST" />
-            </div>
-            <div class="myName">
-                <label for="myName" class="settings-label">Player:</label>
-                <input id="myName" class="myName-input settings-input" type="text" placeholder="Enter player name..." />
-            </div>
-            <div class="settings-doconnect center-text">
-                <button onclick="makeRoom();">Make Room</button>
-                <button onclick="joinRoom();">Join Room</button>
-                <button onclick="startRoom();">Start Game</button>
-                <button onclick="disconnect();">Disconnect</button>
-            </div>
-        </div>
-        <div class="cardViewer">
-			<div class="center-text">
-				<img id="inspect-image" src="placeholder-card.png" class="card" />
-			</div>
-			<div id="detail-container" class="box">
-                <div class="inspect-detail">Title: <span id="inspect-title"></span></div>
-                <div class="inspect-detail">Value: <span id="inspect-value"></span></div>
-                <div class="inspect-detail">Flags: <span id="inspect-flags"></span></div>
-                <div class="inspect-detail">Tags: <span id="inspect-tags"></span></div>
-			</div>
-        </div>
-    </div>
-	<!-- The Modal -->
-	<div id="myModal" class="modal">
+    <link href="style.css" rel="stylesheet">
+    </
 
-	  <!-- The Close Button -->
-	  <span class="close">&times;</span>
+    style
 
-	  <!-- Modal Content (The Image) -->
-	  <img class="modal-content" id="img01">
-	</div>
-    <script src="utils.js"></script>
-    <script src="api.js"></script>
-    <script src="input.js"></script>
-</body>
-</html>
+    >
+    <
+    title >
+
+    1
+    KBWC<
+
+    /
+    title >
+    <
+
+    /
+    head >
+    < body >
+    < div class
+
+    =
+    "main"
+    >
+    < div class
+
+    =
+    "console"
+    >
+    < div id
+
+    =
+    "output"
+    class
+
+    =
+    "console-output box prewrap"
+    > Let
+
+    's start!</div>
+    <
+    div class
+
+    =
+    "console-input"
+    >
+    < div class
+
+    =
+    "console-input-wrapper"
+    >
+    < input id
+
+    =
+    "input"
+    placeholder
+
+    =
+    "Type a command here..."
+    > <
+
+    /
+    input >
+    <
+
+    /
+    div >
+    < div class
+
+    =
+    "console-submit-wrapper"
+    >
+    < button id
+
+    =
+    "submit"
+    onclick
+
+    =
+    "on_submit();"
+    > Submit<
+
+    /
+    button >
+    <
+
+    /
+    div >
+    <
+
+    /
+    div >
+    <
+
+    /
+    div >
+    < div id
+
+    =
+    "hand-state"
+    class
+
+    =
+    "box prewrap"
+    > Game view state stuff goes here HANDS
+        <
+
+    /
+    div >
+    < div id
+
+    =
+    "play-state"
+    class
+
+    =
+    "box prewrap"
+    > Game view state stuff goes here AREAS
+        <
+
+    /
+    div >
+    < div class
+
+    =
+    "settings"
+    >
+    < div class
+
+    =
+    "settings-connected"
+    >
+    Connected?
+
+    <
+    span id
+
+    =
+    "socketConnect"
+    > No<
+
+    /
+    span >
+    <
+
+    /
+    div >
+    < div class
+
+    =
+    "socketPath"
+    >
+    < label for
+
+    =
+    "socketPath"
+    class
+
+    =
+    "settings-label"
+    > URL:<
+
+    /
+    label >
+    < input id
+
+    =
+    "socketPath"
+    class
+
+    =
+    "socketPath-input settings-input"
+    type
+
+    =
+    "text"
+    /
+    >
+    <
+
+    /
+    div >
+    < div class
+
+    =
+    "roomName"
+    >
+    < label for
+
+    =
+    "roomName"
+    class
+
+    =
+    "settings-label"
+    > Room:<
+
+    /
+    label >
+    < input id
+
+    =
+    "roomName"
+    class
+
+    =
+    "roomName-input settings-input"
+    type
+
+    =
+    "text"
+    placeholder
+
+    =
+    "Enter room name..."
+    value
+
+    =
+    "TJHSST"
+    /
+    >
+    <
+
+    /
+    div >
+    < div class
+
+    =
+    "myName"
+    >
+    < label for
+
+    =
+    "myName"
+    class
+
+    =
+    "settings-label"
+    > Player:<
+
+    /
+    label >
+    < input id
+
+    =
+    "myName"
+    class
+
+    =
+    "myName-input settings-input"
+    type
+
+    =
+    "text"
+    placeholder
+
+    =
+    "Enter player name..."
+    /
+    >
+    <
+
+    /
+    div >
+    < div class
+
+    =
+    "settings-doconnect center-text"
+    >
+    < button onclick
+
+    =
+    "makeRoom();"
+    > Make Room<
+
+    /
+    button >
+    < button onclick
+
+    =
+    "joinRoom();"
+    > Join Room<
+
+    /
+    button >
+    < button onclick
+
+    =
+    "startRoom();"
+    > Start Game<
+
+    /
+    button >
+    < button onclick
+
+    =
+    "disconnect();"
+    > Disconnect<
+
+    /
+    button >
+    <
+
+    /
+    div >
+    <
+
+    /
+    div >
+    < div class
+
+    =
+    "cardViewer"
+    >
+    < div class
+
+    =
+    "center-text"
+    >
+    < img id
+
+    =
+    "inspect-image"
+    src
+
+    =
+    "placeholder-card.png"
+    class
+
+    =
+    "card"
+    /
+    >
+    <
+
+    /
+    div >
+    < div id
+
+    =
+    "detail-container"
+    class
+
+    =
+    "box"
+    >
+    < div class
+
+    =
+    "inspect-detail"
+    > Title:
+
+    <
+    span id
+
+    =
+    "inspect-title"
+    > <
+
+    /
+    span > <
+
+    /
+    div >
+    < div class
+
+    =
+    "inspect-detail"
+    > Value:
+
+    <
+    span id
+
+    =
+    "inspect-value"
+    > <
+
+    /
+    span > <
+
+    /
+    div >
+    < div class
+
+    =
+    "inspect-detail"
+    > Flags:
+
+    <
+    span id
+
+    =
+    "inspect-flags"
+    > <
+
+    /
+    span > <
+
+    /
+    div >
+    < div class
+
+    =
+    "inspect-detail"
+    > Tags:
+
+    <
+    span id
+
+    =
+    "inspect-tags"
+    > <
+
+    /
+    span > <
+
+    /
+    div >
+    <
+
+    /
+    div >
+    <
+
+    /
+    div >
+    <
+
+    /
+    div >
+
+    <!--
+    The Modal
+
+    -->
+    <
+    div id
+
+    =
+    "myModal"
+    class
+
+    =
+    "modal"
+    >
+
+    <!--
+    The Close Button
+
+    -->
+    <
+    span class
+
+    =
+    "close"
+    > & times
+
+    ;
+    <
+    /
+    span >
+
+    <!--
+    Modal Content
+
+    (
+    The Image
+
+    )
+    -->
+    <
+    img class
+
+    =
+    "modal-content"
+    id
+
+    =
+    "img01"
+    >
+    <
+
+    /
+    div >
+    < script src
+
+    =
+    "utils.js"
+    > <
+
+    /
+    script >
+    < script src
+
+    =
+    "api.js"
+    > <
+
+    /
+    script >
+    < script src
+
+    =
+    "input.js"
+    > <
+
+    /
+    script >
+    <
+
+    /
+    body >
+    <
+
+    /
+    html >

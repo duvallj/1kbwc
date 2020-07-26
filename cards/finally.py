@@ -15,7 +15,7 @@ class _finally_(Card):
         kernel.send_message(self.owners, "} finally { you may discard a card! }")
         self.old_owners = list(self.owners)
         self.active = True
-    
+
     def handle_move(self, kernel, player, card, from_area, to_area, gamestate):
         if self.active:
             if player in self.old_owners:

@@ -1,82 +1,89 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Card Maker</title>
-<link rel="stylesheet" href="maker.css"></link>
-<link rel="stylesheet" href="styles/a11y-light.css"></link>
+    <title>Card Maker</title>
+    <link href="maker.css" rel="stylesheet"></link>
+    <link href="styles/a11y-light.css" rel="stylesheet"></link>
 </head>
 <body>
-	<h1 class="center">Simple Card Maker!</h1>
-	<div id="controlButtons" class="center">
-		<button id="resetButton" onclick="reset();">Reset!</button>
-		<a id="downloadButton" download="example_card.py" href=""><button id="download" onclick="download();">Export!</button></a>
-		<button id="copyButton" onclick="copy();">Copy!</button>
-		<textarea id="copyArea" readonly></textarea>
-	</div>
-	<div id="gridContainer">
-		<div id="editorContainer">
-			<label for="class">Class:</label>
-			<input id="class" type="text" placeholder="example_card" oninput="update();" disabled>
-			<div></div>
-			<div>
-				<input id="enableClass" type="checkbox" onclick="classUpdate();">
-				<label for="enableClass">Use unique class name</label>
-			</div>
-			<div class="spacer"></div><div class="spacer"></div>
-			<label for="title">Title:</label>
-			<input id="title" type="text" placeholder="Example Card" oninput="update();">
-			<div class="spacer"></div><div class="spacer"></div>
-			<label for="value">Value:</label>
-			<input id="value" type="number" step="any" placeholder="Value" value=0 oninput="update();">
-			<div class="spacer"></div><div class="spacer"></div>
-			<label for="image">Image:</label>
-			<input id="image" type="file" accept="image" oninput="update();">
-			<label for="path">Path:</label>
-			<input id="path" type="text" placeholder="C:/Users/Me/Documents/GitHub/1kbwc/maker/" oninput="update();">
-			<div class="spacer"></div><div class="spacer"></div>
-			<label>Flags:</label>
-			<div class="checkbox">
-				<input name="flags" class="flags" type="checkbox" value="PLAY_ANY_TIME" id="PLAY_ANY_TIME" oninput="update();">
-				<label for="PLAY_ANY_TIME">Play at any time</label>
-			</div>
-			<div></div>
-			<div class="checkbox">
-				<input name="flags" class="flags" type="checkbox" value="ALWAYS_GET_EVENTS" id="ALWAYS_GET_EVENTS" oninput="update();">
-				<label for="ALWAYS_GET_EVENTS">Always get events</label>
-			</div>
-			<div></div>
-			<div class="checkbox">
-				<input name="flags" class="flags" type="checkbox" value="NO_PLAY_TO_CENTER" id="NO_PLAY_TO_CENTER" oninput="update();">
-				<label for="NO_PLAY_TO_CENTER">Cannot be played to center</label>
-			</div>
-			<div></div>
-			<div class="checkbox">
-				<input name="flags" class="flags" type="checkbox" value="ONLY_PLAY_TO_CENTER" id="ONLY_PLAY_TO_CENTER" oninput="update();">
-				<label for="ONLY_PLAY_TO_CENTER">Play only to center</label>
-			</div>
-			<div></div>
-			<div class="checkbox">
-				<input name="flags" class="flags" type="checkbox" value="NO_PLAY_TO_SELF" id="NO_PLAY_TO_SELF" oninput="update();">
-				<label for="NO_PLAY_TO_SELF">Cannot be played to self</label>
-			</div>
-			<div></div>
-			<div class="checkbox">
-				<input name="flags" class="flags" type="checkbox" value="ONLY_PLAY_TO_SELF" id="ONLY_PLAY_TO_SELF" oninput="update();">
-				<label for="ONLY_PLAY_TO_SELF">Play only to self</label>
-			</div>
-			<div class="spacer"></div><div class="spacer"></div>
-			<label for="tags">Tags:</label>
-			<input id="tags" type="text" placeholder='Metallurgy "Road Sign"' oninput="update();">
-		</div>
-		<div id="imageContainer">
-			<img id="cardImage" src="FairAndBalanced.png" />
-		</div>
-		<div id="previewContainer">
-			<pre><code id="preview" class="lang-python">Code!</code></pre>
-		</div>
-	</div>
-	<script src="highlight.pack.js"></script>
-	<script src="longboys.js"></script>
-	<script src="maker.js"></script>
+<h1 class="center">Simple Card Maker!</h1>
+<div class="center" id="controlButtons">
+    <button id="resetButton" onclick="reset();">Reset!</button>
+    <a download="example_card.py" href="" id="downloadButton">
+        <button id="download" onclick="download();">Export!</button>
+    </a>
+    <button id="copyButton" onclick="copy();">Copy!</button>
+    <textarea id="copyArea" readonly></textarea>
+</div>
+<div id="gridContainer">
+    <div id="editorContainer">
+        <label for="class">Class:</label>
+        <input disabled id="class" oninput="update();" placeholder="example_card" type="text">
+        <div></div>
+        <div>
+            <input id="enableClass" onclick="classUpdate();" type="checkbox">
+            <label for="enableClass">Use unique class name</label>
+        </div>
+        <div class="spacer"></div>
+        <div class="spacer"></div>
+        <label for="title">Title:</label>
+        <input id="title" oninput="update();" placeholder="Example Card" type="text">
+        <div class="spacer"></div>
+        <div class="spacer"></div>
+        <label for="value">Value:</label>
+        <input id="value" oninput="update();" placeholder="Value" step="any" type="number" value=0>
+        <div class="spacer"></div>
+        <div class="spacer"></div>
+        <label for="image">Image:</label>
+        <input accept="image" id="image" oninput="update();" type="file">
+        <label for="path">Path:</label>
+        <input id="path" oninput="update();" placeholder="C:/Users/Me/Documents/GitHub/1kbwc/maker/" type="text">
+        <div class="spacer"></div>
+        <div class="spacer"></div>
+        <label>Flags:</label>
+        <div class="checkbox">
+            <input class="flags" id="PLAY_ANY_TIME" name="flags" oninput="update();" type="checkbox" value="PLAY_ANY_TIME">
+            <label for="PLAY_ANY_TIME">Play at any time</label>
+        </div>
+        <div></div>
+        <div class="checkbox">
+            <input class="flags" id="ALWAYS_GET_EVENTS" name="flags" oninput="update();" type="checkbox" value="ALWAYS_GET_EVENTS">
+            <label for="ALWAYS_GET_EVENTS">Always get events</label>
+        </div>
+        <div></div>
+        <div class="checkbox">
+            <input class="flags" id="NO_PLAY_TO_CENTER" name="flags" oninput="update();" type="checkbox" value="NO_PLAY_TO_CENTER">
+            <label for="NO_PLAY_TO_CENTER">Cannot be played to center</label>
+        </div>
+        <div></div>
+        <div class="checkbox">
+            <input class="flags" id="ONLY_PLAY_TO_CENTER" name="flags" oninput="update();" type="checkbox" value="ONLY_PLAY_TO_CENTER">
+            <label for="ONLY_PLAY_TO_CENTER">Play only to center</label>
+        </div>
+        <div></div>
+        <div class="checkbox">
+            <input class="flags" id="NO_PLAY_TO_SELF" name="flags" oninput="update();" type="checkbox" value="NO_PLAY_TO_SELF">
+            <label for="NO_PLAY_TO_SELF">Cannot be played to self</label>
+        </div>
+        <div></div>
+        <div class="checkbox">
+            <input class="flags" id="ONLY_PLAY_TO_SELF" name="flags" oninput="update();" type="checkbox" value="ONLY_PLAY_TO_SELF">
+            <label for="ONLY_PLAY_TO_SELF">Play only to self</label>
+        </div>
+        <div class="spacer"></div>
+        <div class="spacer"></div>
+        <label for="tags">Tags:</label>
+        <input id="tags" oninput="update();" placeholder='Metallurgy "Road Sign"' type="text">
+    </div>
+    <div id="imageContainer">
+        <img id="cardImage" src="FairAndBalanced.png"/>
+    </div>
+    <div id="previewContainer">
+        <pre><code class="lang-python" id="preview">Code!</code></pre>
+    </div>
+</div>
+<script src="highlight.pack.js"></script>
+<script src="longboys.js"></script>
+<script src="maker.js"></script>
 </body>
 </html>

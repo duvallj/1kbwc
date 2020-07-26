@@ -1,6 +1,6 @@
-from objects import Card, CardFlag
+from objects import Card
 from server_rendering import format_player
-import random
+
 
 class Ene(Card):
     def init(self):
@@ -24,19 +24,18 @@ class Ene(Card):
         if current_player in self.owners:
             self.active_player = current_player
             kernel.send_message([current_player], "[Ene] Which hand would you like to play a card from?")
-            kernel.get_player_input(current_player, list(game.players.keys()), on_choice) 
-
+            kernel.get_player_input(current_player, list(game.players.keys()), on_choice)
 
     def handle_move(self, kernel, player, moving_card, from_area, to_area, game):
         if self.active_player == player and \
-           self.target_player is not None and \
-           from_area == self.target_player.hand:
+                self.target_player is not None and \
+                from_area == self.target_player.hand:
             # Decrement the play limit by one to count this as a play
             kernel.change_play_limit(self, game.max_cards_played_this_turn - 1)
             return True
 
     def handle_look(self, kernel, player, area, game):
         if self.active_player == player and \
-           self.target_player is not None and \
-           area == self.target_player.hand:
+                self.target_player is not None and \
+                area == self.target_player.hand:
             return True

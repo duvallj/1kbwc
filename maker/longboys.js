@@ -1,29 +1,29 @@
 const majorTags = ["Animal", "Cat", "Food", "School", "Technology"];
 
-function addTagElements(){
-	for(let i = 0; i < majorTags.length; ++i){
-		document.getElementById("editorContainer").innerHTML += `<div></div>
+function addTagElements() {
+    for (let i = 0; i < majorTags.length; ++i) {
+        document.getElementById("editorContainer").innerHTML += `<div></div>
 			<div class="checkbox">
 				<input name="tagChecks" class="tagChecks" type="checkbox" value="${majorTags[i]}" id="Tag_${majorTags[i]}" oninput="update();">
 				<label for="Tag_${majorTags[i]}">${majorTags[i]}</label>
 			</div>
 			`;
-	}
+    }
 }
 
-function addFunctionElements(){
-	let ec = document.getElementById("editorContainer");
-	ec.innerHTML += `
+function addFunctionElements() {
+    let ec = document.getElementById("editorContainer");
+    ec.innerHTML += `
 			<div class="spacer"></div><div class="spacer"></div>
 			<label for="functions">Funcs:</label>
 			<select name="functions" id="functions">`;
-	let keys = Object.keys(functions)
-	for(let i = 0; i < keys.length; ++i){
-		document.getElementById("functions").innerHTML += `
+    let keys = Object.keys(functions)
+    for (let i = 0; i < keys.length; ++i) {
+        document.getElementById("functions").innerHTML += `
 				<option value="${functions[keys[i]]}">${keys[i]}</option>
 				`;
-	}
-	ec.innerHTML += `
+    }
+    ec.innerHTML += `
 			</select>
 			<div></div>
 			<div id="functionButtons">
@@ -33,7 +33,7 @@ function addFunctionElements(){
 }
 
 const functions = {
-	"on_play": `
+    "on_play": `
     def on_play(self, kernel, gamestate, player):
         '''
         Ease-of-use handler, called after ONLY THIS card is successfully played (defined
@@ -47,7 +47,7 @@ const functions = {
         '''
         pass
 `,
-	"on_turn_start": `
+    "on_turn_start": `
     def on_turn_start(self, kernel, player, gamestate):
         '''
         Called when a player's turn starts
@@ -59,7 +59,7 @@ const functions = {
         '''
         pass
 `,
-	"on_discard": `
+    "on_discard": `
     def on_discard(self, kernel, gamestate, discarder):
         '''
         Ease-of-use handler, called when ONLY THIS card is discarded (defined as moved into
@@ -75,7 +75,7 @@ const functions = {
         '''
         pass
 `,
-	"on_end_game": `
+    "on_end_game": `
     def on_end_game(self, kernel, gamestate):
         '''
         Called immediately before the game ends
@@ -86,7 +86,7 @@ const functions = {
         '''
         pass
 `,
-	"handle_look": `
+    "handle_look": `
     def handle_look(self, kernel, player, area, gamestate):
         '''
         This handler is called whenever a player tries to examine ANY area.
@@ -100,7 +100,7 @@ const functions = {
         '''
         pass
 `,
-	"on_look": `
+    "on_look": `
     def on_look(self, kernel, player, area, gamestate):
         '''
         Called after a successful look request
@@ -113,7 +113,7 @@ const functions = {
         '''
         pass
 `,
-	"handle_move": `
+    "handle_move": `
     def handle_move(self, kernel, player, card, from_area, to_area, gamestate):
         '''
         This handler is called whenever a card is moved between ANY Area object in the game.
@@ -130,7 +130,7 @@ const functions = {
         '''
         pass
 `,
-	"on_move": `
+    "on_move": `
     def on_move(self, kernel, player, card, from_area, to_area, gamestate):
         '''
         Called after a card is successfully moved
@@ -145,7 +145,7 @@ const functions = {
         '''
         pass
 `,
-	"on_play_move": `
+    "on_play_move": `
 	
     def on_play_move(self, kernel, player, card, from_area, to_area, gamestate):
         '''
@@ -166,7 +166,7 @@ const functions = {
         '''
         pass
 `,
-	"handle_end_turn": `
+    "handle_end_turn": `
     def handle_end_turn(self, kernel, player, gamestate):
         '''
         This handler is called when ANY player attempts to end their turn.
@@ -181,7 +181,7 @@ const functions = {
         '''
         pass
 `,
-	"on_end_turn": `
+    "on_end_turn": `
     def on_end_turn(self, kernel, player, gamestate):
         '''
         Called after a player's turn ends
@@ -193,7 +193,7 @@ const functions = {
         '''
         pass
 `,
-	"handle_score_area": `
+    "handle_score_area": `
     def handle_score_area(self, kernel, area, default_score, gamestate):
         '''
         This handler is called when the score of ANY Area is calculated.  Use it
@@ -208,7 +208,7 @@ const functions = {
         '''
         pass
 `,
-	"on_score_area": `
+    "on_score_area": `
     def on_score_area(self, kernel, area, score, gamestate):
         '''
         Called after an area is scored
@@ -221,7 +221,7 @@ const functions = {
         '''
         pass
 `,
-	"handle_score_card": `
+    "handle_score_card": `
     def handle_score_card(self, kernel, card, gamestate):
         '''
         This handler is called when the score of ANY Card is calculated.
@@ -235,7 +235,7 @@ const functions = {
         '''
         pass
 `,
-	"on_score_card": `
+    "on_score_card": `
     def on_score_card(self, kernel, card, gamestate):
         '''
         Called after a card is scored
@@ -247,7 +247,7 @@ const functions = {
         '''
         pass
 `,
-	"handle_score_player": `
+    "handle_score_player": `
     def handle_score_player(self, kernel, player, default_score, gamestate):
         '''
         This handler is called when the score of ANY Player is calculated.  Use it
@@ -262,7 +262,7 @@ const functions = {
         '''
         pass
 `,
-	"on_score_player": `
+    "on_score_player": `
     def on_score_player(self, kernel, player, score, gamestate):
         '''
         Called after a player's score is calculated
@@ -275,7 +275,7 @@ const functions = {
         '''
         pass
 `,
-	"handle_get_mutable_card": `
+    "handle_get_mutable_card": `
     def handle_get_mutable_card(self, kernel, requestor, card, gamestate):
         '''
         This handler is called when ANY card requests ANY mutable (editable) version
@@ -292,7 +292,7 @@ const functions = {
         '''
         pass
 `,
-	"on_get_mutable_card": `
+    "on_get_mutable_card": `
     def on_get_mutable_card(self, kernel, requestor, card, gamestate):
         '''
         Called after a successful get_mutable_card_request
@@ -305,7 +305,7 @@ const functions = {
         '''
         pass
 `,
-	"handle_create_new_area": `
+    "handle_create_new_area": `
     def handle_create_new_area(self, kernel, requestor, new_area, gamestate):
         '''
         This handler is called when any card requests a new Area be created
@@ -318,7 +318,7 @@ const functions = {
         '''
         pass
 `,
-	"on_create_new_area": `
+    "on_create_new_area": `
     def on_create_new_area(self, kernel, new_area, gamestate):
         '''
         Called after a successful create_new_area request
@@ -330,7 +330,7 @@ const functions = {
         '''
         pass
 `,
-	"handle_change_turnorder": `
+    "handle_change_turnorder": `
     def handle_change_turnorder(self, kernel, requestor, new_order, gamestate):
         '''
         This handler is called when a card requests a change to the play order
@@ -343,7 +343,7 @@ const functions = {
         '''
         pass
 `,
-	"on_change_turnorder": `
+    "on_change_turnorder": `
     def on_change_turnorder(self, kernel, new_order, gamestate):
         '''
         Called after a successful change_turnorder request
@@ -355,7 +355,7 @@ const functions = {
         '''
         pass
 `,
-	"handle_change_temporary_turnorder": `
+    "handle_change_temporary_turnorder": `
     def handle_change_temporary_turnorder(self, kernel, requestor, new_order, gamestate):
         '''
         This handler is called when a card requests a change to the *temporary* play order
@@ -368,7 +368,7 @@ const functions = {
         '''
         pass
 `,
-	"on_change_temporary_turnorder": `
+    "on_change_temporary_turnorder": `
     def on_change_temporary_turnorder(self, kernel, gamestate):
         '''
         Called after a successful change_temporary_turn_order action
@@ -380,7 +380,7 @@ const functions = {
         '''
         pass
 `,
-	"handle_add_card": `
+    "handle_add_card": `
     def handle_add_card(self, kernel, requestor, new_card, area, gamestate):
         '''
         This handler is called when a card attempts to add a new card to the game
@@ -394,7 +394,7 @@ const functions = {
         '''
         pass
 `,
-	"on_add_card": `
+    "on_add_card": `
     def on_add_card(self, kernel, new_card, gamestate):
         '''
         Called after a successful add_card request
@@ -406,7 +406,7 @@ const functions = {
         '''
         pass
 `,
-	"handle_change_play_limit": `
+    "handle_change_play_limit": `
     def handle_change_play_limit(self, kernel, requestor, new_limit, gamestate):
         '''
         This handler is called when a card attempts to change the number of a cards
@@ -420,7 +420,7 @@ const functions = {
         '''
         pass
 `,
-	"on_change_play_limit": `
+    "on_change_play_limit": `
     def on_change_play_limit(self, kernel, new_limit, gamestate):
         '''
         Called after the play_limit is changed
@@ -433,7 +433,7 @@ const functions = {
         '''
         pass
 `,
-	"handle_change_draw_limit": `
+    "handle_change_draw_limit": `
     def handle_change_draw_limit(self, kernel, requestor, new_limit, gamestate):
         '''
         This handler is called when a card attempts to change the number of a cards
@@ -447,7 +447,7 @@ const functions = {
         '''
         pass
 `,
-	"on_change_draw_limit": `
+    "on_change_draw_limit": `
     def on_change_draw_limit(self, kernel, new_limit, gamestate):
         '''
         Called after the draw_limit is changed

@@ -1,6 +1,8 @@
-import inspect, random
+import inspect
+import random
+
 from objects import Card
-from cards import *
+
 
 def read_cards():
     import cards
@@ -12,13 +14,14 @@ def read_cards():
     card_classes = [card_class for card_class in card_classes if Card in card_class.__bases__]
     return card_classes
 
+
 def make_deck(size=0, shuffle=True):
     classes = read_cards()
     deck = []
     for card_class in classes:
         deck.append(card_class())
     if shuffle:
-        random.shuffle(deck) #nice
+        random.shuffle(deck)  # nice
     if size == 0:
         return deck
     while len(deck) < size:
@@ -26,6 +29,7 @@ def make_deck(size=0, shuffle=True):
     while len(deck) > size:
         del deck[random.randint(0, len(deck) - 1)]
     return deck
+
 
 if __name__ == "__main__":
     print(read_cards())

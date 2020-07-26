@@ -8,10 +8,10 @@ const playerName_input = document.getElementById("myName");
 function makeRoom() {
     const call_path = MAKE_ROOM_PATH + roomName_input.value;
     websocketOnce(call_path, on_message);
-	// We figured this should be default
-	if(playerName_input.value){
-		joinRoom();
-	}
+    // We figured this should be default
+    if (playerName_input.value) {
+        joinRoom();
+    }
 }
 
 function startRoom() {
@@ -20,15 +20,15 @@ function startRoom() {
 }
 
 function joinRoom() {
-	if(playerName_input.value && roomName_input.value){
-		const call_path = JOIN_ROOM_PATH + roomName_input.value + '/' + playerName_input.value;
-		// Xtreme hacks, referencing something in a global scope that hasn't been defined yet
-		playerName = playerName_input.value;
-		add_to_output("### Trying to join room " + roomName_input.value + " as player " + playerName_input.value);
-		if(socket_connected){
-			disconnect();
-		}
-		socket = new WebSocket(socket_path.value + call_path);
-		init_socket(socket);
-	}
+    if (playerName_input.value && roomName_input.value) {
+        const call_path = JOIN_ROOM_PATH + roomName_input.value + '/' + playerName_input.value;
+        // Xtreme hacks, referencing something in a global scope that hasn't been defined yet
+        playerName = playerName_input.value;
+        add_to_output("### Trying to join room " + roomName_input.value + " as player " + playerName_input.value);
+        if (socket_connected) {
+            disconnect();
+        }
+        socket = new WebSocket(socket_path.value + call_path);
+        init_socket(socket);
+    }
 }

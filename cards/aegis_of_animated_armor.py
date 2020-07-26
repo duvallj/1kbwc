@@ -1,4 +1,4 @@
-from objects import Card, CardFlag, AreaFlag
+from objects import Card, AreaFlag
 
 
 class aegis_of_animated_armor(Card):

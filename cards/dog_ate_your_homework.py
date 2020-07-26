@@ -1,5 +1,7 @@
-from objects import Card, CardFlag
 import random
+
+from objects import Card
+
 
 class Dog_Ate_Your_Homework(Card):
     def init(self):
@@ -10,7 +12,7 @@ class Dog_Ate_Your_Homework(Card):
         self.tags = {"Animal"}
 
     def on_play(self, kernel, gamestate, player):
-        if (len(self.area.contents) > 1): # If the area is empty, or only includes this card, break
+        if (len(self.area.contents) > 1):  # If the area is empty, or only includes this card, break
             dupl = list(self.area.contents)
             dupl.remove(self)
             rand_card = random.choice(dupl)

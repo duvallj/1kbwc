@@ -1,9 +1,8 @@
+from enum import Enum
+from random import getrandbits
 from typing import Dict, Optional, List
 
 from util import immutablize, random_id
-from enum import Enum
-
-from random import getrandbits
 
 
 # (editable) data tied to the card itself, and not the game
@@ -169,10 +168,10 @@ class Card:
         """
         pass
 
-    def on_score_area(self, kernel, area, score, gamestate):
+    def on_score_area(self, kernel, area, default_score, gamestate):
         """
         Called after an area is scored
-        
+
         :param kernel: the game's Kernel object
         :param area: the Area whose score was calculated
         :param default_score: the calculated score
@@ -500,7 +499,7 @@ class Area:
 class AreaFlag(Enum):  # area types
     PLAY_AREA = 'PLAY AREA'
     """
-    This flag marks the area as a Play Area, which means that by default, cards in 
+    This flag marks the area as a Play Area, which means that by default, cards in
     this area will have their callbacks executed.  Also, any moves from a non PLAY_AREA
     to a PLAY_AREA count as a "Play".
     """
@@ -511,7 +510,7 @@ class AreaFlag(Enum):  # area types
     """
     HAND_AREA = 'HAND AREA'
     """
-    This flag marks the area as a Draw Area.  Any moves from a DRAW_AREA to HAND_AREA 
+    This flag marks the area as a Draw Area.  Any moves from a DRAW_AREA to HAND_AREA
     count as a "draw."
     """
     DISCARD_AREA = 'DISCARD AREA'
@@ -551,8 +550,8 @@ class Game:
         self.current_player: Optional[Player] = None
         self.turn_order_index: int = 0
         self.max_cards_played_this_turn: int = 1
-        self.cards_played_this_turn: int = 0        # keeps track of how many cards the player played under normal circumstances, cards that other players play this turn or that cards force a player to play are not counted
+        self.cards_played_this_turn: int = 0  # keeps track of how many cards the player played under normal circumstances, cards that other players play this turn or that cards force a player to play are not counted
         self.max_cards_drawn_this_turn: int = 1
         self.cards_drawn_this_turn: int = 0
 
-        self.is_over: bool = False # whether or not the game is over; set to true after the game ends
+        self.is_over: bool = False  # whether or not the game is over; set to true after the game ends

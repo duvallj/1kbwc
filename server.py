@@ -1,15 +1,16 @@
-import asyncio
 import argparse
-from http import HTTPStatus
+import asyncio
 import json
 import os
-from typing import Callable, List, Optional, Tuple
+from http import HTTPStatus
 from numbers import Number
+from typing import Callable, List, Optional, Tuple
+
 import websockets
 from websockets.exceptions import ConnectionClosedError
 
-from objects import Player
 from engine import Engine
+from objects import Player
 from server_rendering import *
 from util import is_valid_player_name, random_id
 
@@ -18,6 +19,7 @@ NOT_FOUND_CARD = "/placeholder-card.png"
 
 async def send_json(websocket, data):
     await websocket.send(json.dumps(data))
+
 
 async def send_card(websocket, card):
     card_image = card.image
@@ -188,17 +190,21 @@ class Room():
         callback(choices[chosen_index])
         await self.broadcast_update()
 
+
 """
-Returns: None is data is missing any of fields, Some(tuple) containng the 
+Returns: None is data is missing any of fields, Some(tuple) containng the
 extracted data otherwise
 """
+
+
 def get_fields(data: dict, fields: Tuple[str, ...]) -> Optional[Tuple[str, ...]]:
     output = tuple(map(lambda field: data.get(field, None), fields))
-    
+
     if any(value is None for value in output):
         return None
     else:
         return output
+
 
 class RoomManager():
     def __init__(self):
@@ -288,9 +294,9 @@ class RoomManager():
                 print(error)
                 await send_message(websocket, error)
                 return
-                
+
             from_area_id, to_area_id, index = res
-            
+
             if not isinstance(index, Number):
                 index = int(index)
             index = index - 1
@@ -351,7 +357,7 @@ class RoomManager():
             card = area_contents[index]
 
             await send_card(websocket, card)
-            #await room.broadcast_message(f"{format_player(player_name)} looked at card {index + 1} in {format_area_id(area)}")
+            # await room.broadcast_message(f"{format_player(player_name)} looked at card {index + 1} in {format_area_id(area)}")
         elif cmd == "choose":
             index = data.get("which", None)
             if index is None:
@@ -359,7 +365,7 @@ class RoomManager():
                 print(error)
                 await send_message(websocket, error)
                 return
-                
+
             if not isinstance(index, Number):
                 index = int(index)
             index = index - 1

@@ -1,7 +1,7 @@
 import inspect
+import re
 from random import choice
 from typing import List
-import re
 
 
 def immutablize(target):
@@ -14,7 +14,7 @@ def immutablize(target):
     """
     if target is None:
         return None
-    if type(type(target)).__name__ == 'MetaFactory': #  it's already immutable
+    if type(type(target)).__name__ == 'MetaFactory':  # it's already immutable
         return target
 
     class MetaFactory(type):
@@ -94,8 +94,11 @@ def random_id(disallowed: List[str] = None) -> str:
             if c not in disallowed:
                 return c
 
+
 # Explanation: lowercase letters and numbers allowed, hyphens also allowed
 # but only in the middle of the string
 VALID_NAME_REGEX = re.compile(r"^[a-z0-9]+[a-z0-9\-]*[a-z0-9]+$")
+
+
 def is_valid_player_name(player_name: str) -> bool:
     return bool(VALID_NAME_REGEX.fullmatch(player_name))

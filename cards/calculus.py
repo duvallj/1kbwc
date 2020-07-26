@@ -1,5 +1,6 @@
 from objects import Card
 
+
 class Calculus(Card):
     def init(self):
         self.val = 300

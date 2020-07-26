@@ -1,5 +1,6 @@
 from objects import Card
 
+
 class red_cube(Card):
     def init(self):
         self.val = 200

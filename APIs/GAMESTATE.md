@@ -3,6 +3,7 @@
 # All of the objects found in a game
 # The "gamestate" object passed to cards is of type Game, found at the bottom of this file
 
+```
 class Card:
     def __init__(self):
         self.val = 0  # point value of card
@@ -17,6 +18,7 @@ class Card:
         self.area = None  # area this card resides in (hand, play, deck, etc.)
         self.uuid = getrandbits(32)  # unique identifier to distinguish from copies
         self.init()
+
 
 class CardFlag(Enum):
     PLAY_ANY_TIME = 'Play at any time'
@@ -45,6 +47,7 @@ class CardFlag(Enum):
     This flag marks a card that cannot be played into the center area
     """
 
+
 class Area:
     def __init__(self, disallowed=None):
         if disallowed is None:
@@ -54,6 +57,7 @@ class Area:
         self.contents = []  # the cards in this area
         self.id = random_id(disallowed)
         self.flags = set()  # extra data associated with this area
+
 
 class AreaFlag(Enum):  # area types
     PLAY_AREA = 'PLAY AREA'
@@ -86,6 +90,7 @@ class Player:
         self.area = None  # the player's play area
         self.score = 0  # the player's score
 
+
 class Game:
     def __init__(self):
         self.players: Dict[str, Player] = {}  # all the players
@@ -103,6 +108,7 @@ class Game:
         self.current_player: Optional[Player] = None
         self.turn_order_index: int = 0
         self.max_cards_played_this_turn: int = 1
-        self.cards_played_this_turn: int = 0        # keeps track of how many cards the player played under normal circumstances, cards that other players play this turn or that cards force a player to play are not counted
+        self.cards_played_this_turn: int = 0  # keeps track of how many cards the player played under normal circumstances, cards that other players play this turn or that cards force a player to play are not counted
         self.max_cards_drawn_this_turn: int = 1
         self.cards_drawn_this_turn: int = 0
+```

@@ -1,5 +1,7 @@
-from objects import Card
 from random import choice
+
+from objects import Card
+
 
 class aahrt(Card):
     def init(self):
@@ -18,5 +20,3 @@ class aahrt(Card):
     def change_score(self, answer):
         if answer == "Yaaaaasssss!":
             self.val = 300
-
-

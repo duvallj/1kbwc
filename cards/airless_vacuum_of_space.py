@@ -1,5 +1,6 @@
 from objects import Card
 
+
 class AirlessVacuumOfSpace(Card):
     def init(self):
         self.val = 0

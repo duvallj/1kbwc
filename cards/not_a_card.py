@@ -1,4 +1,5 @@
-from objects import Card, CardFlag
+from objects import Card
+
 
 class NotACard(Card):
     def init(self):
@@ -22,4 +23,5 @@ class NotACard(Card):
             if value == "yes":
                 self.val = 1000
                 kernel.send_message(all_players, "...but it is a card, after all.")
+
         return do

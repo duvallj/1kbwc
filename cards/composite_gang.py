@@ -11,4 +11,4 @@ class Composite_Gang(Card):
 
     def handle_score_player(self, kernel, player, default_score, gamestate):
         if player in self.owners:
-            return default_score # return score, resulting in score doubling
+            return default_score  # return score, resulting in score doubling

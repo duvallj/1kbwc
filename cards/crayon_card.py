@@ -1,5 +1,6 @@
-from objects import Card
 from random import choice
+
+from objects import Card
 
 
 class crayon_card(Card):
@@ -22,4 +23,3 @@ class crayon_card(Card):
             self.val = 500
         if answer == "no":
             self.val = -300
-

@@ -2,6 +2,7 @@
 
 # below are the methods cards can invoke on a game's Kernel
 
+```
 class Kernel:
     def look_at(self, player: Player, play_area: Area) -> Tuple[bool, Union[int, List[Card]]]:
         """
@@ -13,7 +14,6 @@ class Kernel:
         :param play_area: the area to be revealed
         :return: contents of the area if allowed, None otherwise
         """
-
 
     def move_card(self, requestor: Union[Player, Card], moving_card: Card, from_area: Area, to_area: Area) -> bool:
         """
@@ -81,7 +81,6 @@ class Kernel:
         :param requested_card: the card the requestor wants a mutable version of
         :return: if allowed, a mutable reference the card, otherwise None
         """
-
 
     # TODO this should actually end the game
     def end_game(self):
@@ -175,3 +174,4 @@ class Kernel:
         """
         Call all the on_turn_start handlers
         """
+```

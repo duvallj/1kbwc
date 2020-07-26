@@ -1,6 +1,7 @@
 import asyncio
 import traceback
-from typing import Callable, List, Optional, Tuple, Union
+from typing import Callable, Tuple, Union
+
 from objects import *
 from util import immutablize
 
@@ -60,7 +61,7 @@ class Kernel:
         Run the function on every card
         For hooks that run after a successful action
         Immutablizes all *args, and passes kernel as first argument
-        
+
         :param hook_str: the name of the function to run
         :param *args: the args to be passed to the function
         :return:
@@ -72,7 +73,7 @@ class Kernel:
                 if handler is not None:
                     try:
                         handler(self, *immutable_args)
-                    except:
+                    except Exception:
                         traceback.print_exc()
                         pass
 
@@ -96,7 +97,8 @@ class Kernel:
 
         for card in self.__game.all_cards:
             can_look = self.__run_card_handler(card, "handle_look", player, play_area, self.__game)
-            if can_look is not None: break
+            if can_look is not None:
+                break
 
         if can_look is None:
             can_look = self.__default_look_handler(player, play_area)
@@ -153,7 +155,7 @@ class Kernel:
         moving_card = self.__mutablize_obj(moving_card)
         from_area = self.__mutablize_obj(from_area)
         to_area = self.__mutablize_obj(to_area)
-        
+
         default_handled = False
 
         if moving_card not in from_area.contents:
@@ -173,7 +175,7 @@ class Kernel:
             default_handled = True
 
         if can_move:
-            
+
             # DISCARD action
             # we call this before the card is moved to the discard pile
             # because once it's discarded it's technically out of play
@@ -236,16 +238,16 @@ class Kernel:
         # card's moves are allowed by default
         if isinstance(requestor, Card):
             if CardFlag.NO_PLAY_TO_CENTER in card.flags and \
-               to_area == self.__game.center:
+                    to_area == self.__game.center:
                 return False
             if CardFlag.ONLY_PLAY_TO_CENTER in card.flags and \
-               AreaFlag.PLAY_AREA in to_area.flags and \
-               to_area != self.__game.center:
+                    AreaFlag.PLAY_AREA in to_area.flags and \
+                    to_area != self.__game.center:
                 return False
             return True
 
         player = requestor
-        
+
         # player's moves are thoroughly examined
         if AreaFlag.HAND_AREA in from_area.flags and \
                 AreaFlag.PLAY_AREA in to_area.flags and \
@@ -277,11 +279,11 @@ class Kernel:
                 AreaFlag.HAND_AREA in to_area.flags and \
                 player in to_area.owners:
             if player == self.__game.current_player and \
-                    (self.__game.cards_drawn_this_turn < \
-                     self.__game.max_cards_drawn_this_turn or \
-                     (self.__game.cards_drawn_this_turn < \
-                      self.__game.max_cards_drawn_this_turn + 1 and \
-                      self.__game.cards_played_this_turn < \
+                    (self.__game.cards_drawn_this_turn <
+                     self.__game.max_cards_drawn_this_turn or
+                     (self.__game.cards_drawn_this_turn <
+                      self.__game.max_cards_drawn_this_turn + 1 and
+                      self.__game.cards_played_this_turn <
                       self.__game.max_cards_played_this_turn)):
                 return True
 
@@ -293,7 +295,7 @@ class Kernel:
         polls the cards to see if the operation is allowed
         if no cards return True or False, calls __default_end_turn_handler
         if allowed, calls the game's advance_turn function
-        
+
         :param player: the player whose turn is ending
         :return: True/False, whether the action was performed
         """
@@ -338,7 +340,7 @@ class Kernel:
         Gets the score of an area
         polls the cards to see if a custom scoring operation is needed
         if no cards return a score, calls __default_score_area_handler
-        
+
         :param score_area: the area to score
         :return: the score
         """
@@ -450,7 +452,7 @@ class Kernel:
 
         First polls cards to see if the action is allowed, if no card denies it, the game ends
 
-        :param requestor: the card that requested this action (or None if the kernel is 
+        :param requestor: the card that requested this action (or None if the kernel is
         responsible)
         :return: True if the game ended, False otherwise
         """
@@ -458,7 +460,7 @@ class Kernel:
         is_allowed = None
         for card in self.__game.all_cards:
             is_allowed = self.__run_card_handler(card, 'handle_end_game', requestor,
-                                                self.__game)
+                                                 self.__game)
             if is_allowed is not None:
                 break
 
@@ -518,7 +520,7 @@ class Kernel:
         if area.id in [p.username for p in self.__game.players.values()] or \
                 area.id in [a.id for a in self.__game.all_areas.values()]:  # Add a digit to duplicate ids
             n = 1
-            disallowed = [p.username for p in self.__game.players.values()] + [a.id for a in self.__game.all_areas.values()];
+            disallowed = [p.username for p in self.__game.players.values()] + [a.id for a in self.__game.all_areas.values()]
             while f"{area.id}{n}" in disallowed:  # No I didn't test this lol it compiles
                 n += 1
             area.id = f"{area.id}{n}"
@@ -658,7 +660,7 @@ class Kernel:
         Change the number of cards that can be played THIS TURN
         Only affects default move card handler, cards can still allow more movements
         First polls call the cards
-        
+
         :param requestor: the card that requested this action
         :param new_limit: the new number of play actions this turn
         :return: whether this operation was allowed
@@ -685,7 +687,7 @@ class Kernel:
         Change the number of cards that can be drawn THIS TURN
         Only affects default move card handler, cards can still allow more movements
         First polls call the cards
-        
+
         :param requestor: the card that requested this action
         :param new_limit: the new number of draw actions allowed this turn
         :return: whether this operation was allowed

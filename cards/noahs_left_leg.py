@@ -1,5 +1,5 @@
-from objects import Card, CardFlag
-import random
+from objects import Card
+
 
 class NoahsLeftLeg(Card):
     def init(self):
