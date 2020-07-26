@@ -1,1 +1,1 @@
-websockets
+sanic>=20.6
