@@ -127,6 +127,28 @@ class Kernel:
 
         return True
 
+    def move_card_by_index(self, requestor: [Union[Player, Card], index: int, from_area: Area, to_area: Area]) -> bool:
+        """
+        Convenience wrapper for move card; converts the index into a card and calls `move_card`
+        Use this method if you want to index cards manually
+        It also checks if the card is moving from the draw pile and the draw pile is empty.
+        If so, the game is over
+
+        :param player: the player responsible for the action
+        :param index: the index in from_area of the card being moved
+        :param from_area: the area the card is being removed from
+        :param to_area: the area the card is being added to
+        :return: whether the action was performed
+        """
+        
+        if index >= len(from_area):
+            if len(self.__game.draw) == 0 and from_area == self.__game.draw:
+                end_game(None)
+            return False
+
+        moving_card = from_area[index]
+        return move_card(requestor, moving_card, from_area, to_area)
+
     def move_card(self, requestor: Union[Player, Card], moving_card: Card, from_area: Area, to_area: Area) -> bool:
         """
         Callback for moving a card between play areas
@@ -714,3 +736,9 @@ class Kernel:
         Call all the on_turn_start handlers
         """
         self.__run_all_hooks('on_turn_start', self.__game.current_player, self.__game)
+
+
+    def find_winners(self):
+        """
+        """
+        pass
