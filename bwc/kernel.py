@@ -134,7 +134,7 @@ class Kernel:
         It also checks if the card is moving from the draw pile and the draw pile is empty.
         If so, the game is over
 
-        :param player: the player responsible for the action
+        :param requestor: the player or card responsible for the action
         :param index: the index in from_area of the card being moved
         :param from_area: the area the card is being removed from
         :param to_area: the area the card is being added to
@@ -156,7 +156,7 @@ class Kernel:
         if no cards return True or False, calls __default_move_handler
         if allowed, moves the card
 
-        :param player: the player responsible for the action
+        :param requestor: the player or card responsible for the action
         :param moving_card: the card being moved
         :param from_area: the area the card is being removed from
         :param to_area: the area the card is being added to
