@@ -401,6 +401,18 @@ class Card:
         """
         pass
 
+    def handle_end_game(self, kernel, requestor, gamestate):
+        """
+        This handler is called when something is attempting to end the game
+
+        :param kernel: the game's Kernel object
+        :param requestor: the card that is requesting the gam end, or None if the game
+        is ending naturally
+        :param gamestate: the entire current state of the game
+        :return: whether this action is allowed, or None if you don't care
+        """
+        pass
+
     def on_end_game(self, kernel, gamestate):
         """
         Called immediately before the game ends
