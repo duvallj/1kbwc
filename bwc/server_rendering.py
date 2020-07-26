@@ -1,4 +1,4 @@
-from bwc.objects import AreaFlag
+from objects import AreaFlag
 
 
 def format_card(index, card):

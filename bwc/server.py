@@ -3,15 +3,18 @@ import asyncio
 import json
 from numbers import Number
 import os
-from sanic import Sanic
-from sanic.websocket import WebSocketProtocol, ConnectionClosedError
-from typing import Callable, List, Optional, Tuple
+from sanic import Sanic, response
+from sanic.websocket import WebSocketProtocol
+import sys
+from typing import Callable, List, Optional, Tuple, Union
+from websockets import ConnectionClosedError
 
-from bwc.engine import Engine
-from bwc.objects import Player
-from bwc.server_rendering import *
-from bwc.util import is_valid_player_name, random_id
+from engine import Engine
+from objects import Player
+from server_rendering import *
+from util import is_valid_player_name, is_valid_room_name, random_id
 
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 NOT_FOUND_CARD = "/placeholder-card.png"
 
 async def send_json(websocket, data):
@@ -34,12 +37,14 @@ async def send_card(websocket, card):
         "tags": tags_string
     })
 
-
-async def send_message(websocket, message):
-    await send_json(websocket, {
+def wrap_message(message):
+    return {
         "type": "message",
         "data": message
-    })
+    }
+
+async def send_message(websocket, message):
+    await send_json(websocket, wrap_message(message))
 
 
 async def send_choices(websocket, choices):
@@ -95,6 +100,25 @@ async def send_final_update(websocket, engine, player):
         "play": play_field
     })
 
+def parse_names_or_error(request) -> Tuple[bool, Union[Tuple[str, str], Tuple[str, int]]]:
+    """
+    REQUIRES: request is a request object made by Sanic
+    ENSURES: returns (success, data)
+        if success == True: data = (player_name, room_name)
+        if success == False: data = (error_message, http_code)
+    """
+    res = get_fields(request.args, ("p", "room"))
+    if res is None:
+        return False, (f"Invalid arguments {request.args}", 400)
+
+    player_name, room_name = res
+
+    if not is_valid_room_name(room_name):
+        return False, (f"Invalid room name '{room_name}'", 400)
+    if not is_valid_player_name(player_name):
+        return False, (f"Invalid player name '{player_name}'", 400)
+
+    return True, (player_name, room_name)
 
 class Room():
     def __init__(self, name):
@@ -204,16 +228,16 @@ class RoomManager():
     def __init__(self):
         self.rooms = dict()
 
-    async def make_room(self, websocket, player_name, room_name):
+    def make_room(self, player_name, room_name) -> Tuple[str, int]:
         print(f"make_room {room_name}")
         if room_name in self.rooms:
-            await send_message(websocket, f"Room '{room_name}' already exists!")
-            return
+            return f"Room '{room_name}' already exists!", 409
 
         room = Room(room_name)
         self.rooms[room_name] = room
         self.rooms[room_name].engine.reset(room.kernel_send_message, room.kernel_get_player_input)
-        await send_message(websocket, f"Made room {room_name}")
+
+        return f"Made room {room_name}", 200
 
     async def join_room(self, websocket, player_name, room_name):
         print(f"join_room {room_name} {player_name}")
@@ -389,21 +413,22 @@ class RoomManager():
         else:
             await send_message(websocket, f"The command '{cmd}' is not supported on this server")
 
-    async def run_game(self, websocket, player_name, room_name):
+    def run_game(self, player_name, room_name) -> Tuple[str, int]:
         print(f"run_game {room_name}")
         # Note: due to the way websocketOnce works, we only get one message to
         # send back on **THIS** `websocket` object. `room` methods still work
         room = self.rooms.get(room_name, None)
         if room is None:
-            await send_message(websocket, f"Error: room '{room_name}' does not exist!")
-            return
+            return f"Error: room '{room_name}' does not exist!", 404
 
         if room.started.is_set():
-            await send_message(websocket, f"Error: room '{room_name}' is already in progress!")
-            return
+            return f"Error: room '{room_name}' is already in progress!", 409
 
-        await send_message(websocket, "Game should be starting now!")
+        # Doesn't hold up this coroutine, schedules run automatically
+        asyncio.create_task(self.game_mainloop(room, player_name, room_name))
+        return "Game should be starting now!", 200
 
+    async def game_mainloop(self, room, player_name, room_name):
         room.started.set()
         await room.broadcast_message(f"Starting game '{room_name}'...")
 
@@ -440,45 +465,42 @@ class RoomManager():
     * /start?p=<player_name>&room=<room_name>
         Starts a game in an already-created room
     """
-    async def serve_make(self, request, websocket):
+    async def serve_make(self, request):
         print(f"serve_make {request=}")
-        res = get_fields(request.args, ("p", "room"))
-        if res is None:
-            await send_message(websocket, f"Invalid arguments {request.args}")
-            return
-
-        player_name, room_name = res
-        player_name, room_name = player_name[0], room_name[0]
-        await self.make_room(websocket, player_name, room_name)
+        success, res = parse_names_or_error(request)
+        if success:
+            player_name, room_name = res
+            message, http_code = self.make_room(player_name, room_name)
+            return response.json(wrap_message(message), status=http_code)
+        else:
+            error_message, http_code = res
+            return response.json(wrap_message(error_message), status=http_code)
 
     async def serve_join(self, request, websocket):
         print(f"serve_join {request=}")
-        res = get_fields(request.args, ("p", "room"))
-        if res is None:
-            await send_message(websocket, f"Invalid arguments {request.args}")
-            return
+        success, res = parse_names_or_error(request)
+        if success:
+            player_name, room_name = res
+            try:
+                await self.join_room(websocket, player_name, room_name)
+            finally:
+                self.remove_from_room(player_name, room_name)
+        else:
+            error_message, http_code = res
+            await send_message(websocket, f"{http_code}: {error_message}")
 
-        player_name, room_name = res
-        player_name, room_name = player_name[0], room_name[0]
-
-        try:
-            await self.join_room(websocket, player_name, room_name)
-        finally:
-            self.remove_from_room(player_name, room_name)
-
-    async def serve_start(self, request, websocket):
+    async def serve_start(self, request):
         print(f"serve_start {request=}")
-        res = get_fields(request.args, ("p", "room"))
-        if res is None:
-            await send_message(websocket, f"Invalid arguments {request.args}")
-            return
+        success, res = parse_names_or_error(request)
+        if success:
+            player_name, room_name = res
+            message, http_code = self.run_game(player_name, room_name)
+            return response.json(wrap_message(message), status=http_code)
+        else:
+            error_message, http_code = res
+            return response.json(wrap_message(error_message), status=http_code)
 
-        player_name, room_name = res
-        player_name, room_name = player_name[0], room_name[0]
-        # Doesn't hold up this socket, schedules run automatically
-        asyncio.create_task(self.run_game(websocket, player_name, room_name))
-
-
+# This code is now redundant, but keeping it for posterity's sake (i lov it so much uwu)
 async def intercept_http(path, headers):
     prefixes = ['make', 'join', 'start']
     if any(path.lstrip('/').startswith(x) for x in prefixes):
@@ -520,19 +542,18 @@ def make_parser():
 def make_server():
     app = Sanic("1kbwc")
     manager = RoomManager()
-    app.add_websocket_route(manager.serve_make, '/make')
+    app.add_route(manager.serve_make, '/make', methods=['GET', 'POST'])
+    app.add_route(manager.serve_start, '/start', methods=['GET', 'POST'])
     app.add_websocket_route(manager.serve_join, '/join')
-    app.add_websocket_route(manager.serve_start, '/start')
-    app.static('/static', './static')
+    app.static('/', os.path.join(PROJECT_ROOT, 'static', 'index.html'))
+    app.static('/', os.path.join(PROJECT_ROOT, 'static'))
     return app
 
 
 def main():
     args = make_parser().parse_args()
-    server = make_server()
-    print(f"Listening on port {args.port}")
     app = make_server()
-    app.run(host="0.0.0.0", port=args.port, protocol=WebSocketProtocol)
+    app.run(host="0.0.0.0", port=args.port, protocol=WebSocketProtocol, workers=1)
 
 if __name__ == "__main__":
     main()

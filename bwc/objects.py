@@ -2,7 +2,7 @@ from enum import Enum
 from random import getrandbits
 from typing import Dict, Optional, List
 
-from bwc.util import immutablize, random_id
+from util import immutablize, random_id
 
 
 # (editable) data tied to the card itself, and not the game

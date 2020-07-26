@@ -1,11 +1,11 @@
 import inspect
 import random
 
-from bwc.objects import Card
+from objects import Card
 
 
 def read_cards():
-    from bwc import cards
+    import cards
     card_modules = inspect.getmembers(cards, inspect.ismodule)
     card_classes = []
     for card_module in card_modules:

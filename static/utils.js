@@ -13,20 +13,41 @@ let socket = false;
 let socket_connected = false;
 
 
-function ajaxOnce(path, callback) {
-    var xmlhttp = new XMLHttpRequest();
+function ajaxGet(path, callback) {
+    let xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function () {
         if (xmlhttp.readyState === XMLHttpRequest.DONE) {
-            if (xmlhttp.status === 200) {
-                callback(xmlhttp.responseText);
-            } else {
-                alert(xmlhttp.status);
+            if (xmlhttp.status > 299) {
+                console.log(xmlhttp.status);
+                console.log(xmlhttp);
             }
+            callback(xmlhttp.responseText);
         }
     };
     xmlhttp.open("GET", path, true);
     xmlhttp.send();
 };
+
+function ajaxPost(path, data, callback) {
+    let xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function () {
+        if (xmlhttp.readyState === XMLHttpRequest.DONE) {
+            if (xmlhttp.status > 299) {
+                console.log(xmlhttp.status);
+                console.log(xmlhttp);
+            }
+            callback(xmlhttp.responseText);
+        }
+    };
+    let formData = new FormData();
+    for (var key in data) {
+        if (data.hasOwnProperty(key)) {           
+            formData.append(key, data[key]);
+        }
+    }
+    xmlhttp.open("POST", path, true);
+    xmlhttp.send(formData);
+}
 
 // Same as the ajaxOnce, calling a callback on the first websocket
 // message received and then immediately closing

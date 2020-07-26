@@ -95,10 +95,14 @@ def random_id(disallowed: List[str] = None) -> str:
                 return c
 
 
-# Explanation: lowercase letters and numbers allowed, hyphens also allowed
-# but only in the middle of the string
-VALID_NAME_REGEX = re.compile(r"^[a-z0-9]+[a-z0-9\-]*[a-z0-9]+$")
-
+# Explanation: lowercase letters are the easiest to type quickly
+VALID_NAME_REGEX = re.compile(r"^[a-z]+$")
+# Explanation: rooms should have 0 chance of doing anything weird in html
+# so, only allow letters, numbers, and single dashes in between
+VALID_ROOM_REGEX = re.compile(r"^[a-zA-Z0-9]+(\-[a-zA-Z0-9]+)*$")
 
 def is_valid_player_name(player_name: str) -> bool:
     return bool(VALID_NAME_REGEX.fullmatch(player_name))
+
+def is_valid_room_name(room_name: str) -> bool:
+    return bool(VALID_ROOM_REGEX.fullmatch(room_name))
