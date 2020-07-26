@@ -113,7 +113,7 @@ class Engine:
         self.kernel.on_turn_start()
 
     def is_game_over(self):
-        return len(self.game.draw.contents) == 0
+        return self.game.is_over
 
     def get_player(self, player_name):
         if player_name in self.game.players:

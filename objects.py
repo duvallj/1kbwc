@@ -554,3 +554,5 @@ class Game:
         self.cards_played_this_turn: int = 0        # keeps track of how many cards the player played under normal circumstances, cards that other players play this turn or that cards force a player to play are not counted
         self.max_cards_drawn_this_turn: int = 1
         self.cards_drawn_this_turn: int = 0
+
+        self.is_over: bool = False # whether or not the game is over; set to true after the game ends

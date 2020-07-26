@@ -125,7 +125,6 @@ class Kernel:
 
         return True
 
-    # TODO ordering in areas - from top of draw pile or to top of discard pile????
     def move_card(self, requestor: Union[Player, Card], moving_card: Card, from_area: Area, to_area: Area) -> bool:
         """
         Callback for moving a card between play areas
@@ -288,7 +287,6 @@ class Kernel:
 
         return False
 
-    # TODO Check if the game is over (drawpile is empty) in here?
     def end_turn(self, player: Player) -> bool:
         """
         Advances to the next turn
@@ -446,13 +444,33 @@ class Kernel:
 
         return None
 
-    # TODO this should actually end the game
-    def end_game(self):
+    def end_game(self, requestor: Union[Card, None]):
         """
-        Calls card's end_game hooks right before the game ends.
+        Ends the game.
+
+        First polls cards to see if the action is allowed, if no card denies it, the game ends
+
+        :param requestor: the card that requested this action (or None if the kernel is 
+        responsible)
+        :return: True if the game ended, False otherwise
         """
+
+        is_allowed = None
         for card in self.__game.all_cards:
-            self.__run_card_handler(card, 'on_end_game', self.__game)
+            is_allowed = self.__run_card_handler(card, 'handle_end_game', requestor,
+                                                self.__game)
+            if is_allowed is not None:
+                break
+
+        if is_allowed is None:
+            # default is to allow
+            is_allowed = True
+
+        if is_allowed:
+            self.__game.is_over = True
+            self.run_all_hooks('on_end_game', self.__game)
+
+        return is_allowed
 
     def send_message(self, players: List[Player], message: str) -> bool:
         """
