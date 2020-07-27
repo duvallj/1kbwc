@@ -32,10 +32,14 @@ function addQueryParamsToPath(path) {
 function makeRoom() {
     const call_path = addQueryParamsToPath(MAKE_PATH);
     if (call_path !== null) {
-        ajaxGet(call_path, on_message);
-        
-        // We figured this should be default
-        joinRoom();
+        ajaxGet(call_path, function (message) {
+            on_message(message)
+
+            // We figured joining the room right after making it should be default
+            // This is inside the callback to ensure we only try to join the room once it's
+            // actually been made
+            joinRoom();
+        });
     }
 }
 

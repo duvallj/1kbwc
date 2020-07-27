@@ -1,8 +1,8 @@
 from os import listdir
 
-import cardreader
-from kernel import Kernel
-from objects import *
+from bwc import cardreader
+from bwc.kernel import Kernel
+from bwc.objects import *
 
 
 class Engine:

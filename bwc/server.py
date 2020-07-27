@@ -9,10 +9,10 @@ import sys
 from typing import Callable, List, Optional, Tuple, Union
 from websockets import ConnectionClosedError
 
-from engine import Engine
-from objects import Player
-from server_rendering import *
-from util import is_valid_player_name, is_valid_room_name, random_id
+from bwc.engine import Engine
+from bwc.objects import Player
+from bwc.server_rendering import *
+from bwc.util import is_valid_player_name, is_valid_room_name, random_id
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 NOT_FOUND_CARD = "/placeholder-card.png"
@@ -135,7 +135,11 @@ class Room():
         self.last_choice = dict()
         self.choice_condition = asyncio.Condition()
 
-    async def add_player(self, websocket, player_name):
+    async def add_player(self, websocket, player_name) -> bool:
+        """
+        Returns true iff the player was successfully added
+        """
+
         if player_name in self.clients:
             await send_message(websocket, f"Error: '{format_player(player_name)}' is already a player in this room '{self.name}!")
             return False
@@ -150,6 +154,10 @@ class Room():
         return True
 
     async def broadcast_message(self, message):
+        """
+        Sends a message to all clients connected to this room
+        """
+
         for client in self.clients.values():
             try:
                 await send_message(client, message)
@@ -163,6 +171,12 @@ class Room():
                 pass
 
     async def broadcast_update(self, final=False):
+        """
+        Broadcasts the game state to all connected clients
+
+        If final=True, then a "final game update" containing the winners is sent
+        """
+
         for player_name, client in self.clients.items():
             player = self.engine.get_player(player_name)
             try:
@@ -175,11 +189,19 @@ class Room():
                 pass
 
     def remove_player(self, player_name):
+        """
+        Removes a player from this room
+        """
+
         if player_name in self.clients:
             self.engine.remove_player(player_name)
             del self.clients[player_name]
 
     async def kernel_send_message(self, players: List[Player], message: str):
+        """
+        Async callback function for the kernel to send a message in this room
+        """
+
         for player in players:
             client = self.clients.get(player.username, None)
             if client is not None:
@@ -191,6 +213,10 @@ class Room():
                 print(f"Player {player.username} was in list to receive message, but they're no longer connected!")
 
     async def kernel_get_player_input(self, player: Player, choices: List[str], callback: Callable[[str], None]):
+        """
+        Async callback function for the kernel to ask for a player to make a choice
+        """
+
         # make a copy just in case
         choices = choices[:]
         client = self.clients.get(player.username, None)
@@ -211,11 +237,12 @@ class Room():
         await self.broadcast_update()
 
 
-"""
-Returns: None is data is missing any of fields, Some(tuple) containng the
-extracted data otherwise
-"""
 def get_fields(data: dict, fields: Tuple[str, ...]) -> Optional[Tuple[str, ...]]:
+    """
+    Returns: None is data is missing any of fields, Some(tuple) containng the
+    extracted data otherwise
+    """
+
     output = tuple(map(lambda field: data.get(field, None), fields))
 
     if any(value is None for value in output):
@@ -466,7 +493,7 @@ class RoomManager():
         Starts a game in an already-created room
     """
     async def serve_make(self, request):
-        print(f"serve_make {request=}")
+        print(f"serve_make {request.args}")
         success, res = parse_names_or_error(request)
         if success:
             player_name, room_name = res
@@ -477,7 +504,7 @@ class RoomManager():
             return response.json(wrap_message(error_message), status=http_code)
 
     async def serve_join(self, request, websocket):
-        print(f"serve_join {request=}")
+        print(f"serve_join {request.args}")
         success, res = parse_names_or_error(request)
         if success:
             player_name, room_name = res
@@ -490,7 +517,7 @@ class RoomManager():
             await send_message(websocket, f"{http_code}: {error_message}")
 
     async def serve_start(self, request):
-        print(f"serve_start {request=}")
+        print(f"serve_start {request.args}")
         success, res = parse_names_or_error(request)
         if success:
             player_name, room_name = res

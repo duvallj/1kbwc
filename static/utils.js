@@ -12,7 +12,9 @@ const output = document.getElementById("output");
 let socket = false;
 let socket_connected = false;
 
-
+/*
+ * Callback: called on the received data like callback(data)
+ */
 function ajaxGet(path, callback) {
     let xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function () {

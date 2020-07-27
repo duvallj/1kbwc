@@ -2,8 +2,8 @@ import asyncio
 import traceback
 from typing import Callable, Tuple, Union
 
-from objects import *
-from util import immutablize
+from bwc.objects import *
+from bwc.util import immutablize
 
 
 class Kernel:

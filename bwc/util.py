@@ -1,8 +1,11 @@
 import inspect
+from os.path import abspath, dirname, join
 import re
 from random import choice
 from typing import List
 
+# Root directory of the module
+MODULE_ROOT = dirname(abspath(__file__))
 
 def immutablize(target):
     """
@@ -88,7 +91,7 @@ def immutablize(target):
 def random_id(disallowed: List[str] = None) -> str:
     if disallowed is None:
         disallowed = []
-    with open('../words.txt', 'r') as f:
+    with open(join(MODULE_ROOT, 'words.txt'), 'r') as f:
         while True:
             c = choice(f.read().strip().split('\n'))
             if c not in disallowed:
