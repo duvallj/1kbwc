@@ -127,7 +127,7 @@ class Kernel:
 
         return True
 
-    def move_card_by_index(self, requestor: [Union[Player, Card], index: int, from_area: Area, to_area: Area]) -> bool:
+    def move_card_by_index(self, requestor: Union[Player, Card], index: int, from_area: Area, to_area: Area) -> bool:
         """
         Convenience wrapper for move card; converts the index into a card and calls `move_card`
         Use this method if you want to index cards manually
@@ -140,7 +140,7 @@ class Kernel:
         :param to_area: the area the card is being added to
         :return: whether the action was performed
         """
-        
+
         if index >= len(from_area):
             if len(self.__game.draw) == 0 and from_area == self.__game.draw:
                 end_game(None)

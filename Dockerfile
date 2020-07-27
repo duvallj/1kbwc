@@ -5,4 +5,4 @@ COPY ./requirements.txt /1kbwc-app/
 RUN cd /1kbwc-app && pip3 install -r requirements.txt
 COPY . /1kbwc-app/
 
-CMD ["/usr/local/bin/python3", "/1kbwc-app/server.py"]
+CMD ["/usr/local/bin/python3", "-m", "bwc.server"]
