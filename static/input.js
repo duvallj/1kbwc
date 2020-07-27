@@ -432,6 +432,8 @@ var img = document.getElementById("inspect-image");
 var modalImg = document.getElementById("img01");
 var captionText = document.getElementById("caption");
 img.onclick = function () {
+    // TODO: also have the modal request a high-resolution image maybe?
+    // (sorry currently the image resolutions are nuked to around 400px wide)
     modal.style.display = "block";
     modalImg.src = this.src;
     captionText.innerHTML = this.alt;
