@@ -478,6 +478,9 @@ class Kernel:
         responsible)
         :return: True if the game ended, False otherwise
         """
+    
+        if requestor is not None:
+            requestor = self.__mutablize_obj(requestor)
 
         is_allowed = None
         for card in self.__game.all_cards:
@@ -740,5 +743,35 @@ class Kernel:
 
     def find_winners(self):
         """
+        Find who won the game, and who didn't
+        (Spoilers, it's you.  You lost the game...)
+
+        Poll cards for a vote on whether given players won, if nobody interferes find the
+        highest-scoring player
+
+        :return: [(Player, winner: bool, score: int)] the players, in order of winningness,
+        with the winners tagged and the player's scores included.
         """
-        pass
+        players = []
+        for player_name in self.__game.players:
+            player = self.__game[player_name]
+            score = self.score_player(player)
+            winningness = 0
+            for card in self.__game.all_cards:
+                val = self.__run_card_handler(card, 'handle_winner', player, score,
+                                            self.__game)
+                if val == True:
+                    winningness += 1
+                elif val == False:
+                    winningness -= 1
+            players.append([player, winningness, score])
+
+        use_default = True
+        for data in players:
+            if data[1] > 0:
+                use_default = False
+
+        if use_default:
+            #do some sortin
+            
+
