@@ -70,6 +70,7 @@ function joinRoom() {
         
         // Xtreme hacks, referencing something in a global scope that hasn't been defined yet
         playerName = params.player_name;
+        roomName = params.room_name;
         add_to_output("### Trying to join room " + params.room_name + " as player " + params.player_name);
         if (socket_connected) {
             disconnect();
