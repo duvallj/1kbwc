@@ -100,16 +100,16 @@ async def send_final_update(websocket, engine, player):
         "play": play_field
     })
 
-def parse_names_or_error(request) -> Tuple[bool, Union[Tuple[str, str], Tuple[str, int]]]:
+def parse_names_or_error(args) -> Tuple[bool, Union[Tuple[str, str], Tuple[str, int]]]:
     """
     REQUIRES: request is a request object made by Sanic
     ENSURES: returns (success, data)
         if success == True: data = (player_name, room_name)
         if success == False: data = (error_message, http_code)
     """
-    res = get_fields(request.args, ("p", "room"))
+    res = get_fields(args, ("player_name", "room_name"))
     if res is None:
-        return False, (f"Invalid arguments {request.args}", 400)
+        return False, (f"Invalid arguments {args}", 400)
 
     player_name, room_name = res
 
@@ -483,18 +483,23 @@ class RoomManager():
         if room is not None:
             room.remove_player(player_name)
 
+    def list_rooms(self):
+        return list(self.rooms.keys())
+
     """
     Paths defined:
-    * /make?p=<player_name>&room=<room_name>
+    * POST /make?p=<player_name>&room=<room_name>
         Makes a new room
-    * /join?p=<player_name>&room=<room_name>
+    * WEBSOCKET /join?p=<player_name>&room=<room_name>
         Joins a room as a player
-    * /start?p=<player_name>&room=<room_name>
+    * POST /start?p=<player_name>&room=<room_name>
         Starts a game in an already-created room
+    * GET /list
+        Lists all rooms currently running
     """
     async def serve_make(self, request):
-        print(f"serve_make {request.args}")
-        success, res = parse_names_or_error(request)
+        print(f"serve_make {request.form}")
+        success, res = parse_names_or_error(request.form)
         if success:
             player_name, room_name = res
             message, http_code = self.make_room(player_name, room_name)
@@ -505,20 +510,27 @@ class RoomManager():
 
     async def serve_join(self, request, websocket):
         print(f"serve_join {request.args}")
-        success, res = parse_names_or_error(request)
+        success, res = parse_names_or_error(request.args)
         if success:
             player_name, room_name = res
             try:
                 await self.join_room(websocket, player_name, room_name)
             finally:
                 self.remove_from_room(player_name, room_name)
+                # If there's no one left connected to the room, DESTROY IT MUAHAHAA
+                # TODO: think about reaping old rooms automatically too
+                room = self.rooms.get(room_name, None)
+                if room is not None:
+                    if len(room.clients) == 0:
+                        print(f"No one left in room '{room_name}', reaping")
+                        del self.rooms[room_name]
         else:
             error_message, http_code = res
             await send_message(websocket, f"{http_code}: {error_message}")
 
     async def serve_start(self, request):
-        print(f"serve_start {request.args}")
-        success, res = parse_names_or_error(request)
+        print(f"serve_start {request.form}")
+        success, res = parse_names_or_error(request.form)
         if success:
             player_name, room_name = res
             message, http_code = self.run_game(player_name, room_name)
@@ -526,6 +538,11 @@ class RoomManager():
         else:
             error_message, http_code = res
             return response.json(wrap_message(error_message), status=http_code)
+
+    async def serve_list(self, request):
+        # TODO: add sorting options server side to prevent sending too much data?
+        print(f"serve_list {request.args}")
+        return response.json(self.list_rooms(), status=200)
 
 # This code is now redundant, but keeping it for posterity's sake (i lov it so much uwu)
 async def intercept_http(path, headers):
@@ -569,8 +586,9 @@ def make_parser():
 def make_server():
     app = Sanic("1kbwc")
     manager = RoomManager()
-    app.add_route(manager.serve_make, '/make', methods=['GET', 'POST'])
-    app.add_route(manager.serve_start, '/start', methods=['GET', 'POST'])
+    app.add_route(manager.serve_make, '/make', methods=['POST'])
+    app.add_route(manager.serve_start, '/start', methods=['POST'])
+    app.add_route(manager.serve_list, '/list', methods=['GET'])
     app.add_websocket_route(manager.serve_join, '/join')
     app.static('/', os.path.join(PROJECT_ROOT, 'static', 'index.html'))
     app.static('/', os.path.join(PROJECT_ROOT, 'static'))

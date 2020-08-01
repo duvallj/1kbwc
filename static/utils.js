@@ -136,6 +136,7 @@ function on_message(content) {
             case "inspect":  // TODO: This can't be right...
                 if (has_all(m, ["url", "title", "value", "flags", "tags"])) {
                     document.getElementById("inspect-image").src = IMAGE_BASE_URL + m.url;
+                    document.getElementById("inspect-image").alt = m.title;
                     document.getElementById("inspect-title").innerHTML = m.title;
                     document.getElementById("inspect-value").innerHTML = m.value;
                     document.getElementById("inspect-flags").innerHTML = m.flags;

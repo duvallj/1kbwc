@@ -1,5 +1,6 @@
 let choices = [];  // Options for the choice state, empty indicates non-choice state
 let playerName = "nonexistent";
+let roomName = "nonexistent";
 
 let commandHistory = [];
 let historyIndex = -1;
