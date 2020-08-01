@@ -771,7 +771,10 @@ class Kernel:
             if data[1] > 0:
                 use_default = False
 
+        players = sorted(players, key=lambda data: data[2])
         if use_default:
-            #do some sortin
-            
+            players[0][1] += 1
 
+        players = sorted(players, key=lambda data: data[1])
+
+        return [(p[0], p[1] > 0, p[2]) for p in players]

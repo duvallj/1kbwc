@@ -401,6 +401,19 @@ class Card:
         """
         pass
 
+    def handle_winner(self, kernel, player, score, gamestate):
+        """
+        This handler is called when the player's scores are evaluated at the end of the game.
+        You can use it to alter who wins
+
+        :param kernel: the game's Kernel object
+        :param player: the player who's victory is currently being determined
+        :param score: the above player's score
+        :param gamestate: the entire state of the game
+        :return: False to vote against this player winning, True to vote for them winning,
+        or None if you don't wish to affect this player's win condition
+        """
+
     def handle_end_game(self, kernel, requestor, gamestate):
         """
         This handler is called when something is attempting to end the game
