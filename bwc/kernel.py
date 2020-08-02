@@ -41,17 +41,16 @@ class Kernel:
         :param *args: all remaining args will be passed to the handler
         :return: the return value from the handler call
         """
+        immutable_args = [immutablize(arg) for arg in args]
         if AreaFlag.PLAY_AREA in card._area.flags or CardFlag.ALWAYS_GET_EVENTS in card.flags:
             handler = getattr(card, handler_str, None)
             result = None
-            if handler is not None:
-                immutable_args = [immutablize(arg) for arg in args]
-                try:
-                    result = handler(self, *immutable_args)
-                except AttributeError as e:
-                    # TODO: do something with the error, like alert the
-                    # players a card has crashed
-                    traceback.print_exc()
+            try:
+                result = handler(self, *immutable_args)
+            except AttributeError as e:
+                # TODO: do something with the error, like alert the
+                # players a card has crashed
+                traceback.print_exc()
             return result
         else:
             return None
@@ -70,12 +69,11 @@ class Kernel:
         for card in self.__game.all_cards:
             if AreaFlag.PLAY_AREA in card._area.flags or CardFlag.ALWAYS_GET_EVENTS in card.flags:
                 handler = getattr(card, hook_str, None)
-                if handler is not None:
-                    try:
-                        handler(self, *immutable_args)
-                    except Exception:
-                        traceback.print_exc()
-                        pass
+                try:
+                    handler(self, *immutable_args)
+                except Exception:
+                    traceback.print_exc()
+                    pass
 
     def __mutablize_obj(self, obj):
         return getattr(obj, "_backing_obj", obj)

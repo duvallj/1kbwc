@@ -14,13 +14,13 @@ class Engine:
         self.game = Game()
         self.kernel = Kernel(self.game, send_message, get_player_input)
 
-    def setup_game(self):
-        self.setup_areas()
+    def setup_game(self, gamerounds=5, handsize=5):
+        self.setup_areas(gamerounds, handsize)
         self.game.turn_order = list(self.game.players.values())
         self.game.current_player = self.game.turn_order[self.game.turn_order_index]
 
-    def setup_areas(self):
-        card_deck = cardreader.make_deck(len(self.game.players) * 8)  # MAGIC NUMBER, AAAAA
+    def setup_areas(self, gamerounds=5, handsize=5):
+        card_deck = cardreader.make_deck(len(self.game.players) * handsize * gamerounds)
         self.game.all_cards = card_deck[:]
 
         # discard
@@ -57,11 +57,11 @@ class Engine:
             player.hand = hand
             hand.flags = {AreaFlag.HAND_AREA}
             hand.id = f'{player.username}.hand'
-            hand.contents = card_deck[:5]
+            hand.contents = card_deck[:handsize]
             for card in hand.contents:
                 card._area = hand
                 card._owner = player
-            card_deck = card_deck[5:]
+            card_deck = card_deck[handsize:]
             self.game.all_areas[hand.id] = hand
 
         # draw pile
