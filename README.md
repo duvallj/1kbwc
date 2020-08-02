@@ -21,3 +21,4 @@ Ok so basically look at the documentation in the `APIs` directory
 
 ### How do I contribute cards
 Look in the `bwc/cards` directory! There are lots of example cards, pick on and start copying its layout
+It's recommended you use the provided `maker/maker.html` to do the repetitive boilerplate for you!
