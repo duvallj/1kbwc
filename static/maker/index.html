@@ -2,14 +2,14 @@
 <html>
 <head>
     <title>Card Maker</title>
-    <link href="maker.css" rel="stylesheet"></link>
-    <link href="styles/a11y-light.css" rel="stylesheet"></link>
+    <link rel="stylesheet" href="/maker/maker.css" />
+    <link rel="stylesheet" href="/maker/styles/a11y-light.css" />
 </head>
 <body>
 <h1 class="center">Simple Card Maker!</h1>
 <div class="center" id="controlButtons">
     <button id="resetButton" onclick="reset();">Reset!</button>
-    <a download="example_card.py" href="" id="downloadButton">
+    <a download="example_card.py" href="#" id="downloadButton">
         <button id="download" onclick="download();">Export!</button>
     </a>
     <button id="copyButton" onclick="copy();">Copy!</button>
@@ -19,7 +19,7 @@
     <div id="editorContainer">
         <label for="class">Class:</label>
         <input disabled id="class" oninput="update();" placeholder="example_card" type="text">
-        <div></div>
+        <br>
         <div>
             <input id="enableClass" onclick="classUpdate();" type="checkbox">
             <label for="enableClass">Use unique class name</label>
@@ -45,27 +45,27 @@
             <input class="flags" id="PLAY_ANY_TIME" name="flags" oninput="update();" type="checkbox" value="PLAY_ANY_TIME">
             <label for="PLAY_ANY_TIME">Play at any time</label>
         </div>
-        <div></div>
+        <br>
         <div class="checkbox">
             <input class="flags" id="ALWAYS_GET_EVENTS" name="flags" oninput="update();" type="checkbox" value="ALWAYS_GET_EVENTS">
             <label for="ALWAYS_GET_EVENTS">Always get events</label>
         </div>
-        <div></div>
+        <br>
         <div class="checkbox">
             <input class="flags" id="NO_PLAY_TO_CENTER" name="flags" oninput="update();" type="checkbox" value="NO_PLAY_TO_CENTER">
             <label for="NO_PLAY_TO_CENTER">Cannot be played to center</label>
         </div>
-        <div></div>
+        <br>
         <div class="checkbox">
             <input class="flags" id="ONLY_PLAY_TO_CENTER" name="flags" oninput="update();" type="checkbox" value="ONLY_PLAY_TO_CENTER">
             <label for="ONLY_PLAY_TO_CENTER">Play only to center</label>
         </div>
-        <div></div>
+        <br>
         <div class="checkbox">
             <input class="flags" id="NO_PLAY_TO_SELF" name="flags" oninput="update();" type="checkbox" value="NO_PLAY_TO_SELF">
             <label for="NO_PLAY_TO_SELF">Cannot be played to self</label>
         </div>
-        <div></div>
+        <br>
         <div class="checkbox">
             <input class="flags" id="ONLY_PLAY_TO_SELF" name="flags" oninput="update();" type="checkbox" value="ONLY_PLAY_TO_SELF">
             <label for="ONLY_PLAY_TO_SELF">Play only to self</label>
@@ -76,14 +76,14 @@
         <input id="tags" oninput="update();" placeholder='Metallurgy "Road Sign"' type="text">
     </div>
     <div id="imageContainer">
-        <img id="cardImage" src="FairAndBalanced.png"/>
+        <img id="cardImage" src="/maker/FairAndBalanced.png" alt="Output card image" />
     </div>
     <div id="previewContainer">
         <pre><code class="lang-python" id="preview">Code!</code></pre>
     </div>
 </div>
-<script src="highlight.pack.js"></script>
-<script src="longboys.js"></script>
-<script src="maker.js"></script>
+<script src="/maker/highlight.pack.js"></script>
+<script src="/maker/longboys.js"></script>
+<script src="/maker/maker.js"></script>
 </body>
 </html>
