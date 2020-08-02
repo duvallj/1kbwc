@@ -590,6 +590,7 @@ def make_server():
     app.add_route(manager.serve_start, '/start', methods=['POST'])
     app.add_route(manager.serve_list, '/list', methods=['GET'])
     app.add_websocket_route(manager.serve_join, '/join')
+    app.static('/maker', os.path.join(PROJECT_ROOT, 'static', 'maker', 'index.html'))
     app.static('/', os.path.join(PROJECT_ROOT, 'static', 'index.html'))
     app.static('/', os.path.join(PROJECT_ROOT, 'static'))
     return app
