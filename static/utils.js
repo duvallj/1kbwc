@@ -3,9 +3,7 @@ const HOST = window.location.host;
 const PATH = SCHEME + "://" + HOST;
 const IMAGE_BASE_URL = "/cards/";
 
-const socket_path = document.getElementById("socketPath");
-socket_path.value = PATH;
-const socket_connected_log = document.getElementById("socketConnect");
+document.getElementById("socketPath").value = PATH;
 
 let socket = false;
 let socket_connected = false;
@@ -54,6 +52,7 @@ function ajaxPost(path, data, callback) {
 // I only have to do this b/c I didn't want to mess around with any
 // webserver libraries in ~~Rust~~ Python oop
 function websocketOnce(path, callback) {
+    const socket_path = document.getElementById("socketPath");
     const full_path = socket_path.value + path;
     var localsocket = new WebSocket(full_path);
 
@@ -87,6 +86,7 @@ function websocketOnce(path, callback) {
 /// Send opened status messages.
 function on_open() {
     add_to_output("### Opened WebSocket");
+    const socket_connected_log = document.getElementById("socketConnect");
     socket_connected_log.innerHTML = "Yes";
     socket_connected = true;
 }
@@ -94,6 +94,7 @@ function on_open() {
 /// Send closed status messages.
 function on_close() {
     add_to_output("### Closed WebSocket");
+    const socket_connected_log = document.getElementById("socketConnect");
     socket_connected_log.innerHTML = "No";
     socket_connected = false;
 }
@@ -169,6 +170,7 @@ function connect() {
     if (socket_connected) {
         disconnect();
     }
+    const socket_path = document.getElementById("socketPath");
     socket = new WebSocket(socket_path.value);
     init_socket(socket);
 }

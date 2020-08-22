@@ -14,9 +14,9 @@ function validatePlayer(player_name) {
     return /^[a-z]+$/.test(player_name);
 }
 
-function validateParams(room_name, player_name) {
-    const room_name = room_name || "TJHSST";
-    const player_name = (player_name || "bob").toLowerCase();
+function validateParams(maybe_room_name, maybe_player_name) {
+    const room_name = maybe_room_name || "TJHSST";
+    const player_name = (maybe_player_name || "bob").toLowerCase();
     if (!validateRoom(room_name)) {
         add_to_output("### Error: room name " + room_name + " is invalid! Please enter something without spaces or special characters.");
         return null;
@@ -36,7 +36,7 @@ function addParamsToPath(path, params) {
 }
 
 function makeRoom(room_name, player_name) {
-    const params = getAndValidateParams(room_name, player_name);
+    const params = validateParams(room_name, player_name);
     if (params !== null) {
         ajaxPost(MAKE_PATH, params, function (message) {
             on_message(message)
@@ -74,6 +74,7 @@ function joinRoom(room_name, player_name) {
         if (socket_connected) {
             disconnect();
         }
+        const socket_path = document.getElementById("socketPath");
         socket = new WebSocket(socket_path.value + call_path);
         init_socket(socket);
     }
