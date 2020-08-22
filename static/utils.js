@@ -6,8 +6,6 @@ const IMAGE_BASE_URL = "/cards/";
 const socket_path = document.getElementById("socketPath");
 socket_path.value = PATH;
 const socket_connected_log = document.getElementById("socketConnect");
-const input = document.getElementById("input");
-const output = document.getElementById("output");
 
 let socket = false;
 let socket_connected = false;
@@ -133,7 +131,7 @@ function on_message(content) {
                     console.log("Update lacked hand or play: " + content);
                 }
                 break;
-            case "inspect":  // TODO: This can't be right...
+            case "inspect":
                 if (has_all(m, ["url", "title", "value", "flags", "tags"])) {
                     document.getElementById("inspect-image").src = IMAGE_BASE_URL + m.url;
                     document.getElementById("inspect-image").alt = m.title;
@@ -193,6 +191,7 @@ function send_on_websocket(what) {
 
 /// Add the string to the output box on the next line.
 function add_to_output(s) {
+    const output = document.getElementById("output");
     output.innerHTML += "\n" + s;
     output.scrollTop = output.scrollHeight;
 }

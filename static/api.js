@@ -1,6 +1,7 @@
 const MAKE_PATH = "/make";
 const JOIN_PATH = "/join";
 const START_PATH = "/start";
+const LIST_PATH = "/list";
 
 
 function validateRoom(room_name) {
@@ -13,11 +14,9 @@ function validatePlayer(player_name) {
     return /^[a-z]+$/.test(player_name);
 }
 
-function getAndValidateParams() {
-    const roomName_input = document.getElementById("roomName");
-    const playerName_input = document.getElementById("myName");
-    const room_name = roomName_input.value;
-    const player_name = playerName_input.value.toLowerCase();
+function validateParams(room_name, player_name) {
+    const room_name = room_name || "TJHSST";
+    const player_name = (player_name || "bob").toLowerCase();
     if (!validateRoom(room_name)) {
         add_to_output("### Error: room name " + room_name + " is invalid! Please enter something without spaces or special characters.");
         return null;
@@ -36,8 +35,8 @@ function addParamsToPath(path, params) {
     return path + "?player_name=" + params.player_name + "&room_name=" + params.room_name;
 }
 
-function makeRoom() {
-    const params = getAndValidateParams();
+function makeRoom(room_name, player_name) {
+    const params = getAndValidateParams(room_name, player_name);
     if (params !== null) {
         ajaxPost(MAKE_PATH, params, function (message) {
             on_message(message)
@@ -50,18 +49,18 @@ function makeRoom() {
     }
 }
 
-function startRoom() {
-    const params = getAndValidateParams();
+function startRoom(room_name, player_name) {
+    const params = validateParams(room_name, player_name);
     if (params !== null) {
         ajaxPost(START_PATH, params, on_message);
     }
 }
 
-function joinRoom() {
-    const params = getAndValidateParams();
+function joinRoom(room_name, player_name) {
+    const params = validateParams(room_name, player_name);
     if (params !== null) {
         // Protection in case someone accidentally clicks "join_room" again while they are the only person in the room
-        if (socket_connected && roomName == params.room_name) {
+        if (socket_connected && currentRoomName == params.room_name) {
             add_to_output("### You have already joined that room!");
             return;
         }
@@ -69,8 +68,8 @@ function joinRoom() {
         const call_path = addParamsToPath(JOIN_PATH, params);
         
         // Xtreme hacks, referencing something in a global scope that hasn't been defined yet
-        playerName = params.player_name;
-        roomName = params.room_name;
+        currentPlayerName = params.player_name;
+        currentRoomName = params.room_name;
         add_to_output("### Trying to join room " + params.room_name + " as player " + params.player_name);
         if (socket_connected) {
             disconnect();
@@ -78,4 +77,8 @@ function joinRoom() {
         socket = new WebSocket(socket_path.value + call_path);
         init_socket(socket);
     }
+}
+
+function listRooms(callback) {
+    ajaxGet(LIST_PATH, callback);
 }

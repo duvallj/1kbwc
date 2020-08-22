@@ -1,6 +1,8 @@
+const input = document.getElementById("input");
+
 let choices = [];  // Options for the choice state, empty indicates non-choice state
-let playerName = "nonexistent";
-let roomName = "nonexistent";
+let currentPlayerName = "nonexistent";
+let currentRoomName = "nonexistent";
 
 let commandHistory = [];
 let historyIndex = -1;
@@ -174,7 +176,7 @@ function choiceParse(r, tokens) {
         r.data = {
             "cmd": "choose",
             "which": num,
-            "caller": playerName
+            "caller": currentPlayerName
         }
         choices = [];
         return r;
@@ -234,7 +236,7 @@ function help(r, args) {
 /// Parse and send a draw command.
 function draw(r, args) {
     if (args.length === 0) {
-        args = ["drawpile", 1, playerName + ".hand"];
+        args = ["drawpile", 1, currentPlayerName + ".hand"];
         return move(r, args);
     }
     r.output = "fail";
@@ -244,9 +246,9 @@ function draw(r, args) {
 /// Parse and send a play command.
 function play(r, args) {
     if (args.length === 2) {
-        args.unshift(playerName + ".hand");
+        args.unshift(currentPlayerName + ".hand");
         if (args[2].indexOf('.') === -1) {  // Might be a player name
-            if (document.getElementById("play-state").innerHTML.indexOf("<span class=\"playerName\">" + args[2] + "</span>") !== -1) {
+            if (document.getElementById("play-state").innerHTML.indexOf("<span class=\"currentPlayerName\">" + args[2] + "</span>") !== -1) {
                 // There exists a player with the name in args[2]
                 args[2] += ".play";
                 console.log("modified play target to " + args[2]);
@@ -270,7 +272,7 @@ function end(r, args) {
     r.output = "input";
     r.data = {
         "cmd": "end",
-        "caller": playerName,
+        "caller": currentPlayerName,
         "comment": ""
     };
     if (args.length > 0) {
@@ -282,7 +284,7 @@ function end(r, args) {
 function readInspect(r, args) {
     if (args.length === 2) {
         if (args[0] === "hand") {
-            args[0] = playerName + ".hand";
+            args[0] = currentPlayerName + ".hand";
         }
         return inspect(r, args);
     }
@@ -311,7 +313,7 @@ function inspect(r, args) {
     r.output = "input";
     r.data = {
         "cmd": "inspect",
-        "caller": playerName,
+        "caller": currentPlayerName,
         "area": area,
         "index": index
     };
@@ -363,7 +365,7 @@ function move(r, args) {
     r.output = "input";
     r.data = {
         "cmd": "move",
-        "caller": playerName,
+        "caller": currentPlayerName,
         "src": src,
         "index": index,
         "dst": dst
@@ -377,7 +379,7 @@ function doSay(r, args) {
     r.output = "input";
     r.data = {
         "cmd": "say",
-        "caller": playerName,
+        "caller": currentPlayerName,
     };
     if (args.length > 0) {
         r.data.msg = args.join(" ");

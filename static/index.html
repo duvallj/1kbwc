@@ -2,75 +2,40 @@
 <html lang="en_US">
 <head>
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="login.css" />
     <link rel="icon" type="image/png" href="favicon-16.png" sizes="16x16" />
     <link rel="icon" type="image/png" href="favicon-32.png" sizes="32x32" />
     <link rel="icon" type="image/png" href="favicon-512.png" />
-    <title>1KBWC</title>
+    <title>Play 1KBWC</title>
 </head>
 <body>
-<div class="main">
-    <div class="console">
-        <div id="output" class="console-output box prewrap">Let's start!</div>
-        <div class="console-input">
-            <div class="console-input-wrapper">
-                <input id="input" placeholder="Type a command here...">
-            </div>
-            <div class="console-submit-wrapper">
-                <button id="submit" onclick="on_submit();">Submit</button>
-            </div>
-        </div>
+<div class="index-main">
+    <h3 class="index-header">1KBWC</h3>
+    <div class="game-list-container">
+        <ul id="game-list" class="game-list"></ul>
+        <button onclick="populateRoomList();" class="game-list-refresh">Refresh</button>
     </div>
-    <div id="hand-state" class="box prewrap">Game view state stuff goes here HANDS
+    <div class="game-new-container">
+        <label for="game-new-input" class="settings-label">Room:</label>
+        <input id="roomName" class="roomName-input settings-input" type="text" placeholder="Enter room name..." />
+        <button onclick="setNameAndCreateRoom();" class="newgame-button">Create Room</button>
     </div>
-    <div id="play-state" class="box prewrap">Game view state stuff goes here AREAS
+    <div class="name-input-container">
+        <input id="myName" class="name-input settings-input" type="text" placeholder="yourname" />
+        <button onclick="setNameAndJoinRoom();" class="join-button">Join</button> 
     </div>
-    <div class="settings">
-        <div class="settings-connected">
-            Connected? <span id="socketConnect">No</span>
-        </div>
+    <div class="extra-settings">
         <div class="socketPath">
             <label for="socketPath" class="settings-label">URL:</label>
             <input id="socketPath" class="socketPath-input settings-input" type="text"/>
         </div>
-        <div class="roomName">
-            <label for="roomName" class="settings-label">Room:</label>
-            <input id="roomName" class="roomName-input settings-input" type="text" placeholder="Enter room name..."
-                   value="TJHSST"/>
-        </div>
-        <div class="myName">
-            <label for="myName" class="settings-label">Player:</label>
-            <input id="myName" class="myName-input settings-input" type="text" placeholder="Enter player name..."/>
-        </div>
-        <div class="settings-doconnect center-text">
-            <button onclick="makeRoom();">Make Room</button>
-            <button onclick="joinRoom();">Join Room</button>
-            <button onclick="startRoom();">Start Game</button>
-            <button onclick="disconnect();">Disconnect</button>
+        <div class="console-container">
+            <div id="output" class="console-output box prewrap">Debug output</div>
         </div>
     </div>
-    <div class="cardViewer">
-        <div class="center-text">
-            <img id="inspect-image" src="placeholder-card.png" alt="Inspect card image" class="card"/>
-        </div>
-        <div id="detail-container" class="box">
-            <div class="inspect-detail">Title: <span id="inspect-title"></span></div>
-            <div class="inspect-detail">Value: <span id="inspect-value"></span></div>
-            <div class="inspect-detail">Flags: <span id="inspect-flags"></span></div>
-            <div class="inspect-detail">Tags: <span id="inspect-tags"></span></div>
-        </div>
-    </div>
-</div>
-<!-- The Modal -->
-<div id="myModal" class="modal">
-
-    <!-- The Close Button -->
-    <span class="close">&times;</span>
-
-    <!-- Modal Content (The Image) -->
-    <img class="modal-content" id="img01" src="placeholder-card.png" alt="Big card image" />
 </div>
 <script src="utils.js"></script>
 <script src="api.js"></script>
-<script src="input.js"></script>
+<script src="login.js"></script>
 </body>
 </html>
