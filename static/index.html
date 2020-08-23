@@ -9,22 +9,27 @@
     <title>Play 1KBWC</title>
 </head>
 <body>
+<main class="main-container">
 <div class="index-main">
-    <h3 class="index-header">1KBWC</h3>
-    <div class="game-list-container">
-        <ul id="game-list" class="game-list"></ul>
-        <button onclick="populateRoomList();" class="game-list-refresh">Refresh</button>
+    <h1 class="index-header">1KBWC</h1>
+    <div class="name-input-container login-container">
+        <label for="myName" class="name-input-label">Name:</label>
+        <input id="myName" class="name-input settings-input" type="text" placeholder="yourname" />
     </div>
-    <div class="game-new-container">
+    <div class="game-list-container login-container">
+        <h4 class="game-list-title">Game List</h4>
+        <ul id="game-list" class="game-list"></ul>
+        <button onclick="populateRoomList();" class="game-list-refresh login-button">Refresh</button>
+    </div>
+    <div class="game-new-container login-container">
         <label for="game-new-input" class="settings-label">Room:</label>
         <input id="roomName" class="roomName-input settings-input" type="text" placeholder="Enter room name..." />
-        <button onclick="setNameAndCreateRoom();" class="newgame-button">Create Room</button>
     </div>
-    <div class="name-input-container">
-        <input id="myName" class="name-input settings-input" type="text" placeholder="yourname" />
-        <button onclick="setNameAndJoinRoom();" class="join-button">Join</button> 
+    <div class="room-action-container login-container">
+        <button onclick="setNameAndCreateRoom();" class="newgame-button login-button">Create Room</button>
+        <button onclick="setNameAndJoinRoom();" class="join-button login-button">Join Existing Room</button> 
     </div>
-    <div class="extra-settings">
+    <div class="extra-settings login-container">
         <div class="socketPath">
             <label for="socketPath" class="settings-label">URL:</label>
             <input id="socketPath" class="socketPath-input settings-input" type="text"/>
@@ -34,8 +39,10 @@
         </div>
     </div>
 </div>
+</main>
 <script src="utils.js"></script>
 <script src="api.js"></script>
+<script src="play-setup.js"></script>
 <script src="login.js"></script>
 </body>
 </html>

@@ -48,11 +48,6 @@
     width: 95%;
 }
 
-.console-output {
-    height: 100%;
-    overflow-y: auto;
-}
-
 #hand-state {
     grid-area: hand;
     overflow-y: auto;
@@ -83,10 +78,6 @@
 
 .card {
     margin: auto;
-}
-
-.prewrap {
-    white-space: pre-wrap;
 }
 
 .inspect-detail {

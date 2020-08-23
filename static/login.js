@@ -28,6 +28,9 @@ function populateRoomList() {
         for (const room_name of room_list) {
             buf += makeRoomItem(room_name);
         }
+        if (buf === "") {
+            buf = "<p>There are no games running</p>";
+        }
         document.getElementById("game-list").innerHTML = buf;
     });
 }
@@ -66,21 +69,27 @@ function replacePage(room_name, player_name, callback) {
 
         // Finally, do the thing
         callback();
+
+        // Also manually call play.js setup function because it's no longer loaded when
+        // the window is
+        playSetup();
     });
 }
 
 function setNameAndCreateRoom() {
     const room_name = getNewRoom();
     const player_name = getName();
-    replacePage(room_name, player_name, () => {
-        makeRoom(room_name, player_name);
-    });
+    const callback = makeRoom(room_name, player_name);
+    if (callback) {
+        replacePage(room_name, player_name, callback);
+    }
 }
 
 function setNameAndJoinRoom() {
     const room_name = getExistingRoom();
     const player_name = getName();
-    replacePage(room_name, player_name, () => {
-        joinRoom(room_name, player_name);
-    });
+    const callback = joinRoom(room_name, player_name);
+    if (callback) {
+        replacePage(room_name, player_name, callback);
+    }
 }
