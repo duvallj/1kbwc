@@ -37,4 +37,5 @@ main.main-container {
 
 .room-action-container {
     flex-direction: row;
+    justify-content: center;
 }

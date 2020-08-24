@@ -1,13 +1,17 @@
+// Validates a room name against a regex. Should be the same regex as in bwc/util.py
 function validateRoom(room_name) {
     // All letters + digits, can have single dashes in between
     return /^[a-zA-Z0-9]+(\-[a-zA-Z0-9]+)*$/.test(room_name);
 }
 
+// Validates a player name against a regex. Should be the same regex as in bwc/util.py
 function validatePlayer(player_name) {
     // All lowercase letters
     return /^[a-z]+$/.test(player_name);
 }
 
+// Given a room and player name (that may not even be strings), validate them and print an error visible to the user
+// if they are invalid. Returns `null` on all invalid, non-null on valid names.
 function validateParams(maybe_room_name, maybe_player_name) {
     if (!maybe_room_name) {
         add_to_output("### Error: you must select a room name");
@@ -34,12 +38,12 @@ function validateParams(maybe_room_name, maybe_player_name) {
     };
 }
 
+// Creates a path for a GET request given valid params from validateParams
 function addParamsToPath(path, params) {
     return path + "?player_name=" + params.player_name + "&room_name=" + params.room_name;
 }
 
-/* Validates parameters, and returns a valid continuation if they OK.
- * Returns `null` otherwise.
+/* Validates parameters, and returns a continuation function if they OK. Returns `null` otherwise.
  * This is to make it so we can handle parameter checking before other async stuff happens.
  * An example call would be:
 ```javascript
@@ -91,13 +95,14 @@ function joinRoom(room_name, player_name) {
     
     const params = validateParams(room_name, player_name);
     if (params !== null) {
-        return (() => {
-            // Protection in case someone accidentally clicks "join_room" again while they are the only person in the room
-            if (socket_connected && currentRoomName == params.room_name) {
-                add_to_output("### You have already joined that room!");
-                return;
-            }
+        // Protection in case someone accidentally clicks "join_room" again while they are the only person in the room
+        // No longer needed because there is no join room button on the play page anymore, but keeping just in case
+        if (socket_connected && currentRoomName == params.room_name) {
+            add_to_output("### You have already joined that room!");
+            return null;
+        }
 
+        return (() => {
             const call_path = addParamsToPath(JOIN_PATH, params);
             
             // Xtreme hacks, referencing something in a global scope that hasn't been defined yet
@@ -116,6 +121,7 @@ function joinRoom(room_name, player_name) {
     return null;
 }
 
+// Call a callback on the data received from a request to list rooms
 function listRooms(callback) {
     const LIST_PATH = "/list";
     

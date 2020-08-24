@@ -1,33 +1,38 @@
+// From play-setup.js, if this file is executed as the window is loading, make sure we still run setup
 window.onload = playSetup;
 
+// Global input element
 let input = document.getElementById("input");
 
 let choices = [];  // Options for the choice state, empty indicates non-choice state
-let currentPlayerName = "nonexistent";
-let currentRoomName = "nonexistent";
 
+// Global data to control command history
 let commandHistory = [];
 let historyIndex = -1;
 let historyBuffer = "";
 
+// Function that gets called when the "Start Room" button is pressed
 function actualStartRoom() {
-    // Retrieve settings from the page
-    const room_name_output = document.getElementById("roomName");
-    const room_name = room_name_output.value;
-    const player_name_output = document.getElementById("myName");
-    const player_name = player_name_output.value;
+    // Player and Room name arameters should have already been read from page as part of playSetup
 
-    const callback = startRoom(room_name, player_name);
+    // So we just need to go through the parameter-checking callback flow
+    const callback = startRoom(currentRoomName, currentPlayerName);
     if (callback) {
-        currentRoomName = room_name;
-        currentPlayerName = player_name;
         callback();
     } else {
-        console.log("Error starting room with player name " + player_name + " and room name " + room_name);
+        console.log("Error starting room with player name " + currentPlayerName + " and room name " + currentRoomName);
     }
 }
 
-/// Process the input field when the button is clicked.
+// Function that gets called when the "Disconnect" button is pressed
+function actualDisconnect() {
+    // First, make sure we close the websocket (defined in utils.js)
+    disconnect();
+    // Then, reload the page
+    window.history.go();
+}
+
+/// Process the input field when the "enter" button is clicked.
 function on_submit() {
     let v = input.value;
     console.log(v);
@@ -39,14 +44,17 @@ function on_submit() {
             clear: true
         };
         if (choices.length === 0) {
+            // Parse the command as normal
             r = parse(r, tokenize(v));
-        } else {  // Choice mode
+        } else {
+            // We have a choice to make, parse that instead
             r = choiceParse(r, tokenize(v));
         }
         do_submit(r, v);
     }
 }
 
+// Function that handles the parsed command
 function do_submit(r, v) {
     if (r.output === "input") {
         add_to_output(">>> " + v);
@@ -104,6 +112,7 @@ const HELPSTRINGS = {
 }
 const NOTENOUGHARGS = "Not enough arguments: ";
 
+// Given a command as a string, tokenize it into elements on spaces, treating quoted elements as no spaces
 function tokenize(v) {
     let matches = v.match(/[^\s"']+|"([^"]*)"|'([^']*)'/g);
     let tokens = [];
@@ -123,6 +132,7 @@ function tokenize(v) {
     return tokens;
 }
 
+// Given a list of tokens and output data `r`, parse the command contained in the tokens.
 function parse(r, tokens) {
     if (tokens.length < 1) {
         r.output = "fail";
@@ -174,6 +184,7 @@ function parse(r, tokens) {
     console.log("what.");
 }
 
+// Similar to `parse`, but only accept commands that are valid while in a choosing state
 function choiceParse(r, tokens) {
     if (tokens.length < 1) {
         r.output = "fail";
@@ -218,6 +229,7 @@ function choiceParse(r, tokens) {
     console.log("what,");
 }
 
+// Given a list of choices, format them with the appropriate HTML tags for output
 function formatChoices(c) {
     s = "Options:";
     for (let i = 0; i < c.length; ++i) {
@@ -300,6 +312,7 @@ function end(r, args) {
     return r;
 }
 
+// Wrapper around `inspect` that allows shorthand specification of the current player's hand
 function readInspect(r, args) {
     if (args.length === 2) {
         if (args[0] === "hand") {
@@ -339,6 +352,7 @@ function inspect(r, args) {
     return r;
 }
 
+// Shorthand command for moving a target card to the discard pile
 function discard(r, args) {
     if (args.length === 2) {
         args.push("discard");
@@ -354,6 +368,7 @@ function discard(r, args) {
     return r;
 }
 
+// Wrapper function for `move` that checks for the correct number of arguments
 function readMove(r, args) {
     if (args.length === 3) {
         return move(r, args);

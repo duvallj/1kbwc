@@ -1,12 +1,19 @@
-const SCHEME = window.location.protocol == "https:" ? "wss" : "ws";
-const HOST = window.location.host;
-const PATH = SCHEME + "://" + HOST;
 const IMAGE_BASE_URL = "/cards/";
 
-document.getElementById("socketPath").value = PATH;
-
+// Global variables that control what the current active socket is
 let socket = false;
 let socket_connected = false;
+
+// Automatically populate the websocket url with the correct value based on the current server
+function setupWSPath() {
+    const SCHEME = window.location.protocol == "https:" ? "wss" : "ws";
+    const HOST = window.location.host;
+    const PATH = SCHEME + "://" + HOST;
+
+    document.getElementById("socketPath").value = PATH;
+}
+
+window.onload = setupWSPath;
 
 /*
  * Callback: called on the received data like callback(data)
@@ -26,6 +33,7 @@ function ajaxGet(path, callback) {
     xmlhttp.send();
 };
 
+// Same as ajaxGet only makes a POST request and requires a dictionary of fields to send as a form
 function ajaxPost(path, data, callback) {
     let xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function () {
@@ -47,10 +55,11 @@ function ajaxPost(path, data, callback) {
     xmlhttp.send(formData);
 }
 
-// Same as the ajaxOnce, calling a callback on the first websocket
-// message received and then immediately closing
-// I only have to do this b/c I didn't want to mess around with any
-// webserver libraries in ~~Rust~~ Python oop
+/* Same as ajaxGet, only instead of a GET request, it opens a websocket and calls a callback on the first websocket 
+ * message received and then immediately closes.
+ * I only had to do this b/c I didn't want to mess around with any webserver libraries but now we have one so this
+ * method is irrelevant.
+ */
 function websocketOnce(path, callback) {
     const socket_path = document.getElementById("socketPath");
     const full_path = socket_path.value + path;
@@ -99,6 +108,7 @@ function on_close() {
     socket_connected = false;
 }
 
+// Utility method to check if all keys are present on an unverified object
 function has_all(obj, keys) {
     for (var i in keys) {
         let key = keys[i];
@@ -109,7 +119,8 @@ function has_all(obj, keys) {
     return true;
 }
 
-/// Send socket message data to the output box.
+// Callback for when a message is sent to us from the server.
+// Should probably be in play.js but that would require some restructuring
 function on_message(content) {
     console.log(content);
     let m = JSON.parse(content);
@@ -198,6 +209,7 @@ function add_to_output(s) {
     output.scrollTop = output.scrollHeight;
 }
 
+// Utility methods for dragging cards
 function dragstart_handler(ev) {
     const area_id = ev.target.dataset.area_id;
     const index = ev.target.dataset.card_index;

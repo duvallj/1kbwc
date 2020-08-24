@@ -35,7 +35,11 @@ function populateRoomList() {
     });
 }
 
-window.onload = populateRoomList;
+window.onload = () => {
+    // do the required setup defined in utils.js
+    setupWSPath();
+    populateRoomList();
+};
 
 function getName() {
     const nameInput = document.getElementById("myName");

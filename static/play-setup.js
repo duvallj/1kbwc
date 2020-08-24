@@ -1,4 +1,7 @@
-function playSetup(event) {
+let currentPlayerName = "nonexistent";
+let currentRoomName = "nonexistent";
+
+function setupModal() {
     // Get the modal
     var modal = document.getElementById("myModal");
 
@@ -20,8 +23,10 @@ function playSetup(event) {
     // When the user clicks on <span> (x), close the modal
     span.onclick = function () {
         modal.style.display = "none";
-    } 
-    
+    }
+}
+
+function setupKeyListener() {
     /// Send command on enter.
     input.addEventListener("keyup", function (event) {
         switch (event.keyCode) {
@@ -31,10 +36,14 @@ function playSetup(event) {
                 break;
         }
     });
+
+    // Navigate through history
     input.addEventListener("keydown", function (event) {
         switch (event.keyCode) {
             case 38:  // Up
                 event.preventDefault();
+                // Xtreme hacks of referencing something in global scope that hasn't been defined yet, but will be when
+                // this event is triggered. Nice!
                 historyIndex = Math.min(historyIndex + 1, commandHistory.length - 1);
                 historyUpdate();
                 break;
@@ -54,4 +63,18 @@ function playSetup(event) {
                 }
         }
     });
+}
+
+function setupGlobalNames() {
+    // Retrieve settings from the page
+    const room_name_output = document.getElementById("roomName");
+    currentRoomName = room_name_output.value;
+    const player_name_output = document.getElementById("myName");
+    currentPlayerName = player_name_output.value;
+}
+
+function playSetup(event) {
+    setupModal();
+    setupKeyListener();
+    setupGlobalNames();
 }
