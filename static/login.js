@@ -1,7 +1,7 @@
 let lastSelected = undefined;
 
 function makeRoomItem(room_name) {
-    return "<li onclick=\"selectRoom(this)\">" + room_name + "</li>";
+    return "<li class=\"room-item\" onclick=\"selectRoom(this)\">" + room_name + "</li>";
 }
 
 function selectRoom(element) {

@@ -39,3 +39,13 @@ main.main-container {
     flex-direction: row;
     justify-content: center;
 }
+
+.room-item {
+	cursor: pointer;
+	margin: 2px;
+	transition: background-color 0.2s;
+}
+
+.room-item:hover {
+	background-color: #cdcdcd;
+}
