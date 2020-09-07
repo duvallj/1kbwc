@@ -1,12 +1,38 @@
-let choices = [];  // Options for the choice state, empty indicates non-choice state
-let playerName = "nonexistent";
-let roomName = "nonexistent";
+// From play-setup.js, if this file is executed as the window is loading, make sure we still run setup
+window.onload = playSetup;
 
+// Global input element
+let input = document.getElementById("input");
+
+let choices = [];  // Options for the choice state, empty indicates non-choice state
+
+// Global data to control command history
 let commandHistory = [];
 let historyIndex = -1;
 let historyBuffer = "";
 
-/// Process the input field when the button is clicked.
+// Function that gets called when the "Start Room" button is pressed
+function actualStartRoom() {
+    // Player and Room name arameters should have already been read from page as part of playSetup
+
+    // So we just need to go through the parameter-checking callback flow
+    const callback = startRoom(currentRoomName, currentPlayerName);
+    if (callback) {
+        callback();
+    } else {
+        console.log("Error starting room with player name " + currentPlayerName + " and room name " + currentRoomName);
+    }
+}
+
+// Function that gets called when the "Disconnect" button is pressed
+function actualDisconnect() {
+    // First, make sure we close the websocket (defined in utils.js)
+    disconnect();
+    // Then, reload the page
+    window.history.go();
+}
+
+/// Process the input field when the "enter" button is clicked.
 function on_submit() {
     let v = input.value;
     console.log(v);
@@ -18,14 +44,17 @@ function on_submit() {
             clear: true
         };
         if (choices.length === 0) {
+            // Parse the command as normal
             r = parse(r, tokenize(v));
-        } else {  // Choice mode
+        } else {
+            // We have a choice to make, parse that instead
             r = choiceParse(r, tokenize(v));
         }
         do_submit(r, v);
     }
 }
 
+// Function that handles the parsed command
 function do_submit(r, v) {
     if (r.output === "input") {
         add_to_output(">>> " + v);
@@ -83,6 +112,7 @@ const HELPSTRINGS = {
 }
 const NOTENOUGHARGS = "Not enough arguments: ";
 
+// Given a command as a string, tokenize it into elements on spaces, treating quoted elements as no spaces
 function tokenize(v) {
     let matches = v.match(/[^\s"']+|"([^"]*)"|'([^']*)'/g);
     let tokens = [];
@@ -102,6 +132,7 @@ function tokenize(v) {
     return tokens;
 }
 
+// Given a list of tokens and output data `r`, parse the command contained in the tokens.
 function parse(r, tokens) {
     if (tokens.length < 1) {
         r.output = "fail";
@@ -153,6 +184,7 @@ function parse(r, tokens) {
     console.log("what.");
 }
 
+// Similar to `parse`, but only accept commands that are valid while in a choosing state
 function choiceParse(r, tokens) {
     if (tokens.length < 1) {
         r.output = "fail";
@@ -174,7 +206,7 @@ function choiceParse(r, tokens) {
         r.data = {
             "cmd": "choose",
             "which": num,
-            "caller": playerName
+            "caller": currentPlayerName
         }
         choices = [];
         return r;
@@ -197,6 +229,7 @@ function choiceParse(r, tokens) {
     console.log("what,");
 }
 
+// Given a list of choices, format them with the appropriate HTML tags for output
 function formatChoices(c) {
     s = "Options:";
     for (let i = 0; i < c.length; ++i) {
@@ -234,7 +267,7 @@ function help(r, args) {
 /// Parse and send a draw command.
 function draw(r, args) {
     if (args.length === 0) {
-        args = ["drawpile", 1, playerName + ".hand"];
+        args = ["drawpile", 1, currentPlayerName + ".hand"];
         return move(r, args);
     }
     r.output = "fail";
@@ -244,9 +277,9 @@ function draw(r, args) {
 /// Parse and send a play command.
 function play(r, args) {
     if (args.length === 2) {
-        args.unshift(playerName + ".hand");
+        args.unshift(currentPlayerName + ".hand");
         if (args[2].indexOf('.') === -1) {  // Might be a player name
-            if (document.getElementById("play-state").innerHTML.indexOf("<span class=\"playerName\">" + args[2] + "</span>") !== -1) {
+            if (document.getElementById("play-state").innerHTML.indexOf("<span class=\"currentPlayerName\">" + args[2] + "</span>") !== -1) {
                 // There exists a player with the name in args[2]
                 args[2] += ".play";
                 console.log("modified play target to " + args[2]);
@@ -270,7 +303,7 @@ function end(r, args) {
     r.output = "input";
     r.data = {
         "cmd": "end",
-        "caller": playerName,
+        "caller": currentPlayerName,
         "comment": ""
     };
     if (args.length > 0) {
@@ -279,10 +312,11 @@ function end(r, args) {
     return r;
 }
 
+// Wrapper around `inspect` that allows shorthand specification of the current player's hand
 function readInspect(r, args) {
     if (args.length === 2) {
         if (args[0] === "hand") {
-            args[0] = playerName + ".hand";
+            args[0] = currentPlayerName + ".hand";
         }
         return inspect(r, args);
     }
@@ -311,13 +345,14 @@ function inspect(r, args) {
     r.output = "input";
     r.data = {
         "cmd": "inspect",
-        "caller": playerName,
+        "caller": currentPlayerName,
         "area": area,
         "index": index
     };
     return r;
 }
 
+// Shorthand command for moving a target card to the discard pile
 function discard(r, args) {
     if (args.length === 2) {
         args.push("discard");
@@ -333,6 +368,7 @@ function discard(r, args) {
     return r;
 }
 
+// Wrapper function for `move` that checks for the correct number of arguments
 function readMove(r, args) {
     if (args.length === 3) {
         return move(r, args);
@@ -363,7 +399,7 @@ function move(r, args) {
     r.output = "input";
     r.data = {
         "cmd": "move",
-        "caller": playerName,
+        "caller": currentPlayerName,
         "src": src,
         "index": index,
         "dst": dst
@@ -377,7 +413,7 @@ function doSay(r, args) {
     r.output = "input";
     r.data = {
         "cmd": "say",
-        "caller": playerName,
+        "caller": currentPlayerName,
     };
     if (args.length > 0) {
         r.data.msg = args.join(" ");
@@ -389,61 +425,3 @@ function doSay(r, args) {
 function historyUpdate() {
     input.value = historyIndex >= 0 ? commandHistory[historyIndex] : historyBuffer;
 }
-
-/// Send command on enter.
-window.onload = function () {
-    input.addEventListener("keyup", function (event) {
-        switch (event.keyCode) {
-            case 13:  // Enter
-                event.preventDefault();
-                document.getElementById("submit").click();
-                break;
-        }
-    });
-    input.addEventListener("keydown", function (event) {
-        switch (event.keyCode) {
-            case 38:  // Up
-                event.preventDefault();
-                historyIndex = Math.min(historyIndex + 1, commandHistory.length - 1);
-                historyUpdate();
-                break;
-            case 40:  // Down arrow
-                event.preventDefault();
-                historyIndex = Math.max(historyIndex - 1, -1);
-                historyUpdate();
-                break;
-            case 27:  // Esc
-                historyIndex = -1;
-                historyBuffer = "";
-                historyUpdate();
-                break;
-            default:
-                if (historyIndex === -1) {
-                    historyBuffer = input.value;
-                }
-        }
-    });
-}
-
-// Get the modal
-var modal = document.getElementById("myModal");
-
-// Get the image and insert it inside the modal - use its "alt" text as a caption
-var img = document.getElementById("inspect-image");
-var modalImg = document.getElementById("img01");
-var captionText = document.getElementById("caption");
-img.onclick = function () {
-    // TODO: also have the modal request a high-resolution image maybe?
-    // (sorry currently the image resolutions are nuked to around 400px wide)
-    modal.style.display = "block";
-    modalImg.src = this.src;
-    captionText.innerHTML = this.alt;
-}
-
-// Get the <span> element that closes the modal
-var span = document.getElementsByClassName("close")[0];
-
-// When the user clicks on <span> (x), close the modal
-span.onclick = function () {
-    modal.style.display = "none";
-} 
