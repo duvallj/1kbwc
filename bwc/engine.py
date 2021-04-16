@@ -20,7 +20,7 @@ class Engine:
         self.game.current_player = self.game.turn_order[self.game.turn_order_index]
 
     def setup_areas(self, gamerounds=5, handsize=5):
-        card_deck = cardreader.make_deck(len(self.game.players) * handsize * gamerounds)
+        card_deck = cardreader.make_deck(len(self.game.players) * (handsize + gamerounds))
         self.game.all_cards = card_deck[:]
 
         # discard
